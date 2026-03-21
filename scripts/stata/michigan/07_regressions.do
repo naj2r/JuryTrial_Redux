@@ -247,6 +247,16 @@ program define run_variant
         tab year treat_pros_contested
     }
 
+    * --- Tier 0: Election-year binary ---
+    *     Simplest test: any election year vs non-election year
+    *     Y_ct = β*ElectionYear + α_c + γ_t + ε_ct
+    di _n "=== TIER 0: ELECTION-YEAR BINARY (is_election_year_pros) `spec_suffix' ==="
+    foreach y of local all_outcomes {
+        run_reg, variant("`variant'") tier("T0_electionyear") spec("electionyear`spec_suffix'") ///
+            outcome("`y'") treatvars("is_election_year_pros") ///
+            fe_unit("county_id") cluster("county_id") controls("`controls'")
+    }
+
     * --- Tier 1: Baseline (pressure + open seat decomposition) ---
     *     Three mutually exclusive states: non-election (omitted), incumbent running, open seat
     *     Y_ct = β1*IncumbentRunning + β2*OpenSeat + α_c + γ_t + ε_ct
@@ -332,6 +342,14 @@ program define run_court_subsample
     local rate_outcomes   "pct_told_to_report pct_sent_to_courtroom pct_questioned_in_voir_dire utilization_rate pct_capital_felony pct_other_felony pct_other_cases"
     local count_outcomes  "total_jury_verdicts capital_felony other_felony other_cases"
     local all_outcomes    "`rate_outcomes' `count_outcomes'"
+
+    * --- Tier 0: Election-year binary ---
+    di _n "=== TIER 0: ELECTION-YEAR BINARY (is_election_year_pros) `spec_suffix' ==="
+    foreach y of local all_outcomes {
+        run_reg, variant("`variant'") tier("T0_electionyear") spec("electionyear`spec_suffix'") ///
+            outcome("`y'") treatvars("is_election_year_pros") ///
+            fe_unit("court_id") cluster("county_id") controls("`controls'")
+    }
 
     * --- Tier 1: Baseline ---
     di _n "=== TIER 1: BASELINE (pressure) `spec_suffix' ==="

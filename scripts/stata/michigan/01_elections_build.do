@@ -299,6 +299,75 @@ di as text "--- A4 complete: treatment variables created ---"
 
 
 /*------------------------------------------------------------------------------
+  A4b: Closeness Variables (Election Margin Intensity)
+
+  Closeness = 1 - |incumbent_pct - 50| / 50
+    Range: 0 (blowout) to 1 (tied at 50%)
+    Close to 50% = high closeness = maximum competitive pressure
+    Close to 100% or 0% = low closeness = blowout win or loss
+
+  Construction:
+    general_closeness  — from general_pct (incumbent's general election %)
+    primary_closeness  — from primary_pct (incumbent's primary %)
+    max_closeness      — max of general and primary (tightest race)
+
+  Fill rules:
+    Non-election years: closeness = 0 (filled after merge into panel)
+    Open seats: closeness = 0 (no incumbent -> no competitive pressure)
+    Uncontested incumbents with missing pct: closeness = 0
+
+  Source: Audit 3-19-26/check_margin_regressions_v2.do
+------------------------------------------------------------------------------*/
+
+di as text _newline "--- A4b: Closeness Variables ---"
+
+* Build closeness from incumbent vote shares (candidate-level data)
+gen general_closeness = .
+gen primary_closeness = .
+
+* General closeness: 1 - |pct - 50| / 50
+replace general_closeness = 1 - abs(general_pct - 50) / 50 ///
+    if incumbent_or_challenger == "I" & !missing(general_pct)
+
+* Primary closeness: 1 - |pct - 50| / 50
+replace primary_closeness = 1 - abs(primary_pct - 50) / 50 ///
+    if incumbent_or_challenger == "I" & !missing(primary_pct)
+
+* Propagate incumbent closeness to all rows in the same district-year
+bysort district year: egen _gc = max(general_closeness)
+bysort district year: egen _pc = max(primary_closeness)
+replace general_closeness = _gc
+replace primary_closeness = _pc
+drop _gc _pc
+
+* Max closeness = tightest race across stages
+gen max_closeness = .
+replace max_closeness = max(general_closeness, primary_closeness) ///
+    if !missing(general_closeness) & !missing(primary_closeness)
+replace max_closeness = general_closeness ///
+    if missing(primary_closeness) & !missing(general_closeness)
+replace max_closeness = primary_closeness ///
+    if missing(general_closeness) & !missing(primary_closeness)
+
+* Fill missing closeness with 0
+* (open seats, uncontested with no vote share data)
+foreach v in general_closeness primary_closeness max_closeness {
+    replace `v' = 0 if missing(`v')
+}
+
+label var general_closeness "General election closeness (0=blowout, 1=tied)"
+label var primary_closeness "Primary election closeness (0=blowout, 1=tied)"
+label var max_closeness     "Max closeness across stages (tightest race)"
+
+di as text "--- Closeness summary (incumbent-running obs only) ---"
+tabstat general_closeness primary_closeness max_closeness ///
+    if treat_pros_pressure == 1, ///
+    stat(n mean sd min p25 p50 p75 max) columns(statistics) format(%9.3f)
+
+di as text "--- A4b complete: closeness variables created ---"
+
+
+/*------------------------------------------------------------------------------
   A5: Assertions (pre-collapse, still candidate-level but vars are group-level)
 ------------------------------------------------------------------------------*/
 
@@ -446,8 +515,10 @@ foreach var of varlist is_election_year_pros incumbent_pros open_pros ///
     primary_contest_only_pros n_candidates ///
     treat_pros_pressure treat_pros_contested treat_pros_uncontested ///
     treat_pros_contested_long treat_pros_incumbent_electyear ///
+    treat_pros_primary_only ///
     flag_no_winner flag_multiple_incumbents flag_mixed_open_challenger ///
-    flag_sparse_election {
+    flag_sparse_election ///
+    general_closeness primary_closeness max_closeness {
     replace `var' = 0 if missing(`var')
 }
 

@@ -57,7 +57,8 @@ program define merge_variant
         treat_pros_uncontested treat_pros_contested_long ///
         treat_pros_incumbent_electyear is_election_year_pros ///
         incumbent_pros open_pros contested_pros turnover_pros ///
-        current_prosecutor current_party) ///
+        current_prosecutor current_party ///
+        general_closeness primary_closeness max_closeness) ///
         nogen keep(match)
     rename district county
 
@@ -132,7 +133,8 @@ merge m:1 district year using "$DATA_INT/elections_panel.dta", ///
     treat_pros_uncontested treat_pros_contested_long ///
     treat_pros_incumbent_electyear is_election_year_pros ///
     incumbent_pros open_pros contested_pros turnover_pros ///
-    current_prosecutor current_party)
+    current_prosecutor current_party ///
+    general_closeness primary_closeness max_closeness)
 drop if _merge == 2
 drop _merge
 drop district
