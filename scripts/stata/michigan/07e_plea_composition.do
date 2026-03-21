@@ -30,6 +30,7 @@
 
   Requires: 01-06 pipeline + 03c must have run.
 ==============================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 * --- Bootstrap ---
 if "$ROOT" == "" {

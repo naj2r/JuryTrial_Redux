@@ -16,6 +16,7 @@
   Note:     Romano-Wolf requires: ssc install rwolf
             TOST is computed manually from lincom output.
 ==============================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 * --- Bootstrap: allow standalone execution ---
 if "$ROOT" == "" {

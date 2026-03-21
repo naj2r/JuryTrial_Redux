@@ -12,6 +12,7 @@
   Output:   $OL/files/tab/mi_conference/mi_table5_plea_fc.tex
             $OL/files/tab/mi_conference/mi_tableA22_plea_popsplit.tex
 ==============================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 * --- Bootstrap ---
 if "$ROOT" == "" {

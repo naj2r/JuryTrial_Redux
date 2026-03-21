@@ -20,6 +20,7 @@
   Requires: paths.do must be run first.
             OR: cd to results_rebuild/ and run this file directly (auto-bootstraps).
 ==============================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 * --- Bootstrap: allow standalone execution ---
 if "$ROOT" == "" {

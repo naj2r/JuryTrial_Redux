@@ -21,6 +21,7 @@
   Design:   Standalone — builds FC/FH data internally, merges with elections,
             runs all regressions. No dependency on 03c.
 ==============================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 * --- Bootstrap ---
 if "$ROOT" == "" {

@@ -23,6 +23,7 @@
   Scraping source: data_raw/michigan/scao_r_scripts/scrape_outgoing_caseload.R
   Requires: paths.do must be run first.
 ==============================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 * --- Bootstrap ---
 if "$ROOT" == "" {
@@ -197,7 +198,7 @@ label variable trial_total      "Total trials (jury + bench)"
 label variable resolved_total   "Total resolved (plea + trial)"
 label variable plea_share       "Plea share = plea / (plea + trial)"
 label variable jury_share       "Jury share = jury / (plea + trial)"
-label variable log_jury_only    "ln(jury verdicts + 1)"
+* label variable log_jury_only    "ln(jury verdicts + 1)"  // REMOVED: log outcomes inappropriate with many zeros
 
 * Validation
 di _n "--- Felony COUNTY-LEVEL plea composition ---"

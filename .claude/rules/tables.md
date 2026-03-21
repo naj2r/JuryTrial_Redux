@@ -2,10 +2,12 @@
 
 ## Hard Rule: Every Table Is Code-Generated
 
-**Every `.tex` file in `Tables/` MUST be produced by a script. No exceptions.**
+**Every `.tex` file in `Tables/` or `$OL/files/tab/` MUST be produced by a script. No exceptions.**
 
-- If a table exists in `Tables/`, there must be an R/Stata/Python script that generates it
+- If a table exists, there must be a script (R, Stata, Python) that generates it
 - The script must write the file directly — never copy-paste values from console output into a `.tex` file
+- **Claude NEVER edits table `.tex` files directly.** To change a table, modify the generating script and re-run it. This applies to `08_conference_tables.do` and all supplemental table scripts (10-13).
+- To fix a table label, number, or layout: edit the do-file, re-run, verify output
 - If `modelsummary` or another package produces incompatible format (e.g., `tabularray`), fix the package settings or write a code-based formatter — do NOT fall back to manually typing values
 - Hand-entered coefficient values are a **replication failure** waiting to happen: re-running the script would overwrite them with different formatting, or worse, they silently diverge from updated estimates
 

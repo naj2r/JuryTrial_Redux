@@ -15,6 +15,7 @@
 
   Requires: 07_regressions.do and 07d_caseload_robustness.do must have run.
 ==============================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 * --- Bootstrap ---
 if "$ROOT" == "" {

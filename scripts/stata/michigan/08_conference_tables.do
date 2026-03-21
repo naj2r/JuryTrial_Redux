@@ -22,7 +22,7 @@
               (A4) mi_tableA4_scaling.tex     (per 10k)
               (A6) mi_tableA6_popsplit.tex    (pop heterogeneity)
               (A7) mi_tableA7_config.tex      (pipeline configuration summary)
-            (A5 removed — midterm exclusion folded into Table 4 Panel D)
+            (A5 removed — no_offcycle exclusion folded into Table 4 Panel D)
 
   Prereq:   Run 07_regressions.do first to generate the CSV.
             Regressions are NOT re-run here; coefficients read from CSV.
@@ -33,6 +33,7 @@
   - All formatting decisions are in this file (edit here, not .tex)
   - Dep var means computed from panel data (unconditional sample mean)
 ==================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 * ─── Bootstrap: standalone execution ─────────────────────────────
 if "$ROOT" == "" {
@@ -1501,7 +1502,7 @@ di as text "    Done: `f'"
 *  Columns: (1) Actually Reported [B], (2) % Told to Report [B],
 *           (3) % Other Felony [B]
 *  Panels: A = Full, B = No 2016, C = No 2024,
-*          D = No midterms 2018/2022, E = Full + log(pop) control
+*          D = No no_offcycles 2018/2022, E = Full + log(pop) control
 *===================================================================
 di as text _n "  Building Table 4: Cycle Robustness..."
 
@@ -1547,16 +1548,16 @@ local b3c "`r(coef)'"
 local s3c "`r(se)'"
 local n3c "`r(nobs)'"
 
-* Panel D: Excluding midterm years (2018, 2022)
-cell B_midterm pressure actually_reported %9.1f treat_pros_pressure
+* Panel D: Excluding no_offcycle years (2018, 2022)
+cell B_no_offcycle pressure actually_reported %9.1f treat_pros_pressure
 local b1d "`r(coef)'"
 local s1d "`r(se)'"
 local n1d "`r(nobs)'"
-cell B_midterm pressure pct_told_to_report %9.3f treat_pros_pressure
+cell B_no_offcycle pressure pct_told_to_report %9.3f treat_pros_pressure
 local b2d "`r(coef)'"
 local s2d "`r(se)'"
 local n2d "`r(nobs)'"
-cell B_midterm pressure pct_other_felony %9.3f treat_pros_pressure
+cell B_no_offcycle pressure pct_other_felony %9.3f treat_pros_pressure
 local b3d "`r(coef)'"
 local s3d "`r(se)'"
 local n3d "`r(nobs)'"
@@ -1603,13 +1604,13 @@ cell B_no2024 pressure pct_other_felony %9.3f open_pros
 local o3c "`r(coef)'"
 local os3c "`r(se)'"
 
-cell B_midterm pressure actually_reported %9.1f open_pros
+cell B_no_offcycle pressure actually_reported %9.1f open_pros
 local o1d "`r(coef)'"
 local os1d "`r(se)'"
-cell B_midterm pressure pct_told_to_report %9.3f open_pros
+cell B_no_offcycle pressure pct_told_to_report %9.3f open_pros
 local o2d "`r(coef)'"
 local os2d "`r(se)'"
-cell B_midterm pressure pct_other_felony %9.3f open_pros
+cell B_no_offcycle pressure pct_other_felony %9.3f open_pros
 local o3d "`r(coef)'"
 local os3d "`r(se)'"
 
@@ -1665,8 +1666,8 @@ file write t "Open-seat election & `o1c' & `o2c' & `o3c' \\" _n
 file write t "                 & `os1c' & `os2c' & `os3c' \\" _n
 file write t "Observations     & `n1c' & `n2c' & `n3c' \\[0.5em]" _n
 
-* Panel D: Excluding midterm years
-file write t "\multicolumn{4}{l}{\textit{Panel D: Excluding midterm years (2018, 2022)}} \\[0.3em]" _n
+* Panel D: Excluding no_offcycle years
+file write t "\multicolumn{4}{l}{\textit{Panel D: Excluding no_offcycle years (2018, 2022)}} \\[0.3em]" _n
 file write t "Pressure         & `b1d' & `b2d' & `b3d' \\" _n
 file write t "                 & `s1d' & `s2d' & `s3d' \\" _n
 file write t "Open-seat election & `o1d' & `o2d' & `o3d' \\" _n
@@ -1693,8 +1694,8 @@ file close t
 di as text "    Done: `f'"
 
 
-* TABLE A5 removed — midterm exclusion now in Table 4, Panel D
-* TABLE A5 .tex file (mi_tableA5_midterm.tex) should be deleted from Overleaf
+* TABLE A5 removed — no_offcycle exclusion now in Table 4, Panel D
+* TABLE A5 .tex file (mi_tableA5_no_offcycle.tex) should be deleted from Overleaf
 
 
 *===================================================================
@@ -2262,12 +2263,12 @@ local b2c "`r(coef)'"
 local s2c "`r(se)'"
 local n2c "`r(nobs)'"
 
-* Panel D: Presidential-cycle only (excluding midterm years 2018, 2022)
-cell B_midterm contested_long total_jury_verdicts %9.1f treat_pros_contested_long
+* Panel D: Presidential-cycle only (excluding no_offcycle years 2018, 2022)
+cell B_no_offcycle contested_long total_jury_verdicts %9.1f treat_pros_contested_long
 local b1d "`r(coef)'"
 local s1d "`r(se)'"
 local n1d "`r(nobs)'"
-cell B_midterm contested_long pct_capital_felony %9.3f treat_pros_contested_long
+cell B_no_offcycle contested_long pct_capital_felony %9.3f treat_pros_contested_long
 local b2d "`r(coef)'"
 local s2d "`r(se)'"
 local n2d "`r(nobs)'"
@@ -2314,7 +2315,7 @@ file write t "                 & `s1c' & `s2c' \\" _n
 file write t "Observations     & `n1c' & `n2c' \\[0.5em]" _n
 
 * Panel D: Presidential-cycle only
-file write t "\multicolumn{3}{l}{\textit{Panel D: Excluding midterm years (2018, 2022)}} \\[0.3em]" _n
+file write t "\multicolumn{3}{l}{\textit{Panel D: Excluding no_offcycle years (2018, 2022)}} \\[0.3em]" _n
 file write t "Contested        & `b1d' & `b2d' \\" _n
 file write t "                 & `s1d' & `s2d' \\" _n
 file write t "Observations     & `n1d' & `n2d' \\" _n
@@ -4475,5 +4476,5 @@ di as text   "             mi_tableA13_pipeline_county.tex"
 di as text   "             mi_tableA14_verdict_county.tex"
 di as text   "             mi_tableA15_pipeline_circuit.tex"
 di as text   "             mi_tableA16_verdict_circuit.tex"
-di as text   "  (A5 removed — midterm exclusion now in Table 4 Panel D)"
+di as text   "  (A5 removed — no_offcycle exclusion now in Table 4 Panel D)"
 di as text   "========================================================"

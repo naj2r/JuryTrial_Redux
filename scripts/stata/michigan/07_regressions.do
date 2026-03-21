@@ -41,6 +41,7 @@
   Requires: paths.do, globals.do, 01-06 must have run, reghdfe installed.
             OR: cd to results_rebuild/ and run this file directly (auto-bootstraps).
 ==============================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 * --- Bootstrap: allow standalone execution ---
 * If called from master_build_all.do, $ROOT is already set — skip.
@@ -604,32 +605,32 @@ foreach y of local key_A {
 
 
 * =============================================================================
-* ROBUSTNESS B: Excluding Midterm Election Years
-*   Drop midterm election years (2018, 2022).
+* ROBUSTNESS B: Excluding Off-Cycle Election Years
+*   Drop no_offcycle election years (2018, 2022).
 *   Keep: 2016, 2017, 2019, 2023, 2024.
 *   Treatment variation comes only from presidential election cycles.
 *   Full spec: all tiers and outcomes via run_variant / run_court_subsample.
 * =============================================================================
 
 di _n "{hline 72}"
-di "ROBUSTNESS B: EXCLUDING MIDTERM YEARS (drop 2018/2022)"
+di "ROBUSTNESS B: EXCLUDING OFF-CYCLE YEARS (drop 2018/2022)"
 di "{hline 72}"
 
 * --- County-level panels ---
 foreach p in A B C {
     use "$DATA_FINAL/michigan_panel_`p'.dta", clear
     drop if year == 2018 | year == 2022
-    di "`p'_midterm: N=" _N
-    tempfile midterm_`p'
-    save `midterm_`p''
-    run_variant, variant("`p'_midterm") datafile("`midterm_`p''")
-    run_variant, variant("`p'_midterm") datafile("`midterm_`p''") controls("log_county_pop") spec_suffix("_pop")
+    di "`p'_no_offcycle: N=" _N
+    tempfile no_offcycle_`p'
+    save `no_offcycle_`p''
+    run_variant, variant("`p'_no_offcycle") datafile("`no_offcycle_`p''")
+    run_variant, variant("`p'_no_offcycle") datafile("`no_offcycle_`p''") controls("log_county_pop") spec_suffix("_pop")
 }
 
 * --- Court-level ---
 use "$DATA_FINAL/michigan_court_level.dta", clear
 drop if year == 2018 | year == 2022
-di "Court-level midterm: N=" _N
+di "Court-level no_offcycle: N=" _N
 
 capture drop is_standalone_cp is_combined is_district
 gen is_standalone_cp = (court_category == "STANDALONE_CP")
@@ -647,28 +648,28 @@ if _rc {
 }
 
 preserve
-    run_court_subsample, variant("COURT_ALL_midterm")
+    run_court_subsample, variant("COURT_ALL_no_offcycle")
 restore
 preserve
-    run_court_subsample, variant("COURT_ALL_midterm") controls("log_county_pop") spec_suffix("_pop")
+    run_court_subsample, variant("COURT_ALL_no_offcycle") controls("log_county_pop") spec_suffix("_pop")
 restore
 preserve
-    run_court_subsample, variant("COURT_STALONE_CP_midterm") keep_condition("is_standalone_cp == 1")
+    run_court_subsample, variant("COURT_STALONE_CP_no_offcycle") keep_condition("is_standalone_cp == 1")
 restore
 preserve
-    run_court_subsample, variant("COURT_STALONE_CP_midterm") keep_condition("is_standalone_cp == 1") controls("log_county_pop") spec_suffix("_pop")
+    run_court_subsample, variant("COURT_STALONE_CP_no_offcycle") keep_condition("is_standalone_cp == 1") controls("log_county_pop") spec_suffix("_pop")
 restore
 preserve
-    run_court_subsample, variant("COURT_COMBINED_midterm") keep_condition("is_combined == 1")
+    run_court_subsample, variant("COURT_COMBINED_no_offcycle") keep_condition("is_combined == 1")
 restore
 preserve
-    run_court_subsample, variant("COURT_COMBINED_midterm") keep_condition("is_combined == 1") controls("log_county_pop") spec_suffix("_pop")
+    run_court_subsample, variant("COURT_COMBINED_no_offcycle") keep_condition("is_combined == 1") controls("log_county_pop") spec_suffix("_pop")
 restore
 preserve
-    run_court_subsample, variant("COURT_DISTRICT_midterm") keep_condition("is_district == 1")
+    run_court_subsample, variant("COURT_DISTRICT_no_offcycle") keep_condition("is_district == 1")
 restore
 preserve
-    run_court_subsample, variant("COURT_DISTRICT_midterm") keep_condition("is_district == 1") controls("log_county_pop") spec_suffix("_pop")
+    run_court_subsample, variant("COURT_DISTRICT_no_offcycle") keep_condition("is_district == 1") controls("log_county_pop") spec_suffix("_pop")
 restore
 
 

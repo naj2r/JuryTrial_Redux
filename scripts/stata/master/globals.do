@@ -21,7 +21,7 @@ global STATE_FIPS "26"
 * --- Election years ---
 * MI prosecutor elections: every even year.
 * Primary election years: 2016, 2020, 2024 (presidential years)
-* Midterm election years: 2018, 2022 (sparse — flagged with flag_sparse_election)
+* Off-cycle election years: 2018, 2022 (sparse — flagged with flag_sparse_election)
 global ELECTION_YEARS "2016 2018 2020 2022 2024"
 
 * --- Counties ---

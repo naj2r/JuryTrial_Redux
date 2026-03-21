@@ -20,6 +20,7 @@
 
   Non-destructive: baseline files are read-only.
 ==============================================================================*/
+/* FC = Felony Capital (life-sentence-eligible). FH = Felony non-capital (other felonies). From SCAO case type codes. */
 
 set update_query off
 set more off
