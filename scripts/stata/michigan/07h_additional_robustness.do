@@ -64,8 +64,7 @@ preserve
 restore
 
 * Key outcomes for jackknife
-local jack_outcomes "actually_reported told_to_report pct_told_to_report ///
-    utilization_rate total_jury_verdicts capital_felony pct_other_felony"
+local jack_outcomes "actually_reported told_to_report pct_told_to_report utilization_rate total_jury_verdicts capital_felony pct_other_felony"
 
 * Full-sample estimates (benchmark)
 foreach y of local jack_outcomes {
@@ -236,8 +235,7 @@ replace lag_open = 0 if missing(lag_open)
 label var lag_pressure "Lag: pressure in t-1"
 label var lag_open "Lag: open seat in t-1"
 
-local pretrend_outcomes "actually_reported told_to_report pct_told_to_report ///
-    utilization_rate total_jury_verdicts capital_felony pct_other_felony"
+local pretrend_outcomes "actually_reported told_to_report pct_told_to_report utilization_rate total_jury_verdicts capital_felony pct_other_felony"
 
 * --- Test 1: Lead of treatment (does next year's election predict this year's outcome?) ---
 di _n "=== Lead test: does t+1 pressure predict t outcome? ==="

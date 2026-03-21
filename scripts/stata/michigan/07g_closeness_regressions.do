@@ -143,9 +143,7 @@ di _n "Mean general closeness (contested): " %6.3f `gen_close_mean'
 di "Mean max closeness (pressure): " %6.3f `max_close_mean'
 
 * --- Key outcomes ---
-local key_outcomes "actually_reported told_to_report pct_told_to_report ///
-    utilization_rate total_jury_verdicts capital_felony ///
-    pct_other_felony pct_capital_felony pct_other_cases"
+local key_outcomes "actually_reported told_to_report pct_told_to_report utilization_rate total_jury_verdicts capital_felony pct_other_felony pct_capital_felony pct_other_cases"
 
 * =============================================================================
 * T1 regressions: pressure × closeness
