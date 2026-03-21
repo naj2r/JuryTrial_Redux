@@ -89,6 +89,16 @@ file close `fh2'
 
 di "Equality-test CSV initialized: $EQ_CSV"
 
+* Define lincom difference CSV (proper SE accounting for covariance)
+global DIFF_CSV "$OUTPUT/results/mi_coefficient_differences.csv"
+
+tempname fh3
+file open `fh3' using "$DIFF_CSV", write replace
+file write `fh3' "variant,tier,spec_name,outcome,tvar1,tvar2,beta1,beta2,diff_estimate,diff_se,diff_p,diff_ci_lo,diff_ci_hi,n_obs,n_clusters" _n
+file close `fh3'
+
+di "Coefficient-difference CSV initialized: $DIFF_CSV"
+
 
 * =============================================================================
 * PROGRAM: run_reg — run one regression and append results to CSV
@@ -136,7 +146,7 @@ program define run_reg
     local nobs = e(N)
     local nclu = e(N_clust)
 
-    * --- Equality test: when 2 treatment vars, test beta1 = beta2 ---
+    * --- Equality test + lincom difference: when 2 treatment vars ---
     local ntv : word count `treatvars'
     if `ntv' == 2 {
         local tv1 : word 1 of `treatvars'
@@ -162,6 +172,30 @@ program define run_reg
         }
         else {
             di "  EQUALITY TEST FAILED for `outcome' (test command rc=" _rc ")"
+        }
+
+        * --- lincom: proper difference with SE accounting for covariance ---
+        capture lincom `tv1' - `tv2'
+        if !_rc {
+            local d_est = r(estimate)
+            local d_se  = r(se)
+            local d_t   = `d_est' / `d_se'
+            local d_p   = 2 * ttail(e(df_r), abs(`d_t'))
+            local d_lo  = `d_est' - invttail(e(df_r), 0.025) * `d_se'
+            local d_hi  = `d_est' + invttail(e(df_r), 0.025) * `d_se'
+
+            * Append to lincom CSV
+            tempname fhd
+            file open `fhd' using "$DIFF_CSV", write append
+            file write `fhd' ///
+                `"`variant'"' "," `"`tier'"' "," `"`spec'"' "," ///
+                `"`outcome'"' "," `"`tv1'"' "," `"`tv2'"' "," ///
+                (`b1') "," (`b2') "," ///
+                (`d_est') "," (`d_se') "," (`d_p') "," ///
+                (`d_lo') "," (`d_hi') "," (`nobs') "," (`nclu') _n
+            file close `fhd'
+            di "  LINCOM `outcome': diff=" %9.4f `d_est' " se=" %9.4f `d_se' ///
+                " p=" %6.4f `d_p'
         }
     }
 
