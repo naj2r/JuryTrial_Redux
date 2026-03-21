@@ -247,15 +247,54 @@ program define run_variant
         tab year treat_pros_contested
     }
 
-    * --- Tier 0: Election-year binary ---
-    *     Simplest test: any election year vs non-election year
-    *     Y_ct = β*ElectionYear + α_c + γ_t + ε_ct
-    di _n "=== TIER 0: ELECTION-YEAR BINARY (is_election_year_pros) `spec_suffix' ==="
-    foreach y of local all_outcomes {
-        run_reg, variant("`variant'") tier("T0_electionyear") spec("electionyear`spec_suffix'") ///
-            outcome("`y'") treatvars("is_election_year_pros") ///
-            fe_unit("county_id") cluster("county_id") controls("`controls'")
-    }
+    * --- Tier 0: Election-year binary (open-seat cycles excluded) ---
+    *     Cleanest test: incumbent-running election year vs non-election year
+    *     Open-seat election years AND their preceding lame-duck non-election
+    *     years (back to the prior election) are dropped. This removes counties
+    *     where the prosecutor is retiring/not seeking re-election, since their
+    *     behavior in run-up years is contaminated by known departure.
+    *
+    *     Implementation: for each county with open_pros==1 in year Y, drop
+    *     year Y and all preceding years back to (but not including) the most
+    *     recent prior election year for that county.
+    di _n "=== TIER 0: ELECTION-YEAR BINARY (open-seat cycles excluded) `spec_suffix' ==="
+    preserve
+        * Step 1: Flag open-seat election years
+        * Step 2: For each county, find the previous election year before each open seat
+        * Step 3: Drop county-years from (prev_election+1) through open_seat_year
+
+        * Identify open-seat election years by county
+        qui gen _has_open = 0
+        qui levelsof county_id if open_pros == 1, local(open_counties)
+        foreach cid of local open_counties {
+            * Get the open-seat year(s) for this county
+            qui levelsof year if county_id == `cid' & open_pros == 1, local(open_years)
+            foreach oy of local open_years {
+                * Find most recent election year BEFORE the open seat for this county
+                qui sum year if county_id == `cid' & is_election_year_pros == 1 & year < `oy'
+                if r(N) > 0 {
+                    local prev_elec = r(max)
+                    * Drop years from (prev_election+1) through open_seat_year
+                    qui replace _has_open = 1 if county_id == `cid' & year > `prev_elec' & year <= `oy'
+                }
+                else {
+                    * No prior election in data — drop from start of panel through open year
+                    qui replace _has_open = 1 if county_id == `cid' & year <= `oy'
+                }
+            }
+        }
+
+        qui drop if _has_open == 1
+        drop _has_open
+        di "  T0 sample (open-seat cycles excluded): " _N
+
+        * Now is_election_year_pros == 1 means incumbent-running election only
+        foreach y of local all_outcomes {
+            run_reg, variant("`variant'") tier("T0_electionyear") spec("electionyear`spec_suffix'") ///
+                outcome("`y'") treatvars("is_election_year_pros") ///
+                fe_unit("county_id") cluster("county_id") controls("`controls'")
+        }
+    restore
 
     * --- Tier 1: Baseline (pressure + open seat decomposition) ---
     *     Three mutually exclusive states: non-election (omitted), incumbent running, open seat
@@ -359,13 +398,35 @@ program define run_court_subsample
     local count_outcomes  "total_jury_verdicts capital_felony other_felony other_cases"
     local all_outcomes    "`rate_outcomes' `count_outcomes'"
 
-    * --- Tier 0: Election-year binary ---
-    di _n "=== TIER 0: ELECTION-YEAR BINARY (is_election_year_pros) `spec_suffix' ==="
-    foreach y of local all_outcomes {
-        run_reg, variant("`variant'") tier("T0_electionyear") spec("electionyear`spec_suffix'") ///
-            outcome("`y'") treatvars("is_election_year_pros") ///
-            fe_unit("court_id") cluster("county_id") controls("`controls'")
-    }
+    * --- Tier 0: Election-year binary (open-seat cycles excluded) ---
+    *     Same logic as county-level T0: drop open-seat years + lame-duck preceding years
+    preserve
+        qui gen _has_open = 0
+        qui levelsof county_id if open_pros == 1, local(open_counties)
+        foreach cid of local open_counties {
+            qui levelsof year if county_id == `cid' & open_pros == 1, local(open_years)
+            foreach oy of local open_years {
+                qui sum year if county_id == `cid' & is_election_year_pros == 1 & year < `oy'
+                if r(N) > 0 {
+                    local prev_elec = r(max)
+                    qui replace _has_open = 1 if county_id == `cid' & year > `prev_elec' & year <= `oy'
+                }
+                else {
+                    qui replace _has_open = 1 if county_id == `cid' & year <= `oy'
+                }
+            }
+        }
+        qui drop if _has_open == 1
+        drop _has_open
+        di "  T0 court sample (open-seat cycles excluded): " _N
+
+        di _n "=== TIER 0: ELECTION-YEAR BINARY (open-seat cycles excluded) `spec_suffix' ==="
+        foreach y of local all_outcomes {
+            run_reg, variant("`variant'") tier("T0_electionyear") spec("electionyear`spec_suffix'") ///
+                outcome("`y'") treatvars("is_election_year_pros") ///
+                fe_unit("court_id") cluster("county_id") controls("`controls'")
+        }
+    restore
 
     * --- Tier 1: Baseline ---
     di _n "=== TIER 1: BASELINE (pressure) `spec_suffix' ==="
