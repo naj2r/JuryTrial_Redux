@@ -306,6 +306,22 @@ program define run_variant
     else {
         di _n "NOTE: No per-10k variables found in `variant'. Skipping Tier 4."
     }
+
+    * --- Tier 5: Within-election comparison (incumbent-running vs open-seat) ---
+    *     Restricts to election years only. Incumbent-running is treatment,
+    *     open-seat is the omitted category. Tests whether incumbent presence
+    *     matters CONDITIONAL ON being an election year.
+    *     Y_ct = β*IncumbentRunning + α_c + γ_t + ε_ct  (election years only)
+    di _n "=== TIER 5: WITHIN-ELECTION (incumbent vs open, election years only) `spec_suffix' ==="
+    preserve
+        qui keep if is_election_year_pros == 1
+        di "  T5 sample (election years only): " _N
+        foreach y of local all_outcomes {
+            run_reg, variant("`variant'") tier("T5_within_election") spec("incumbent_vs_open`spec_suffix'") ///
+                outcome("`y'") treatvars("treat_pros_pressure") ///
+                fe_unit("county_id") cluster("county_id") controls("`controls'")
+        }
+    restore
 end
 
 
@@ -361,15 +377,29 @@ program define run_court_subsample
 
     * --- Tier 2: Mechanism ---
     *     Primary-only contested AND open-seat county-years excluded from T2 sample
-    qui drop if treat_pros_primary_only == 1
-    qui drop if open_pros == 1
-    di "  T2 sample (primary-only + open seats excluded): " _N
-    di _n "=== TIER 2: MECHANISM (contested_long + uncontested) `spec_suffix' ==="
-    foreach y of local all_outcomes {
-        run_reg, variant("`variant'") tier("T2_mechanism") spec("contested_long`spec_suffix'") ///
-            outcome("`y'") treatvars("treat_pros_contested_long treat_pros_uncontested") ///
-            fe_unit("court_id") cluster("county_id") controls("`controls'")
-    }
+    preserve
+        qui drop if treat_pros_primary_only == 1
+        qui drop if open_pros == 1
+        di "  T2 sample (primary-only + open seats excluded): " _N
+        di _n "=== TIER 2: MECHANISM (contested_long + uncontested) `spec_suffix' ==="
+        foreach y of local all_outcomes {
+            run_reg, variant("`variant'") tier("T2_mechanism") spec("contested_long`spec_suffix'") ///
+                outcome("`y'") treatvars("treat_pros_contested_long treat_pros_uncontested") ///
+                fe_unit("court_id") cluster("county_id") controls("`controls'")
+        }
+    restore
+
+    * --- Tier 5: Within-election (incumbent vs open, election years only) ---
+    preserve
+        qui keep if is_election_year_pros == 1
+        di "  T5 sample (election years only): " _N
+        di _n "=== TIER 5: WITHIN-ELECTION (incumbent vs open) `spec_suffix' ==="
+        foreach y of local all_outcomes {
+            run_reg, variant("`variant'") tier("T5_within_election") spec("incumbent_vs_open`spec_suffix'") ///
+                outcome("`y'") treatvars("treat_pros_pressure") ///
+                fe_unit("court_id") cluster("county_id") controls("`controls'")
+        }
+    restore
 end
 
 
