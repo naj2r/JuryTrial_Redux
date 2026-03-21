@@ -81,7 +81,7 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 
 [LEARN:project] Three locations: repo (code + config), Dropbox $RB (data + results + Quarto book), Overleaf $OL (paper .tex). See `_paths.md` for routing.
 
-[LEARN:data] Never use log outcomes for jury/plea data — too many zeros (ln(0) undefined, ln(0+1) compresses distribution). Permanent rule since 2026-03-20.
+[LEARN:data] Log transform rule: log(x) is fine for CONTROLS with no zeros (e.g., log_county_pop — every county has positive population). Log(x) is BAD for outcomes or controls with concentrated zeros (jury counts, plea counts, pending caseload). pending_felony has zeros at 1st percentile — use levels, not log. Permanent rule.
 
 [LEARN:data] FC = Felony Capital (life-eligible), FH = Felony non-capital. From SCAO case type codes. Never guess definitions.
 
