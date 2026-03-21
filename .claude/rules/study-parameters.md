@@ -25,11 +25,12 @@
 
 | Model | Tier | Treatment Variable(s) | Omitted Category | Sample Restriction | N (Var B) |
 |-------|------|----------------------|-----------------|-------------------|-----------|
-| 0 | T0 | `is_election_year_pros` | Non-election years | Full panel | 579 |
+| 0 | T0 | `is_election_year_pros` | Non-election years | Open-seat cycles excluded (lame-duck years + open-seat year dropped) | ~465 |
 | 1 | T1 | `treat_pros_pressure` + `open_pros` | Non-election years | Full panel | 579 |
 | 2 | T2 | `treat_pros_contested_long` + `treat_pros_uncontested` | Non-election years | Open seats excluded + primary-only excluded | ~553 |
 | 3 | T3 | `treat_pros_contested` + `treat_pros_uncontested` | Non-election years | Open seats excluded | ~553 |
 | 4 | T4 | `treat_pros_pressure` + `open_pros` | Non-election years | Full panel, per-10k outcomes | 579 |
+| 5 | T5 | `treat_pros_pressure` | Open-seat elections | Election years only | ~167 |
 
 **T2 vs T3:** T2 = general-election challenges only (primary-only dropped). T3 = any-stage challenges (primary-only = contested). T2 is the primary specification.
 
