@@ -1,0 +1,300 @@
+{
+  "_comment": "Pattern dictionary for the cheap-scan1 scanner agent. These regex patterns detect tables, figures, equations, and other content types in extracted text. The scanner uses these to route pages to the right specialist agent. Patterns are updatable — when the scanner misses something, add a [LEARN:scanner-pattern] tag to MEMORY.md and update this file.",
+  "_version": "1.0",
+
+  "table_indicators": {
+    "_doc": "Patterns that suggest a page contains a table worth analyzing visually",
+    "patterns": [
+      "(?i)\\bTable\\s+\\d",
+      "(?i)\\bTable\\s+[A-Z]\\d",
+      "(?i)\\bPanel\\s+[A-Z]",
+      "(?i)\\bColumn\\s*\\(?\\d",
+      "(?i)\\(\\d+\\)\\s+\\(\\d+\\)\\s+\\(\\d+\\)",
+      "(?i)\\bDependent\\s+[Vv]ariable",
+      "(?i)\\bObs(?:ervations)?\\b.*\\d{2,}",
+      "(?i)\\bN\\s*=\\s*\\d{2,}",
+      "(?i)\\bR[²2-]squared",
+      "(?i)\\bAdj\\.?\\s*R",
+      "(?i)\\bFixed\\s+[Ee]ffects",
+      "(?i)\\bStandard\\s+[Ee]rrors",
+      "(?i)\\bCluster",
+      "(?i)\\b(?:OLS|2SLS|IV|FE|RE|DID|TWFE)\\b",
+      "(?i)\\*\\*\\*|\\*\\*|\\*\\s",
+      "(?i)\\bSignificant\\s+at",
+      "(?i)\\bp\\s*[<>]\\s*0\\.\\d",
+      "(?i)\\bSE\\b.*\\bSE\\b",
+      "(?i)\\bCoeff",
+      "(?i)\\bEstimate"
+    ],
+    "min_matches": 3,
+    "confidence_boost_if_images": true
+  },
+
+  "figure_indicators": {
+    "_doc": "Patterns suggesting a page contains a figure, chart, or map",
+    "patterns": [
+      "(?i)\\bFigure\\s+\\d",
+      "(?i)\\bFig\\.?\\s+\\d",
+      "(?i)\\bChart\\s+\\d",
+      "(?i)\\bMap\\s+\\d",
+      "(?i)\\bGraph\\s+\\d",
+      "(?i)\\bDiagram\\s+\\d",
+      "(?i)\\bPlot\\s+\\d",
+      "(?i)\\bSource:",
+      "(?i)\\bNotes?:",
+      "(?i)\\bx-axis|y-axis",
+      "(?i)\\blegend\\b"
+    ],
+    "min_matches": 1,
+    "confidence_boost_if_images": true
+  },
+
+  "equation_indicators": {
+    "_doc": "Patterns suggesting equations that need LaTeX transcription",
+    "patterns": [
+      "(?i)\\bEquation\\s+\\(?\\d",
+      "(?i)\\bEq\\.?\\s+\\(?\\d",
+      "(?i)\\bwhere\\s+\\w+\\s+(?:is|denotes|represents)",
+      "(?i)\\b(?:max|min|arg\\s*max|arg\\s*min)\\b.*[=∑∫]",
+      "(?i)[αβγδεζηθλμνξπρσφχψω]",
+      "(?i)\\b(?:ln|log|exp|sqrt|sum|prod)\\b",
+      "(?i)\\\\(?:frac|sum|int|partial|nabla|infty)",
+      "(?i)\\bβ[₀₁₂₃0-9]",
+      "(?i)\\bε[ᵢₜit]",
+      "(?i)\\bY[ᵢₜit]\\s*=",
+      "(?i)∑|∏|∫|∂|∞|≤|≥|≠|≈|∈|∉|⊂|⊃",
+      "(?i)\\bE\\[|\\bVar\\[|\\bCov\\[|\\bCorr\\["
+    ],
+    "min_matches": 2,
+    "confidence_boost_if_low_text": true
+  },
+
+  "reference_indicators": {
+    "_doc": "Patterns indicating this is a references/bibliography page (skip visual analysis)",
+    "patterns": [
+      "(?i)^\\s*References\\s*$",
+      "(?i)^\\s*Bibliography\\s*$",
+      "(?i)^\\s*Works\\s+Cited\\s*$",
+      "(?i)\\(\\d{4}[a-z]?\\)",
+      "(?i)\\b(?:Journal|Quarterly|Review|American\\s+Economic)\\b",
+      "(?i)\\bVol\\.?\\s+\\d",
+      "(?i)\\bpp?\\.?\\s+\\d+[–-]\\d+",
+      "(?i)\\bdoi:\\s*10\\.",
+      "(?i)\\bNBER\\s+Working\\s+Paper",
+      "(?i)\\bWorking\\s+Paper\\s+(?:No\\.?|#)\\s*\\d"
+    ],
+    "min_matches": 4,
+    "note": "Reference pages have lots of text but don't need vision — just text extraction"
+  },
+
+  "appendix_indicators": {
+    "_doc": "Patterns indicating appendix content (may contain additional tables/figures)",
+    "patterns": [
+      "(?i)\\bAppendix\\s+[A-Z]",
+      "(?i)\\bOnline\\s+Appendix",
+      "(?i)\\bSupplementary",
+      "(?i)\\bTable\\s+A\\d",
+      "(?i)\\bFigure\\s+A\\d",
+      "(?i)\\bAdditional\\s+Results"
+    ],
+    "min_matches": 1,
+    "note": "Appendix pages often contain tables/figures — check for those patterns too"
+  },
+
+  "publisher_fingerprints": {
+    "_doc": "Detect the publisher/platform from telltale text in the extracted PDF. When recognized, the scanner can predict which header format to try first — saving compute by prioritizing the most likely pattern. Fingerprints are checked against the first 2 pages of extracted text (title page, abstract).",
+    "_learning_doc": "As more papers are processed, add publisher/journal-specific entries here. Use [LEARN:scanner-pattern] tags in MEMORY.md when a paper's format deviates from its publisher default. The scanner agent can propose additions after processing papers.",
+
+    "publishers": {
+      "wiley": {
+        "fingerprints": [
+          "(?i)\\bWiley\\b",
+          "(?i)\\bJohn\\s+Wiley\\b",
+          "(?i)wiley\\.com",
+          "(?i)\\bdoi\\.org/10\\.1002\\b"
+        ],
+        "predicted_header_format": "wiley_pipe",
+        "header_description": "Number-pipe-ALLCAPS on separate lines (e.g., 2\\n|\\nRELATED LITERATURE)",
+        "preferred_pattern_indices": [2, 3],
+        "notes": "Wiley journals use pipe-delimited section headers. Some Wiley journals (e.g., Southern Economic Journal) use this format consistently."
+      },
+      "jstor": {
+        "fingerprints": [
+          "(?i)\\bThis\\s+content\\s+downloaded\\s+from\\b",
+          "(?i)\\bjstor\\.org/terms\\b",
+          "(?i)\\bjstor\\.org/stable\\b"
+        ],
+        "predicted_header_format": "varies_by_journal",
+        "header_description": "JSTOR is a platform, not a publisher — header format depends on the original journal. Check journal-level overrides.",
+        "preferred_pattern_indices": null,
+        "notes": "JSTOR PDFs have distinctive footer text on every page. The header format varies by original publisher."
+      },
+      "springer": {
+        "fingerprints": [
+          "(?i)\\bSpringer\\b",
+          "(?i)\\bSpringer\\s+Nature\\b",
+          "(?i)springer\\.com",
+          "(?i)\\bdoi\\.org/10\\.1007\\b",
+          "(?i)\\bSpringer\\s+Science\\+Business\\s+Media\\b"
+        ],
+        "predicted_header_format": "arabic_dot_title",
+        "header_description": "Arabic numeral + dot + Title Case (e.g., 1. Introduction, 2. Data and Methods)",
+        "preferred_pattern_indices": [0],
+        "notes": "Most Springer journals use '1. Section Name' format. Some economic journals under Springer (e.g., Public Choice) may differ."
+      },
+      "elsevier": {
+        "fingerprints": [
+          "(?i)\\bElsevier\\b",
+          "(?i)\\bScienceDirect\\b",
+          "(?i)sciencedirect\\.com",
+          "(?i)\\bdoi\\.org/10\\.1016\\b",
+          "(?i)\\bAll\\s+rights\\s+reserved\\.\\s*Elsevier\\b"
+        ],
+        "predicted_header_format": "arabic_dot_title",
+        "header_description": "Arabic numeral + dot + Title Case (e.g., 1. Introduction)",
+        "preferred_pattern_indices": [0],
+        "notes": "Elsevier is highly consistent with numbered sections."
+      },
+      "degruyter": {
+        "fingerprints": [
+          "(?i)\\bDe\\s*Gruyter\\b",
+          "(?i)degruyter\\.com",
+          "(?i)\\bdoi\\.org/10\\.1515\\b"
+        ],
+        "predicted_header_format": "roman_or_arabic",
+        "header_description": "Mix of Roman numeral or Arabic numeral formats depending on journal",
+        "preferred_pattern_indices": [0, 1],
+        "notes": "De Gruyter hosts diverse journals — format varies."
+      },
+      "oxford_university_press": {
+        "fingerprints": [
+          "(?i)\\bOxford\\s+University\\s+Press\\b",
+          "(?i)\\bdoi\\.org/10\\.1093\\b",
+          "(?i)academic\\.oup\\.com"
+        ],
+        "predicted_header_format": "arabic_dot_title",
+        "header_description": "Arabic numeral + dot + Title Case, sometimes ALL CAPS",
+        "preferred_pattern_indices": [0, 3],
+        "notes": "OUP journals like JLEO, QJE typically use numbered sections."
+      },
+      "cambridge_university_press": {
+        "fingerprints": [
+          "(?i)\\bCambridge\\s+University\\s+Press\\b",
+          "(?i)\\bdoi\\.org/10\\.1017\\b",
+          "(?i)cambridge\\.org"
+        ],
+        "predicted_header_format": "roman_numeral_title",
+        "header_description": "Roman numeral + Title (e.g., II. Data, III. Results)",
+        "preferred_pattern_indices": [1],
+        "notes": "CUP econ journals (e.g., Journal of Institutional and Theoretical Economics) often use Roman numerals."
+      },
+      "uchicago_press": {
+        "fingerprints": [
+          "(?i)\\bUniversity\\s+of\\s+Chicago\\s+Press\\b",
+          "(?i)\\bdoi\\.org/10\\.1086\\b",
+          "(?i)journals\\.uchicago\\.edu"
+        ],
+        "predicted_header_format": "roman_numeral_title",
+        "header_description": "Roman numeral sections (I. Introduction, II. Model)",
+        "preferred_pattern_indices": [1],
+        "notes": "JPE, JLE, JLS, Journal of Labor Economics — typically Roman numerals."
+      },
+      "heinonline": {
+        "fingerprints": [
+          "(?i)\\bHeinOnline\\b",
+          "(?i)heinonline\\.org",
+          "(?i)\\bHein\\s+Online\\b"
+        ],
+        "predicted_header_format": "allcaps_or_roman",
+        "header_description": "Law reviews — typically ALL CAPS headers or Roman numeral sections",
+        "preferred_pattern_indices": [1, 3, 5],
+        "notes": "Law review articles have distinctive formatting. Roman numerals for major sections, letters for subsections."
+      },
+      "law_review": {
+        "fingerprints": [
+          "(?i)\\bL\\.\\s*REV\\.\\b",
+          "(?i)\\bLAW\\s+REVIEW\\b",
+          "(?i)\\bLAW\\s+JOURNAL\\b",
+          "(?i)\\bL\\.\\s*J\\.\\b",
+          "(?i)\\bTABLE\\s+OF\\s+CONTENTS\\b",
+          "(?i)\\bJ\\.D\\.,\\s+.+\\bSchool\\s+of\\s+Law\\b",
+          "(?i)\\bProfessor\\s+of\\s+Law\\b",
+          "(?i)\\bWM\\.\\s*&\\s*MARY\\b",
+          "(?i)\\bHARV\\.\\s*L\\.\\s*REV\\b",
+          "(?i)\\bYALE\\s+L\\.?\\s*J\\b",
+          "(?i)\\bSTAN\\.\\s*L\\.\\s*REV\\b"
+        ],
+        "predicted_header_format": "roman_plus_letters",
+        "header_description": "Law reviews use Roman numerals (I., II., III.) for major sections and letters (A., B., C.) for subsections. ALL CAPS for Introduction/Conclusion.",
+        "preferred_pattern_indices": [1, 3, 5],
+        "notes": "General law review format. Roman numeral pattern [1] is permissive (any title). Pattern [5] catches letter subsections. Includes fingerprints for major law schools and L. REV./L.J. abbreviations common in footnotes."
+      },
+      "ssrn": {
+        "fingerprints": [
+          "(?i)\\bSSRN\\b",
+          "(?i)ssrn\\.com",
+          "(?i)\\bElectronic\\s+Journal\\b",
+          "(?i)\\bdoi\\.org/10\\.2139\\b"
+        ],
+        "predicted_header_format": "varies",
+        "header_description": "SSRN is a preprint platform — format depends on the paper's target journal. Often law reviews (Roman numerals) or economics journals (Arabic numerals).",
+        "preferred_pattern_indices": null,
+        "notes": "SSRN papers often lack final journal formatting. Check for law review fingerprints (L. REV., footnote density) or economics fingerprints (regression tables, significance stars) to determine likely format."
+      },
+      "aea": {
+        "fingerprints": [
+          "(?i)\\bAmerican\\s+Economic\\s+Association\\b",
+          "(?i)\\bAmerican\\s+Economic\\s+Review\\b",
+          "(?i)\\bAEA\\b.*\\bjournals\\b",
+          "(?i)\\bdoi\\.org/10\\.1257\\b"
+        ],
+        "predicted_header_format": "roman_numeral_title",
+        "header_description": "Roman numeral sections (I. Introduction)",
+        "preferred_pattern_indices": [1],
+        "notes": "AER, AEJ journals use Roman numeral sections consistently."
+      }
+    },
+
+    "journal_overrides": {
+      "_doc": "Journal-specific overrides when a journal deviates from its publisher default. Keyed by a regex that matches the journal name in the PDF text. These take priority over publisher defaults.",
+      "_learning_doc": "Add entries here when processing reveals a journal uses different formatting than its publisher's norm. Format: journal name regex → override settings.",
+
+      "southern_economic_journal": {
+        "journal_pattern": "(?i)\\bSouthern\\s+Economic\\s+Journal\\b",
+        "publisher": "wiley",
+        "override_header_format": "wiley_pipe",
+        "preferred_pattern_indices": [2, 3],
+        "notes": "Confirmed via McCannon (2021): uses Wiley pipe format. JSTOR-hosted but Wiley-published."
+      },
+      "public_choice": {
+        "journal_pattern": "(?i)\\bPublic\\s+Choice\\b",
+        "publisher": "springer",
+        "override_header_format": null,
+        "preferred_pattern_indices": null,
+        "notes": "Placeholder — needs data from processing. Expected to follow Springer default but may vary."
+      }
+    },
+
+    "format_learning_queue": {
+      "_doc": "When the scanner encounters a paper and cannot determine the publisher/journal, or when the detected format doesn't match predictions, it logs an entry here. The learn skill or scanner agent can later update publisher_fingerprints or journal_overrides based on accumulated evidence.",
+      "entries": []
+    }
+  },
+
+  "routing_rules": {
+    "_doc": "How the scanner agent uses pattern matches to decide routing",
+    "priority_order": [
+      "If reference_indicators match → route to text_only (cheap, no vision needed)",
+      "If equation_indicators match AND page has low text → route to equation_transcriber (sonnet + vision)",
+      "If table_indicators match → route to visual_analyzer (sonnet + vision)",
+      "If figure_indicators match AND page has images → route to visual_analyzer (sonnet + vision)",
+      "If appendix_indicators match → check for table/figure/equation sub-patterns",
+      "Default → route to text_summarizer (haiku, cheapest)"
+    ],
+    "notes": [
+      "A page can match multiple categories. Priority order resolves conflicts.",
+      "Pages with images AND pattern matches get higher confidence for visual routing.",
+      "The scanner should list ALL matches and let the routing rules decide."
+    ]
+  }
+}
