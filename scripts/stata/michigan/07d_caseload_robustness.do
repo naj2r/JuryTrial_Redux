@@ -166,7 +166,7 @@ di "Panel B loaded: " _N " obs"
 
 * Merge caseload panel
 merge m:1 county year using "$DATA_INT/mi_caseload_panel.dta", ///
-    keepusing(incoming_felony pending_felony log_incoming log_pending ///
+    keepusing(incoming_felony pending_felony ///
               incoming_felony_lag1 outgoing_felony clearance_rate ///
               clearance_rate_lead1 log_outgoing ///
               d_clearance_rate d_clearance_rate_lead1) ///
@@ -191,9 +191,9 @@ capture gen log_county_pop = ln(county_pop)
 * Generate primary-only flag for T2 exclusion
 capture gen treat_pros_primary_only = (treat_pros_contested == 1 & treat_pros_contested_long == 0)
 
-* Verify log_pending is non-missing for all obs
-qui count if missing(log_pending)
-di "Missing log_pending: " r(N) " of " _N
+* Verify pending_felony is non-missing for all obs
+qui count if missing(pending_felony)
+di "Missing pending_felony: " r(N) " of " _N
 assert r(N) == 0
 
 * Quick summary of caseload variables
@@ -244,11 +244,8 @@ run_reg, variant("B_falsi") tier("T1_baseline") spec("pressure_lag") ///
     outcome("incoming_felony_lag1") treatvars("treat_pros_pressure open_pros") ///
     fe_unit("county_id") cluster("county_id")
 
-* --- Optional: log-level ---
-di _n "=== OPTIONAL: log_incoming ==="
-run_reg, variant("B_falsi") tier("T1_baseline") spec("pressure_log") ///
-    outcome("log_incoming") treatvars("treat_pros_pressure open_pros") ///
-    fe_unit("county_id") cluster("county_id")
+* --- log_incoming REMOVED: log outcomes inappropriate with many zeros ---
+* (was: run_reg on log_incoming, removed 2026-03-21)
 
 
 * =============================================================================
@@ -364,38 +361,38 @@ run_reg, variant("B_mech_fd") tier("T3_robustness") spec("contested_lead") ///
 *       pending caseload (stock variable, proxies congestion environment).
 
 di _n "{hline 72}"
-di "PRONG 2: CONGESTION CONTROL (main outcomes + log_pending)"
+di "PRONG 2: CONGESTION CONTROL (main outcomes + pending_felony)"
 di "{hline 72}"
 
 * Core outcomes: actually_reported, told_to_report, pct_told_to_report
 local core_outcomes "actually_reported told_to_report pct_told_to_report"
 
 * --- Tier 1: Baseline with congestion control ---
-di _n "=== T1: BASELINE + log_pending ==="
+di _n "=== T1: BASELINE + pending_felony ==="
 foreach y of local core_outcomes {
     run_reg, variant("B_caseload") tier("T1_baseline") spec("pressure_pending") ///
         outcome("`y'") treatvars("treat_pros_pressure open_pros") ///
-        fe_unit("county_id") cluster("county_id") controls("log_pending")
+        fe_unit("county_id") cluster("county_id") controls("pending_felony")
 }
 
 * --- Tier 2: Mechanism with congestion control ---
-di _n "=== T2: MECHANISM + log_pending ==="
+di _n "=== T2: MECHANISM + pending_felony ==="
 preserve
     qui drop if treat_pros_primary_only == 1
     qui drop if open_pros == 1
     foreach y of local core_outcomes {
         run_reg, variant("B_caseload") tier("T2_mechanism") spec("contested_long_pending") ///
             outcome("`y'") treatvars("treat_pros_contested_long treat_pros_uncontested") ///
-            fe_unit("county_id") cluster("county_id") controls("log_pending")
+            fe_unit("county_id") cluster("county_id") controls("pending_felony")
     }
 restore
 
 * --- Tier 3: Robustness with congestion control ---
-di _n "=== T3: ROBUSTNESS + log_pending ==="
+di _n "=== T3: ROBUSTNESS + pending_felony ==="
 foreach y of local core_outcomes {
     run_reg, variant("B_caseload") tier("T3_robustness") spec("contested_pending") ///
         outcome("`y'") treatvars("treat_pros_contested treat_pros_uncontested") ///
-        fe_unit("county_id") cluster("county_id") controls("log_pending")
+        fe_unit("county_id") cluster("county_id") controls("pending_felony")
 }
 
 
@@ -415,13 +412,13 @@ local b_base = _b[treat_pros_pressure]
 local se_base = _se[treat_pros_pressure]
 local p_base = 2 * ttail(e(df_r), abs(`b_base'/`se_base'))
 
-di _n "--- With log_pending control: actually_reported ---"
-reghdfe actually_reported treat_pros_pressure log_pending, ///
+di _n "--- With pending_felony control: actually_reported ---"
+reghdfe actually_reported treat_pros_pressure pending_felony, ///
     absorb(county_id year) vce(cluster county_id)
 local b_ctrl = _b[treat_pros_pressure]
 local se_ctrl = _se[treat_pros_pressure]
 local p_ctrl = 2 * ttail(e(df_r), abs(`b_ctrl'/`se_ctrl'))
-local b_pending = _b[log_pending]
+local b_pending = _b[pending_felony]
 
 di _n "==========================================="
 di "HEADLINE COMPARISON: Actually Reported"
@@ -429,7 +426,7 @@ di "==========================================="
 di "Baseline:   b = " %9.2f `b_base' "  se = " %9.2f `se_base' "  p = " %6.4f `p_base'
 di "Controlled: b = " %9.2f `b_ctrl'  "  se = " %9.2f `se_ctrl'  "  p = " %6.4f `p_ctrl'
 di "Change:     " %6.1f ((`b_ctrl' - `b_base') / `b_base' * 100) "%"
-di "log_pending coeff: " %9.2f `b_pending'
+di "pending_felony coeff: " %9.2f `b_pending'
 di "==========================================="
 
 

@@ -91,4 +91,6 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 
 [LEARN:stata] Do NOT use `///` line continuation inside `local` macro definitions with quoted strings (`local x "a b /// c d"`). Stata treats `///` as literal text. Put the full list on one line.
 
+[LEARN:stata] Stata writes p-values without leading zeros (`.39` not `0.39`). R's `read_csv` parses these as character strings. ALWAYS add `mutate(across(c(beta, se, p_value, ci_lo, ci_hi), as.numeric))` after reading Stata-generated CSVs in R/Quarto.
+
 [LEARN:identity] CLAUDE.md must stay under 150 lines. Verbose content goes into .claude/rules/ files.
