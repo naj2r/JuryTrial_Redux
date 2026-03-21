@@ -50,6 +50,26 @@ Thumbs.db
 # Quarto rendering artifacts
 /.quarto/
 
-# Output artifacts — uncomment lines below based on your preference
-# *.rds
-# output/**/*.rds
+# Output artifacts
+*.rds
+
+# Data files — NEVER in repo (stay in Dropbox)
+*.dta
+*.csv
+!Bibliography_base.bib
+
+# Stata artifacts
+*.smcl
+*.sthlp
+
+# Large files
+*.log
+
+# Windows artifacts
+desktop.ini
+nul
+
+# Quarto book output
+_book/
+_site/
+site_libs/

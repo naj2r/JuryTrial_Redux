@@ -70,3 +70,23 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:meta] Dogfooding principles must be enforced: plan-first, spec-then-plan, quality gates, session logs → we follow our own guide.
 
 [LEARN:meta] Template development work (building infrastructure, docs) doesn't create session logs in quality_reports/ → those are for user work (slides, analysis), not meta-work. Keeps template clean for users who fork.
+
+## Project-Specific (Jury Trial Redux)
+
+[LEARN:project] User institution is Wabash College. Any Emory references in templates are placeholders.
+
+[LEARN:project] "Shadow expansion" mobilization story is DEAD (2026-03-20 correction). Current framing: "shadow contraction" — election pressure reduces voir dire utilization and suppresses jury verdicts. Contestation adds capital-felony verdict premium in small counties.
+
+[LEARN:project] Overleaf results section (5-results.tex) contains pre-correction coefficient values. All specific numbers are UNVERIFIED until pipeline re-run with corrected code.
+
+[LEARN:project] Three locations: repo (code + config), Dropbox $RB (data + results + Quarto book), Overleaf $OL (paper .tex). See `_paths.md` for routing.
+
+[LEARN:data] Never use log outcomes for jury/plea data — too many zeros (ln(0) undefined, ln(0+1) compresses distribution). Permanent rule since 2026-03-20.
+
+[LEARN:data] FC = Felony Capital (life-eligible), FH = Felony non-capital. From SCAO case type codes. Never guess definitions.
+
+[LEARN:data] `B_midterm` is a MISLEADING LABEL — it means "dropping 2018 and 2022 off-cycle years," NOT "dropping midterm elections." Pending rename to `B_no_offcycle`.
+
+[LEARN:stata] Always use PowerShell batch mode for Stata: `& "C:\Program Files\StataNow19\StataMP-64.exe" /e do "path\to\file.do"`. Never run from bash.
+
+[LEARN:identity] CLAUDE.md must stay under 150 lines. Verbose content goes into .claude/rules/ files.
