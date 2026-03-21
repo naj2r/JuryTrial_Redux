@@ -77,20 +77,26 @@ This paper (Jensen & Ammons, working title: "Electoral Incentives and the Jury P
 
 ## 6. Pending Work
 
-### Phase 0: Fix Misleading Labels
-- Rename `B_midterm` → `B_no_offcycle` (and `A_midterm` → `A_no_offcycle`, etc.) in `07_regressions.do`, `08_conference_tables.do`, and all supplemental do-files.
-- Add `/* FC = Felony Capital, FH = Felony non-capital */` comment to every do-file that uses these terms.
-- Search-and-replace in CSV outputs. Keep old CSVs as backups.
-- This is the FIRST task — do it before any other code changes.
+### Phase 0: Fix Misleading Labels — COMPLETED 2026-03-21
+- ✅ Renamed `B_midterm` → `B_no_offcycle` across 07_regressions.do (15), 08_conference_tables.do (18), 08_conference_tables_test.do (15), globals.do (1). Zero residual.
+- ✅ Added FC/FH definition comment to 11 do-files.
+- ✅ Commented out stray `label variable log_jury_only` in 03c.
+- ✅ Full nuclear pipeline run: 07 + 08 + 07c-09b + 10-13. All CSVs regenerated.
+- ✅ Coefficients verified bit-identical pre/post rename. Coder-critic score: 98/100.
+- ✅ Backups in `output/results/backup_pre_phase0_nuclear/` (31 CSVs).
 
-### Phase 1: Code Pipeline Modifications
-- Add closeness variable construction (`general_closeness`, `primary_closeness`, `max_closeness`) to `01_elections_build.do`. Fill non-election/open/uncontested with 0. Source: logic from `Audit 3-19-26/check_margin_regressions_v2.do`.
-- Add closeness vars to keep-list in `05_merge_panels.do`.
-- Add T0 tier (election-year binary using `is_election_year_pros`) to `07_regressions.do` inside `run_variant` and `run_court_subsample`.
-- Create `07g_closeness_regressions.do` → output `mi_closeness_results.csv`.
-- Create `07h_additional_robustness.do` → outputs `mi_jackknife_results.csv`, `mi_permutation_results.csv`, `mi_pretrend_results.csv`. Jackknife: at least 10 largest counties. Permutation: 500 iterations. Pre-trend: exclude prosecutors not seeking re-election at t=0.
-- Run full pipeline: master_build_all.do (01–06) → 07 → 07c → 07d → 07e → 07f → 07g → 07h → 09b.
-- Verify all topcoding and winsorization is correct. Review audit notes for any remaining impossible values.
+### Phase 1: Code Pipeline Modifications — COMPLETED 2026-03-21
+- ✅ Added closeness variables (general_closeness, primary_closeness, max_closeness) to `01_elections_build.do` section A4b. Propagated via bysort, filled missing with 0.
+- ✅ Added closeness vars to keepusing() in `05_merge_panels.do` (both county + court merges).
+- ✅ Added `treat_pros_primary_only` + closeness vars to B2 fill loop.
+- ✅ Added T0 tier (`is_election_year_pros`) to `run_variant` and `run_court_subsample` in `07_regressions.do`. Result: 772 T0 rows in main CSV.
+- ✅ Created `07g_closeness_regressions.do` → `mi_closeness_results.csv` (136 rows). T1/T2/T3 × general/max closeness, raw + demeaned.
+- ✅ Created `07h_additional_robustness.do`:
+  - Jackknife: 10 largest counties × 7 outcomes → `mi_jackknife_results.csv` (71 rows)
+  - Permutation: 500 iterations × 4 outcomes → `mi_permutation_results.csv` (2005 rows)
+  - Pre-trend: lead/lag/joint × 7 outcomes → `mi_pretrend_results.csv` (36 rows)
+- ✅ Full pipeline rebuild: master_build_all (01-06) → 07 → 07g → 07h → 08. All verified.
+- ⚠️ [LEARN] Stata `///` inside `local` macro quoted strings is invalid — fixed in commit 061b491.
 
 ### Phase 2: Quarto Master Results Audit Book
 - Create 8 new QMD chapters (100–107) in `replication_book/`.

@@ -85,8 +85,10 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 
 [LEARN:data] FC = Felony Capital (life-eligible), FH = Felony non-capital. From SCAO case type codes. Never guess definitions.
 
-[LEARN:data] `B_midterm` is a MISLEADING LABEL — it means "dropping 2018 and 2022 off-cycle years," NOT "dropping midterm elections." Pending rename to `B_no_offcycle`.
+[LEARN:data] `B_midterm` was renamed to `B_no_offcycle` (2026-03-21). It means "dropping 2018 and 2022 off-cycle years." Rename applied to all do-files + CSV outputs. Coefficients verified identical pre/post rename.
 
 [LEARN:stata] Always use PowerShell batch mode for Stata: `& "C:\Program Files\StataNow19\StataMP-64.exe" /e do "path\to\file.do"`. Never run from bash.
+
+[LEARN:stata] Do NOT use `///` line continuation inside `local` macro definitions with quoted strings (`local x "a b /// c d"`). Stata treats `///` as literal text. Put the full list on one line.
 
 [LEARN:identity] CLAUDE.md must stay under 150 lines. Verbose content goes into .claude/rules/ files.
