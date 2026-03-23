@@ -47,10 +47,26 @@
 
 26 open-seat county-year observations (4.5% of sample) were previously pooled into the control group. Fix: T1 now includes `open_pros` as separate regressor. T2/T3 exclude open seats entirely. ALL prior positive mobilization results were artifacts of this contamination.
 
+### TWFE Weight Diagnostics (2026-03-23)
+
+`twowayfeweights` (de Chaisemartin & D'Haultfoeuille 2020) decomposes the TWFE estimator:
+
+| Variant | Neg ATTs | Σ Neg Weights | Status |
+|---------|----------|---------------|--------|
+| T1 (pressure) | 2/144 | -0.007 | **CLEAN** — primary spec is reliable |
+| T0 full (uncorrected) | 12/170 | -0.325 | BAD — open seats + off-cycle timing |
+| T0 corrected (open-seat excl) | 8/133 | -0.361 | BAD — open-seat fix doesn't resolve |
+| T0 no off-cycle counties | **0/77** | **0.000** | **CLEAN** — off-cycle counties were the source |
+| T0 no offcycle + no open-seat | 62/119 | -0.471 | WORSE — lame-duck exclusion creates asymmetry |
+
+**Key finding:** The 6 off-cycle election counties (Allegan, Isabella, Newaygo, Osceola, Roscommon with 2018; Delta with 2022) are the **entire source** of T0 negative weights. Dropping them produces zero negative weights. The `B_no_offcycle` variant is the clean T0 specification.
+
+**Implication:** T1 is the primary specification (clean weights, full panel). T0 requires the `B_no_offcycle` variant to be TWFE-valid. The lame-duck cycle exclusion fixes sample contamination but not TWFE weight heterogeneity — these are separate issues.
+
 ## Non-Negotiable Facts
 
 - **FC = Felony Capital** (capital felonies). **FH = Felony non-capital** (other felonies). From SCAO case type codes.
-- **`B_midterm` is a misleading label.** Pending rename to `B_no_offcycle`. It means "dropping 2018 and 2022" — NOT "dropping midterm elections."
+- **`B_no_offcycle`** (formerly `B_midterm`, renamed 2026-03-21). Means "dropping 2018 and 2022 off-cycle years." Also the TWFE-valid T0 variant (zero negative weights).
 - **Never use log outcomes** for jury or plea data. Too many zeros. Use levels and shares only. Permanent rule.
 - **Rate outcomes (`pct_*`) are top-coded at 1.0** in `03_classify_and_aggregate.do`.
 - **Prosecutors do NOT summon jurors.** Court administrators do. Prosecutors generate demand signals.
