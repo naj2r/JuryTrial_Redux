@@ -74,7 +74,7 @@ global REG_CSV "$OUTPUT/results/mi_regression_results.csv"
 * Initialize CSV (overwrite any prior run — idempotent)
 tempname fh
 file open `fh' using "$REG_CSV", write replace
-file write `fh' "variant,tier,spec_name,outcome,treatment_var,beta,se,p_value,ci_lo,ci_hi,n_obs,n_treated,n_clusters,share_treated,fe_unit,fe_year,cluster" _n
+file write `fh' "variant,tier,spec_name,outcome,treatment_var,beta,se,p_value,ci_lo,ci_hi,n_obs,n_treated,n_clusters,share_treated,fe_unit,fe_year,cluster,sign,sig_stars" _n
 file close `fh'
 
 di "Results CSV initialized: $REG_CSV"
@@ -94,7 +94,7 @@ global DIFF_CSV "$OUTPUT/results/mi_coefficient_differences.csv"
 
 tempname fh3
 file open `fh3' using "$DIFF_CSV", write replace
-file write `fh3' "variant,tier,spec_name,outcome,tvar1,tvar2,beta1,beta2,diff_estimate,diff_se,diff_p,diff_ci_lo,diff_ci_hi,n_obs,n_clusters" _n
+file write `fh3' "variant,tier,spec_name,outcome,tvar1,tvar2,beta1,beta2,diff_estimate,diff_se,diff_p,diff_ci_lo,diff_ci_hi,n_obs,n_clusters,diff_sign,diff_sig_stars" _n
 file close `fh3'
 
 di "Coefficient-difference CSV initialized: $DIFF_CSV"
@@ -184,6 +184,16 @@ program define run_reg
             local d_lo  = `d_est' - invttail(e(df_r), 0.025) * `d_se'
             local d_hi  = `d_est' + invttail(e(df_r), 0.025) * `d_se'
 
+            * Compute sign and significance stars for difference
+            local d_sign "+"
+            if `d_est' < 0 local d_sign "-"
+
+            local d_sig_stars ""
+            if `d_p' < 0.1   local d_sig_stars "*"
+            if `d_p' < 0.05  local d_sig_stars "**"
+            if `d_p' < 0.01  local d_sig_stars "***"
+            if `d_p' < 0.001 local d_sig_stars "****"
+
             * Append to lincom CSV
             tempname fhd
             file open `fhd' using "$DIFF_CSV", write append
@@ -192,7 +202,8 @@ program define run_reg
                 `"`outcome'"' "," `"`tv1'"' "," `"`tv2'"' "," ///
                 (`b1') "," (`b2') "," ///
                 (`d_est') "," (`d_se') "," (`d_p') "," ///
-                (`d_lo') "," (`d_hi') "," (`nobs') "," (`nclu') _n
+                (`d_lo') "," (`d_hi') "," (`nobs') "," (`nclu') "," ///
+                `"`d_sign'"' "," `"`d_sig_stars'"' _n
             file close `fhd'
             di "  LINCOM `outcome': diff=" %9.4f `d_est' " se=" %9.4f `d_se' ///
                 " p=" %6.4f `d_p'
@@ -212,6 +223,16 @@ program define run_reg
         local n_treat = r(N)
         local share = `n_treat' / `nobs'
 
+        * Compute sign and significance stars
+        local sign "+"
+        if `b' < 0 local sign "-"
+
+        local sig_stars ""
+        if `p' < 0.1   local sig_stars "*"
+        if `p' < 0.05  local sig_stars "**"
+        if `p' < 0.01  local sig_stars "***"
+        if `p' < 0.001 local sig_stars "****"
+
         * Append to CSV
         tempname fh
         file open `fh' using "$REG_CSV", write append
@@ -220,7 +241,8 @@ program define run_reg
             `"`outcome'"' "," `"`tvar'"' "," ///
             (`b') "," (`se') "," (`p') "," (`ci_lo') "," (`ci_hi') "," ///
             (`nobs') "," (`n_treat') "," (`nclu') "," (`share') "," ///
-            `"`fe_unit'"' "," "year" "," `"`cluster'"' _n
+            `"`fe_unit'"' "," "year" "," `"`cluster'"' "," ///
+            `"`sign'"' "," `"`sig_stars'"' _n
         file close `fh'
 
         di "  `variant' | `tier' | `outcome' | `tvar' | b=" %9.4f `b' ///
