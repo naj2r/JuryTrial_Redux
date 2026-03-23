@@ -277,9 +277,37 @@ foreach y of local key_outcomes {
 }
 
 * T0: election year binary (full panel — before open-seat exclusion)
+* This shows the PROBLEM: open seats generate negative weights
 foreach y of local key_outcomes {
-    run_twfe_weights, tier("T0_electionyear") outcome("`y'") tvar("is_election_year_pros")
+    run_twfe_weights, tier("T0_full_uncorrected") outcome("`y'") tvar("is_election_year_pros")
 }
+
+* T0: election year binary (CORRECTED — open-seat cycles excluded)
+* This shows the FIX: excluding lame-duck cycles should eliminate negative weights
+preserve
+    bysort county_id (year): gen _has_open = (open_pros == 1)
+    bysort county_id: egen _ever_open = max(_has_open)
+
+    gen _open_year = year if open_pros == 1
+    bysort county_id: egen _max_open_yr = max(_open_year)
+
+    gen _prev_elec = .
+    forvalues y = 2016/2024 {
+        replace _prev_elec = `y' if _max_open_yr > `y' & is_election_year_pros == 1 & year == `y' & _ever_open == 1
+    }
+    bysort county_id: egen _prev_elec_yr = max(_prev_elec)
+
+    drop if _ever_open == 1 & year > _prev_elec_yr & year <= _max_open_yr & !missing(_prev_elec_yr)
+    drop if _ever_open == 1 & missing(_prev_elec_yr) & year <= _max_open_yr
+
+    drop _has_open _ever_open _open_year _max_open_yr _prev_elec _prev_elec_yr
+
+    di _n "  T0 corrected sample: " _N
+
+    foreach y of local key_outcomes {
+        run_twfe_weights, tier("T0_corrected") outcome("`y'") tvar("is_election_year_pros")
+    }
+restore
 
 
 di _n "=============================================="
