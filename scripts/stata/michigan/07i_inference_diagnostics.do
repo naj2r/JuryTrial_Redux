@@ -43,7 +43,7 @@ di "   INFERENCE DIAGNOSTICS"
 di "=============================================="
 
 * Load main panel
-use "$DATADIR/mi_panel_B.dta", clear
+use "$DATA_FINAL/michigan_panel_B.dta", clear
 di "Panel B loaded: " _N " obs"
 
 
@@ -63,145 +63,89 @@ di _n "=============================================="
 di "   PART 1: Wild Cluster Bootstrap"
 di "=============================================="
 
-* --- T1: Pressure + Open Seat ---
-di _n "--- T1 Baseline ---"
-foreach y of local key_outcomes {
-    capture confirm variable `y'
-    if _rc continue
+* NOTE: boottest does NOT work with reghdfe when >1 set of absorbed FEs.
+* Workaround: use areg (absorb county_id) + manual year dummies.
+* This is numerically equivalent to reghdfe with county + year FE.
 
-    qui count if !missing(`y')
-    if r(N) < 50 continue
+* Create year dummies (xi would work but tab is cleaner)
+qui tab year, gen(_yr_)
+* Drop one for identification (first year = reference)
+drop _yr_1
 
-    * Run the regression
-    qui reghdfe `y' treat_pros_pressure open_pros, absorb(county_id year) vce(cluster county_id)
+
+* === Helper program for boottest with areg ===
+capture program drop run_boottest
+program define run_boottest
+    syntax , tier(string) spec(string) outcome(string) ///
+        treatvars(string) [controls(string)]
+
+    capture confirm variable `outcome'
+    if _rc exit
+
+    qui count if !missing(`outcome')
+    if r(N) < 50 exit
+
+    * Build year dummy list
+    local yrdums ""
+    foreach v of varlist _yr_* {
+        local yrdums "`yrdums' `v'"
+    }
+
+    * Run areg (absorb county_id, manual year dummies, cluster county_id)
+    qui areg `outcome' `treatvars' `yrdums' `controls', absorb(county_id) vce(cluster county_id)
 
     local nobs = e(N)
     local nclu = e(N_clust)
 
-    * Conventional results for pressure
-    local b    = _b[treat_pros_pressure]
-    local se   = _se[treat_pros_pressure]
-    local t    = `b' / `se'
-    local p_cl = 2 * ttail(e(df_r), abs(`t'))
+    foreach tvar of local treatvars {
+        local b    = _b[`tvar']
+        local se   = _se[`tvar']
+        local t    = `b' / `se'
+        local p_cl = 2 * ttail(e(df_r), abs(`t'))
 
-    qui count if treat_pros_pressure == 1 & e(sample)
-    local n_treat = r(N)
+        qui count if `tvar' == 1 & e(sample)
+        local n_treat = r(N)
 
-    * Wild cluster bootstrap for pressure
-    capture boottest treat_pros_pressure, reps(999) seed(42) nograph
-    if !_rc {
-        local p_boot = r(p)
+        * Wild cluster bootstrap
+        capture noisily boottest `tvar', reps(999) seed(42) nograph
+        if !_rc {
+            local p_boot = r(p)
+        }
+        else {
+            local p_boot = .
+            di "  boottest FAILED for `outcome' `tier' `tvar'"
+        }
+
+        * Write result
+        tempname fh
+        file open `fh' using "$OUTPUT/results/mi_boottest_results.csv", write append
+        file write `fh' "B,`tier',`spec',`outcome',`tvar'," ///
+            (`b') "," (`se') "," (`p_cl') "," (`p_boot') "," ///
+            (`nobs') "," (`nclu') "," (`n_treat') ",999" _n
+        file close `fh'
+
+        di "  `tier' | `outcome' | `tvar' | p_cl=" %6.4f `p_cl' " p_boot=" %6.4f `p_boot'
     }
-    else {
-        local p_boot = .
-        di "  boottest FAILED for `y' T1 pressure"
-    }
+end
 
-    * Write result
-    tempname fh
-    file open `fh' using "$OUTPUT/results/mi_boottest_results.csv", write append
-    file write `fh' "B,T1_baseline,pressure,`y',treat_pros_pressure," ///
-        (`b') "," (`se') "," (`p_cl') "," (`p_boot') "," ///
-        (`nobs') "," (`nclu') "," (`n_treat') ",999" _n
-    file close `fh'
 
-    di "  T1 | `y' | pressure | p_cluster=" %6.4f `p_cl' " p_boot=" %6.4f `p_boot'
-
-    * Wild cluster bootstrap for open_pros
-    local b_o    = _b[open_pros]
-    local se_o   = _se[open_pros]
-    local t_o    = `b_o' / `se_o'
-    local p_cl_o = 2 * ttail(e(df_r), abs(`t_o'))
-
-    qui count if open_pros == 1 & e(sample)
-    local n_treat_o = r(N)
-
-    capture boottest open_pros, reps(999) seed(42) nograph
-    if !_rc {
-        local p_boot_o = r(p)
-    }
-    else {
-        local p_boot_o = .
-    }
-
-    tempname fh
-    file open `fh' using "$OUTPUT/results/mi_boottest_results.csv", write append
-    file write `fh' "B,T1_baseline,pressure,`y',open_pros," ///
-        (`b_o') "," (`se_o') "," (`p_cl_o') "," (`p_boot_o') "," ///
-        (`nobs') "," (`nclu') "," (`n_treat_o') ",999" _n
-    file close `fh'
+* --- T1: Pressure + Open Seat ---
+di _n "--- T1 Baseline ---"
+foreach y of local key_outcomes {
+    run_boottest, tier("T1_baseline") spec("pressure") ///
+        outcome("`y'") treatvars("treat_pros_pressure open_pros")
 }
 
 * --- T2: Contested + Uncontested (open seats excluded) ---
 di _n "--- T2 Mechanism ---"
 preserve
     drop if open_pros == 1
-    * Drop primary-only contested
     capture gen treat_pros_primary_only = (treat_pros_contested == 1 & treat_pros_contested_long == 0)
     drop if treat_pros_primary_only == 1
 
     foreach y of local key_outcomes {
-        capture confirm variable `y'
-        if _rc continue
-
-        qui count if !missing(`y')
-        if r(N) < 50 continue
-
-        qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(county_id year) vce(cluster county_id)
-
-        local nobs = e(N)
-        local nclu = e(N_clust)
-
-        * Contested
-        local b    = _b[treat_pros_contested_long]
-        local se   = _se[treat_pros_contested_long]
-        local t    = `b' / `se'
-        local p_cl = 2 * ttail(e(df_r), abs(`t'))
-
-        qui count if treat_pros_contested_long == 1 & e(sample)
-        local n_treat = r(N)
-
-        capture boottest treat_pros_contested_long, reps(999) seed(42) nograph
-        if !_rc {
-            local p_boot = r(p)
-        }
-        else {
-            local p_boot = .
-            di "  boottest FAILED for `y' T2 contested"
-        }
-
-        tempname fh
-        file open `fh' using "$OUTPUT/results/mi_boottest_results.csv", write append
-        file write `fh' "B,T2_mechanism,contested,`y',treat_pros_contested_long," ///
-            (`b') "," (`se') "," (`p_cl') "," (`p_boot') "," ///
-            (`nobs') "," (`nclu') "," (`n_treat') ",999" _n
-        file close `fh'
-
-        di "  T2 | `y' | contested | p_cluster=" %6.4f `p_cl' " p_boot=" %6.4f `p_boot'
-
-        * Uncontested
-        local b_u    = _b[treat_pros_uncontested]
-        local se_u   = _se[treat_pros_uncontested]
-        local t_u    = `b_u' / `se_u'
-        local p_cl_u = 2 * ttail(e(df_r), abs(`t_u'))
-
-        qui count if treat_pros_uncontested == 1 & e(sample)
-        local n_treat_u = r(N)
-
-        capture boottest treat_pros_uncontested, reps(999) seed(42) nograph
-        if !_rc {
-            local p_boot_u = r(p)
-        }
-        else {
-            local p_boot_u = .
-        }
-
-        tempname fh
-        file open `fh' using "$OUTPUT/results/mi_boottest_results.csv", write append
-        file write `fh' "B,T2_mechanism,contested,`y',treat_pros_uncontested," ///
-            (`b_u') "," (`se_u') "," (`p_cl_u') "," (`p_boot_u') "," ///
-            (`nobs') "," (`nclu') "," (`n_treat_u') ",999" _n
-        file close `fh'
+        run_boottest, tier("T2_mechanism") spec("contested") ///
+            outcome("`y'") treatvars("treat_pros_contested_long treat_pros_uncontested")
     }
 restore
 
@@ -212,7 +156,6 @@ preserve
     bysort county_id (year): gen _has_open = (open_pros == 1)
     bysort county_id: egen _ever_open = max(_has_open)
 
-    * For counties with open seats, find the open-seat year and prior election
     gen _open_year = year if open_pros == 1
     bysort county_id: egen _max_open_yr = max(_open_year)
 
@@ -222,9 +165,7 @@ preserve
     }
     bysort county_id: egen _prev_elec_yr = max(_prev_elec)
 
-    * Drop from (prev_election + 1) through open-seat year
     drop if _ever_open == 1 & year > _prev_elec_yr & year <= _max_open_yr & !missing(_prev_elec_yr)
-    * If no prior election found, drop all years up to open seat
     drop if _ever_open == 1 & missing(_prev_elec_yr) & year <= _max_open_yr
 
     drop _has_open _ever_open _open_year _max_open_yr _prev_elec _prev_elec_yr
@@ -232,43 +173,13 @@ preserve
     di "  T0 sample: " _N
 
     foreach y of local key_outcomes {
-        capture confirm variable `y'
-        if _rc continue
-
-        qui count if !missing(`y')
-        if r(N) < 50 continue
-
-        qui reghdfe `y' is_election_year_pros, absorb(county_id year) vce(cluster county_id)
-
-        local nobs = e(N)
-        local nclu = e(N_clust)
-
-        local b    = _b[is_election_year_pros]
-        local se   = _se[is_election_year_pros]
-        local t    = `b' / `se'
-        local p_cl = 2 * ttail(e(df_r), abs(`t'))
-
-        qui count if is_election_year_pros == 1 & e(sample)
-        local n_treat = r(N)
-
-        capture boottest is_election_year_pros, reps(999) seed(42) nograph
-        if !_rc {
-            local p_boot = r(p)
-        }
-        else {
-            local p_boot = .
-        }
-
-        tempname fh
-        file open `fh' using "$OUTPUT/results/mi_boottest_results.csv", write append
-        file write `fh' "B,T0_electionyear,electionyear,`y',is_election_year_pros," ///
-            (`b') "," (`se') "," (`p_cl') "," (`p_boot') "," ///
-            (`nobs') "," (`nclu') "," (`n_treat') ",999" _n
-        file close `fh'
-
-        di "  T0 | `y' | p_cluster=" %6.4f `p_cl' " p_boot=" %6.4f `p_boot'
+        run_boottest, tier("T0_electionyear") spec("electionyear") ///
+            outcome("`y'") treatvars("is_election_year_pros")
     }
 restore
+
+* Clean up year dummies
+capture drop _yr_*
 
 
 /*------------------------------------------------------------------------------
@@ -292,105 +203,82 @@ di "   PART 2: TWFE Weight Diagnostics"
 di "=============================================="
 
 * Reload clean panel
-use "$DATADIR/mi_panel_B.dta", clear
+use "$DATA_FINAL/michigan_panel_B.dta", clear
 
-* twowayfeweights requires: outcome, group, time, treatment
-* For T1: treatment = treat_pros_pressure
-foreach y of local key_outcomes {
-    capture confirm variable `y'
-    if _rc continue
+* twowayfeweights stores results in e(M) matrix (3x2):
+*   Row 1: Positive weights — [# ATTs, Σ weights]
+*   Row 2: Negative weights — [# ATTs, Σ weights]
+*   Row 3: Total — [# ATTs, Σ weights]
+* Also stores e(beta) and e(lb_se_te) for sensitivity.
 
-    qui count if !missing(`y')
-    if r(N) < 50 continue
+capture program drop run_twfe_weights
+program define run_twfe_weights
+    syntax , tier(string) outcome(string) tvar(string)
 
-    di _n "--- twowayfeweights: `y' (T1 pressure) ---"
+    capture confirm variable `outcome'
+    if _rc exit
 
-    capture twowayfeweights `y' county_id year treat_pros_pressure, type(feTR)
-    if !_rc {
-        * Extract results
-        local n_pos = r(N_pos_weights)
-        local n_neg = r(N_neg_weights)
-        local sum_pos = r(sum_pos_weights)
-        local sum_neg = r(sum_neg_weights)
+    qui count if !missing(`outcome')
+    if r(N) < 50 exit
 
-        * Get min/max weights if available
-        capture local min_w = r(min_weight)
-        if _rc local min_w = .
-        capture local max_w = r(max_weight)
-        if _rc local max_w = .
+    di _n "--- twowayfeweights: `outcome' (`tier' `tvar') ---"
 
-        * Sensitivity bounds
-        capture local lb = r(sensibility_beta_lb)
-        if _rc local lb = .
-        capture local ub = r(sensibility_beta_ub)
-        if _rc local ub = .
+    capture noisily twowayfeweights `outcome' county_id year `tvar', type(feTR)
+    if _rc {
+        di "  twowayfeweights FAILED for `outcome'"
+        exit
+    }
 
-        qui count if !missing(`y')
-        local nobs = r(N)
+    * Extract from e(M) matrix
+    tempname M
+    matrix `M' = e(M)
+    local n_pos   = `M'[1,1]
+    local sum_pos = `M'[1,2]
+    local n_neg   = `M'[2,1]
+    local sum_neg = `M'[2,2]
+    local n_total = `M'[3,1]
+    local beta_tw = e(beta)
 
-        tempname fh2
-        file open `fh2' using "$OUTPUT/results/mi_twowayfeweights.csv", write append
-        file write `fh2' "B,T1_baseline,`y',treat_pros_pressure," ///
-            (`n_pos') "," (`n_neg') "," (`sum_pos') "," (`sum_neg') "," ///
-            (`min_w') "," (`max_w') "," (`nobs') "," (`lb') "," (`ub') _n
-        file close `fh2'
+    * Sensitivity bounds from e()
+    capture local lb_se = e(lb_se_te)
+    if _rc local lb_se = .
+    capture local lb_se2 = e(lb_se_te2)
+    if _rc local lb_se2 = .
 
-        di "  Positive weights: `n_pos' (sum=" %7.4f `sum_pos' ")"
-        di "  Negative weights: `n_neg' (sum=" %7.4f `sum_neg' ")"
-        if `n_neg' > 0 {
-            di "  WARNING: Negative weights detected!"
-        }
-        else {
-            di "  OK: No negative weights"
-        }
+    qui count if !missing(`outcome')
+    local nobs = r(N)
+
+    tempname fh2
+    file open `fh2' using "$OUTPUT/results/mi_twowayfeweights.csv", write append
+    file write `fh2' "B,`tier',`outcome',`tvar'," ///
+        (`n_pos') "," (`n_neg') "," (`sum_pos') "," (`sum_neg') "," ///
+        (`n_total') "," (`beta_tw') "," (`nobs') "," (`lb_se') "," (`lb_se2') _n
+    file close `fh2'
+
+    di "  Positive: " `n_pos' " (sum=" %7.4f `sum_pos' ")"
+    di "  Negative: " `n_neg' " (sum=" %7.4f `sum_neg' ")"
+    if `n_neg' > 0 {
+        di "  WARNING: " `n_neg' " negative weight(s) detected (sum=" %7.4f `sum_neg' ")"
     }
     else {
-        di "  twowayfeweights FAILED for `y'"
+        di "  OK: No negative weights"
     }
+end
+
+* Update CSV header to match new column structure
+tempname fh2
+file open `fh2' using "$OUTPUT/results/mi_twowayfeweights.csv", write replace
+file write `fh2' "variant,tier,outcome,treatment_var,n_pos_weights,n_neg_weights,sum_pos_weights,sum_neg_weights,n_total_atts,beta_twfe,n_obs,lb_se_te,lb_se_te2" _n
+file close `fh2'
+
+* T1: pressure
+foreach y of local key_outcomes {
+    run_twfe_weights, tier("T1_baseline") outcome("`y'") tvar("treat_pros_pressure")
 }
 
-* T0: election year binary (on full panel before exclusions, for comparison)
+* T0: election year binary (full panel — before open-seat exclusion)
 foreach y of local key_outcomes {
-    capture confirm variable `y'
-    if _rc continue
-
-    qui count if !missing(`y')
-    if r(N) < 50 continue
-
-    di _n "--- twowayfeweights: `y' (T0 election year) ---"
-
-    capture twowayfeweights `y' county_id year is_election_year_pros, type(feTR)
-    if !_rc {
-        local n_pos = r(N_pos_weights)
-        local n_neg = r(N_neg_weights)
-        local sum_pos = r(sum_pos_weights)
-        local sum_neg = r(sum_neg_weights)
-
-        capture local min_w = r(min_weight)
-        if _rc local min_w = .
-        capture local max_w = r(max_weight)
-        if _rc local max_w = .
-
-        capture local lb = r(sensibility_beta_lb)
-        if _rc local lb = .
-        capture local ub = r(sensibility_beta_ub)
-        if _rc local ub = .
-
-        qui count if !missing(`y')
-        local nobs = r(N)
-
-        tempname fh2
-        file open `fh2' using "$OUTPUT/results/mi_twowayfeweights.csv", write append
-        file write `fh2' "B,T0_electionyear,`y',is_election_year_pros," ///
-            (`n_pos') "," (`n_neg') "," (`sum_pos') "," (`sum_neg') "," ///
-            (`min_w') "," (`max_w') "," (`nobs') "," (`lb') "," (`ub') _n
-        file close `fh2'
-
-        di "  Positive: `n_pos' | Negative: `n_neg'"
-    }
-    else {
-        di "  twowayfeweights FAILED for `y'"
-    }
+    run_twfe_weights, tier("T0_electionyear") outcome("`y'") tvar("is_election_year_pros")
 }
 
 
