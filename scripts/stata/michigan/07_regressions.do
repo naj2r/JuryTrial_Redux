@@ -874,8 +874,30 @@ keep if avg_pop <= `median_pop'
 di "B_lowpop: N=" _N
 save `lowpop_data'
 
-* === HIGH POP: T1, T3, then T2 (which drops obs) ===
+* === HIGH POP: T0, T1, T5, T3, then T2 (which drops obs) ===
 use `highpop_data', clear
+
+* T0: election year binary (open-seat cycles excluded)
+preserve
+    bysort county_id (year): gen _has_open = (open_pros == 1)
+    bysort county_id: egen _ever_open = max(_has_open)
+    gen _open_year = year if open_pros == 1
+    bysort county_id: egen _max_open_yr = max(_open_year)
+    gen _prev_elec = .
+    forvalues y = 2016/2024 {
+        replace _prev_elec = `y' if _max_open_yr > `y' & is_election_year_pros == 1 & year == `y' & _ever_open == 1
+    }
+    bysort county_id: egen _prev_elec_yr = max(_prev_elec)
+    drop if _ever_open == 1 & year > _prev_elec_yr & year <= _max_open_yr & !missing(_prev_elec_yr)
+    drop if _ever_open == 1 & missing(_prev_elec_yr) & year <= _max_open_yr
+    drop _has_open _ever_open _open_year _max_open_yr _prev_elec _prev_elec_yr
+    di "  B_highpop T0 sample (open-seat cycles excluded): " _N
+    foreach y of local all_outcomes {
+        run_reg, variant("B_highpop") tier("T0_electionyear") spec("electionyear") ///
+            outcome("`y'") treatvars("is_election_year_pros") ///
+            fe_unit("county_id") cluster("county_id")
+    }
+restore
 
 * T1: pressure
 foreach y of local all_outcomes {
@@ -883,6 +905,17 @@ foreach y of local all_outcomes {
         outcome("`y'") treatvars("treat_pros_pressure open_pros") ///
         fe_unit("county_id") cluster("county_id")
 }
+
+* T5: within-election (incumbent vs open seat, election years only)
+preserve
+    keep if is_election_year_pros == 1
+    di "  B_highpop T5 sample (election years only): " _N
+    foreach y of local all_outcomes {
+        run_reg, variant("B_highpop") tier("T5_within_election") spec("within_election") ///
+            outcome("`y'") treatvars("treat_pros_pressure") ///
+            fe_unit("county_id") cluster("county_id")
+    }
+restore
 foreach y of local all_outcomes {
     run_reg, variant("B_highpop") tier("T1_baseline") spec("pressure_pop") ///
         outcome("`y'") treatvars("treat_pros_pressure open_pros") ///
@@ -920,8 +953,30 @@ foreach y of local all_outcomes {
         fe_unit("county_id") cluster("county_id") controls("log_county_pop")
 }
 
-* === LOW POP: T1, T3, then T2 ===
+* === LOW POP: T0, T1, T5, T3, then T2 ===
 use `lowpop_data', clear
+
+* T0: election year binary (open-seat cycles excluded)
+preserve
+    bysort county_id (year): gen _has_open = (open_pros == 1)
+    bysort county_id: egen _ever_open = max(_has_open)
+    gen _open_year = year if open_pros == 1
+    bysort county_id: egen _max_open_yr = max(_open_year)
+    gen _prev_elec = .
+    forvalues y = 2016/2024 {
+        replace _prev_elec = `y' if _max_open_yr > `y' & is_election_year_pros == 1 & year == `y' & _ever_open == 1
+    }
+    bysort county_id: egen _prev_elec_yr = max(_prev_elec)
+    drop if _ever_open == 1 & year > _prev_elec_yr & year <= _max_open_yr & !missing(_prev_elec_yr)
+    drop if _ever_open == 1 & missing(_prev_elec_yr) & year <= _max_open_yr
+    drop _has_open _ever_open _open_year _max_open_yr _prev_elec _prev_elec_yr
+    di "  B_lowpop T0 sample (open-seat cycles excluded): " _N
+    foreach y of local all_outcomes {
+        run_reg, variant("B_lowpop") tier("T0_electionyear") spec("electionyear") ///
+            outcome("`y'") treatvars("is_election_year_pros") ///
+            fe_unit("county_id") cluster("county_id")
+    }
+restore
 
 * T1: pressure
 foreach y of local all_outcomes {
@@ -929,6 +984,17 @@ foreach y of local all_outcomes {
         outcome("`y'") treatvars("treat_pros_pressure open_pros") ///
         fe_unit("county_id") cluster("county_id")
 }
+
+* T5: within-election (incumbent vs open seat, election years only)
+preserve
+    keep if is_election_year_pros == 1
+    di "  B_lowpop T5 sample (election years only): " _N
+    foreach y of local all_outcomes {
+        run_reg, variant("B_lowpop") tier("T5_within_election") spec("within_election") ///
+            outcome("`y'") treatvars("treat_pros_pressure") ///
+            fe_unit("county_id") cluster("county_id")
+    }
+restore
 foreach y of local all_outcomes {
     run_reg, variant("B_lowpop") tier("T1_baseline") spec("pressure_pop") ///
         outcome("`y'") treatvars("treat_pros_pressure open_pros") ///
