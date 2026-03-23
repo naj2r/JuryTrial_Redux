@@ -309,6 +309,63 @@ preserve
     }
 restore
 
+* T0: Drop off-cycle election COUNTIES entirely (Allegan, Isabella, Newaygo,
+*     Osceola, Roscommon have 2018 elections; Delta has 2022 election).
+*     Keep open-seat distinction but remove counties whose asynchronous
+*     election timing may create the treatment effect heterogeneity driving
+*     negative TWFE weights.
+preserve
+    * Identify counties with any off-cycle election (2018 or 2022)
+    gen _offcycle = (is_election_year_pros == 1 & inlist(year, 2018, 2022))
+    bysort county_id: egen _ever_offcycle = max(_offcycle)
+
+    di _n "  Counties with off-cycle elections:"
+    tab county_id if _ever_offcycle == 1 & _offcycle == 1
+
+    * Drop ALL years for off-cycle counties
+    drop if _ever_offcycle == 1
+    drop _offcycle _ever_offcycle
+
+    di "  T0 no-offcycle-counties sample: " _N
+
+    foreach y of local key_outcomes {
+        run_twfe_weights, tier("T0_no_offcycle_counties") outcome("`y'") tvar("is_election_year_pros")
+    }
+restore
+
+* T0: Combined — drop off-cycle counties AND exclude open-seat cycles
+preserve
+    * Drop off-cycle counties
+    gen _offcycle = (is_election_year_pros == 1 & inlist(year, 2018, 2022))
+    bysort county_id: egen _ever_offcycle = max(_offcycle)
+    drop if _ever_offcycle == 1
+    drop _offcycle _ever_offcycle
+
+    * Also exclude open-seat cycles (lame-duck contamination)
+    bysort county_id (year): gen _has_open = (open_pros == 1)
+    bysort county_id: egen _ever_open = max(_has_open)
+
+    gen _open_year = year if open_pros == 1
+    bysort county_id: egen _max_open_yr = max(_open_year)
+
+    gen _prev_elec = .
+    forvalues y = 2016/2024 {
+        replace _prev_elec = `y' if _max_open_yr > `y' & is_election_year_pros == 1 & year == `y' & _ever_open == 1
+    }
+    bysort county_id: egen _prev_elec_yr = max(_prev_elec)
+
+    drop if _ever_open == 1 & year > _prev_elec_yr & year <= _max_open_yr & !missing(_prev_elec_yr)
+    drop if _ever_open == 1 & missing(_prev_elec_yr) & year <= _max_open_yr
+
+    drop _has_open _ever_open _open_year _max_open_yr _prev_elec _prev_elec_yr
+
+    di "  T0 combined (no offcycle counties + no open-seat cycles) sample: " _N
+
+    foreach y of local key_outcomes {
+        run_twfe_weights, tier("T0_no_offcycle_no_open") outcome("`y'") tvar("is_election_year_pros")
+    }
+restore
+
 
 di _n "=============================================="
 di "   INFERENCE DIAGNOSTICS COMPLETE"
