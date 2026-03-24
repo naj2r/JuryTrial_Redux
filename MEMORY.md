@@ -99,7 +99,9 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 
 [LEARN:identification] T0 cannot use county + year FE (TWFE) because election timing is nearly synchronized — year FE absorbs the election signal. Use county FE only for T0 (descriptive benchmark). T2 can use TWFE because contested/uncontested varies within election years.
 
-[LEARN:identification] Off-cycle counties (Allegan, Isabella, Newaygo, Osceola, Roscommon + Delta) have structurally lower composition baselines (capital felony share 5.8% vs 13.9%). They distort year FE estimation for composition outcomes. Δ (contested - uncontested) is robust; individual coefficients are sensitive. Address with timing-group × year FE or Wooldridge cohort × time.
+[LEARN:identification] Off-cycle counties (Allegan, Isabella, Newaygo, Osceola, Roscommon + Delta) have structurally lower composition baselines (capital felony share 5.8% vs 13.9%). They distort year FE estimation for composition outcomes. Δ (contested - uncontested) is robust; individual coefficients are sensitive. Address with timing-group × year FE (= 2-cohort Wooldridge, they're identical).
+
+[LEARN:identification] 2018 and 2022 off-cycle elections are the SAME off-cycle schedule, not separate cohorts. Do NOT split into 3 cohorts (sync, 2018, 2022). Use 2 cohorts only (sync vs off-cycle). The 3-cohort Wooldridge was an error — corrected 2026-03-25.
 
 [LEARN:identification] TWFE weights for T2: contested 0/39 negative (perfect), uncontested 2/105 negative (0.06%). T2 is TWFE-valid on the full panel.
 

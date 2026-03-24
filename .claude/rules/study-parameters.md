@@ -102,21 +102,26 @@ T2 is TWFE-valid on the full panel.
 
 The 6 off-cycle counties create asynchronous election timing that interacts with year FE estimation. Individual composition coefficients (% capital felony, % other felony, % other cases) are sensitive to whether off-cycle counties are included. The Δ (contested − uncontested) is robust across all specifications.
 
-**Four timing specifications tested (2026-03-25):**
+**Four timing specifications tested (2026-03-25, corrected):**
 
 | Spec | Description | Δ Total Verdicts | Δ Capital Felony | Δ % Cap Felony |
 |------|-------------|-------------------|-------------------|-----------------|
-| Main (county + year FE) | Standard TWFE | -6.2** | -5.1** | -0.077*** |
-| Group × Year FE | Separate year FE for sync vs off-cycle | -6.2** | -5.3** | -0.082*** |
-| Linear Trends | County-specific trends for off-cycle | -6.4** | -5.2** | -0.077*** |
-| Wooldridge Cohort × Time | 3 cohorts × 7 years FE | -6.2** | -5.4** | -0.082*** |
+| 1. Main TWFE | County + year FE (standard) | -6.2** | -5.1** | -0.077*** |
+| 2. Group × Year FE | Separate year FE for sync vs off-cycle (= 2-cohort Wooldridge) | -6.2** | -5.3** | -0.082*** |
+| 3. Linear Trends | County-specific trends for 6 off-cycle counties | -6.4** | -5.2** | -0.077*** |
+| 4. Drop Off-Cycle | Exclude 6 off-cycle counties entirely (77 counties, N=518) | -5.9* | -5.4* | -0.079*** |
 
-**Key finding:** Uncontested % capital felony moves from null (main spec) to significant (p=.003 Wooldridge) when timing heterogeneity is accounted for. Off-cycle counties have structurally lower composition baselines (capital felony share 5.8% vs 13.9%) that distort year FE when included without timing adjustment.
+**CORRECTION (2026-03-25):** The earlier "3-cohort Wooldridge" spec was wrong — it incorrectly split off-cycle counties into 2018 vs 2022 sub-cohorts. 2018 and 2022 are the SAME off-cycle schedule, not separate cohorts. The corrected 2-cohort Wooldridge (sync vs off-cycle) is numerically identical to spec 2 (Group × Year FE). The old 3-cohort results are discarded.
 
-**Current architecture (2026-03-25):**
+**Election-cycle interaction (appendix only, 2026-03-25):**
+Allowing β_contested and β_uncontested to differ by 2016 vs 2024 cycle reveals that the verdict suppression Δ is 2024-driven (2016 Δ for total verdicts = +6.8, null; 2024 Δ = -26.4*). However, β_uncontested × 2024 is collinear (dropped), and cycle-specific estimates are very imprecise with only 2 election cycles. Presented as descriptive, not as a primary robustness check.
+
+**Key finding:** Uncontested % capital felony moves from null (main spec) to significant (p=.008 in Group × Year FE) when timing heterogeneity is accounted for. Off-cycle counties have structurally lower composition baselines (capital felony share 5.8% vs 13.9%) that distort year FE when included without timing adjustment.
+
+**Current architecture (2026-03-25, corrected):**
 - T0: County FE only (no year FE). Descriptive benchmark. `elec_incumbent + open_pros`.
 - T2: County + year FE (TWFE). Main result. `contested + uncontested + Δ`. Open seats dropped.
-- Wooldridge cohort × time FE: Robustness check for T2.
+- Timing robustness: 4 specs (main, group×year, linear trends, drop off-cycle) + cycle interaction in appendix.
 
 ## Non-Negotiable Facts
 
