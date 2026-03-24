@@ -419,28 +419,29 @@ di "Table A1 (T0 appendix with T0e) DONE: `fa'"
 
 
 * =============================================================================
-* TABLE 2 — T2: CONTESTATION (MAIN RESULT — PORTRAIT FORMAT)
+* TABLE 2 — T2: CONTESTATION (PRIMARY SPECIFICATION)
 *   Y = β1*Contested + β2*Uncontested + county FE + year FE + ε
-*   Full B, open seats dropped. N=553.
+*   SYNCHRONIZED COUNTIES ONLY (77 counties, off-cycle excluded).
+*   Open seats dropped. N ≈ 518.
 *   Reports β1, β2, AND Δ = β1 - β2 via lincom.
-*   All 16 outcomes as rows, paneled by family.
-*   THIS IS THE MOST IMPORTANT TABLE IN THE PAPER.
+*   8 key outcomes. THIS IS THE MOST IMPORTANT TABLE IN THE PAPER.
 * =============================================================================
 
 di _n "{hline 72}"
-di "TABLE 2: T2 CONTESTATION — MAIN RESULT (portrait)"
+di "TABLE 2: T2 CONTESTATION — PRIMARY (77 sync counties)"
 di "{hline 72}"
 
 use "$DATA_FINAL/michigan_panel_B.dta", clear
 drop if open_pros == 1
-di "T2 sample (open seats dropped): " _N
+drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+di "T2 primary sample (open seats + off-cycle dropped): " _N
 
 local f "$TAB_DIR/table2_contestation.tex"
 file open t using "`f'", write replace
 
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
-file write t "\caption{Effect of Electoral Contestation on Jury Outcomes (T2)}" _n
+file write t "\caption{Effect of Electoral Contestation on Jury Outcomes}" _n
 file write t "\label{tab:table2}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\begin{tabular}{lccccccc}" _n
@@ -450,8 +451,7 @@ file write t `"\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}"' _n
 file write t `"Outcome & Coef & SE & Coef & SE & \(\Delta\) & SE & \(N\) \\"' _n
 file write t "\midrule" _n
 
-* Main paper: 8 key outcomes (3 rates + 2 verdicts + 3 composition)
-* Full 16-outcome version goes in appendix Table A2
+* 8 key outcomes (3 rates + 2 verdicts + 3 composition)
 local t2_panel_lbl_1 "Panel A: Pipeline Rates"
 local t2_panel_list_1 "pct_sent_to_courtroom pct_questioned_in_voir_dire utilization_rate"
 local t2_panel_lbl_2 "Panel B: Verdict Counts"
@@ -477,13 +477,11 @@ forvalues p = 1/`t2_npanels' {
         local p2 = 2 * ttail(e(df_r), abs(`b2'/`se2'))
         local n = e(N)
 
-        * Δ via lincom
         qui lincom treat_pros_contested_long - treat_pros_uncontested
         local d = r(estimate)
         local dse = r(se)
         local dp = 2 * ttail(e(df_r), abs(`d'/`dse'))
 
-        * Stars
         add_stars `p1'
         local st1 "`r(stars)'"
         add_stars `p2'
@@ -491,7 +489,6 @@ forvalues p = 1/`t2_npanels' {
         add_stars `dp'
         local std "`r(stars)'"
 
-        * Format (count vs rate)
         fmt_coef `b1' `y'
         local b1f "`r(formatted)'"
         fmt_coef `se1' `y'
@@ -513,21 +510,17 @@ file write t "\midrule" _n
 file write t `"County FE & \multicolumn{7}{c}{Yes} \\"' _n
 file write t `"Year FE & \multicolumn{7}{c}{Yes} \\"' _n
 file write t `"Clustering & \multicolumn{7}{c}{County} \\"' _n
+file write t `"Off-cycle counties & \multicolumn{7}{c}{Excluded} \\"' _n
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\footnotesize" _n
 file write t `"\item \textit{Notes.} \(Y_{ct} = \beta_1 \cdot \text{Contested}_{ct} + \beta_2 \cdot \text{Uncontested}_{ct} + \alpha_c + \gamma_t + \varepsilon_{ct}\)."' _n
-file write t `"\item County and year fixed effects. Standard errors clustered at county level."' _n
-file write t `"\item Contested \(= 1\) when incumbent faces a general-election challenger."' _n
-file write t `"\item Uncontested \(= 1\) when incumbent runs unopposed at all stages."' _n
-file write t `"\item Both indicators are mutually exclusive; omitted category is non-election years."' _n
-file write t `"\item Open-seat county-years excluded (26 obs). Sample: 553 obs, 83 counties."' _n
+file write t `"\item Sample restricted to 77 synchronized counties (standard presidential election cycle)."' _n
+file write t `"\item Six counties with off-cycle elections excluded to ensure year FE are estimated"' _n
+file write t `"  from a homogeneous election-timing population (see Section~\ref{subsec-robustness})."' _n
+file write t `"\item Open-seat county-years excluded. Omitted category: non-election years."' _n
 file write t `"\item \(\Delta = \beta_1 - \beta_2\) tested via \texttt{lincom} (covariance-adjusted)."' _n
-file write t `"\item A significant \(\Delta\) indicates contestation itself shifts the outcome"' _n
-file write t `"  beyond what an uncontested election year produces."' _n
-file write t `"\item Count outcomes (summoned, reported, etc.) are null and reported in Table~\ref{tab:tableA2}."' _n
-file write t `"\item TWFE weight diagnostics: contested 0/39 negative ATT weights;"' _n
-file write t `"  uncontested 2/105 negative (share \(-0.06\%\)). See Table~\ref{tab:tableA2} for off-cycle robustness."' _n
+file write t `"\item Count outcomes (summoned, reported, etc.) are null and reported in Appendix Table~\ref{tab:tableA2}."' _n
 file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
 file write t "\end{tablenotes}" _n
 file write t "\end{threeparttable}" _n
@@ -536,8 +529,134 @@ file write t "\end{table}" _n
 file close t
 di "Table 2 DONE: `f'"
 
-* Table 3 is now merged into Table 2 (portrait format includes all outcomes)
-* Write a stub so the \input doesn't break
+
+* =============================================================================
+* TABLE 2b — Δ ROBUSTNESS ACROSS SPECIFICATIONS
+*   Compact: 8 outcomes × 3 specs, Δ only
+*   (1) TWFE no off-cycle (primary) (2) Wooldridge Group×Year (3) Pooled
+* =============================================================================
+
+di _n "{hline 72}"
+di "TABLE 2b: DELTA ROBUSTNESS (3 specs)"
+di "{hline 72}"
+
+* We need to store Δ from 3 specs, then write one table
+* Use tempfile CSV approach
+
+tempname fh2b
+tempfile delta_results
+file open `fh2b' using "`delta_results'", write replace
+file write `fh2b' "spec,outcome,delta,delta_se,delta_p,nobs" _n
+
+* --- Spec 1: TWFE no off-cycle (primary) ---
+use "$DATA_FINAL/michigan_panel_B.dta", clear
+drop if open_pros == 1
+drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+
+local t2b_outcomes "pct_sent_to_courtroom pct_questioned_in_voir_dire utilization_rate total_jury_verdicts capital_felony pct_capital_felony pct_other_felony pct_other_cases"
+
+foreach y of local t2b_outcomes {
+    qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(county_id year) vce(cluster county_id)
+    qui lincom treat_pros_contested_long - treat_pros_uncontested
+    file write `fh2b' "twfe_nooc,`y'," (r(estimate)) "," (r(se)) "," (2 * ttail(e(df_r), abs(r(estimate)/r(se)))) "," (e(N)) _n
+}
+
+* --- Spec 2: Wooldridge Group × Year FE (all 83 counties) ---
+use "$DATA_FINAL/michigan_panel_B.dta", clear
+drop if open_pros == 1
+gen byte sync_group = !inlist(county_id, 3, 37, 62, 66, 74, 21)
+egen group_year = group(sync_group year)
+
+foreach y of local t2b_outcomes {
+    qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(county_id group_year) vce(cluster county_id)
+    qui lincom treat_pros_contested_long - treat_pros_uncontested
+    file write `fh2b' "wooldridge,`y'," (r(estimate)) "," (r(se)) "," (2 * ttail(e(df_r), abs(r(estimate)/r(se)))) "," (e(N)) _n
+}
+
+* --- Spec 3: Pooled (county FE only, all 83 counties) ---
+use "$DATA_FINAL/michigan_panel_B.dta", clear
+drop if open_pros == 1
+
+foreach y of local t2b_outcomes {
+    qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(county_id) vce(cluster county_id)
+    qui lincom treat_pros_contested_long - treat_pros_uncontested
+    file write `fh2b' "pooled,`y'," (r(estimate)) "," (r(se)) "," (2 * ttail(e(df_r), abs(r(estimate)/r(se)))) "," (e(N)) _n
+}
+
+file close `fh2b'
+
+* --- Build the table ---
+preserve
+import delimited using "`delta_results'", clear
+
+local f2b "$TAB_DIR/table2b_delta_robustness.tex"
+file open t using "`f2b'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t `"\caption{Contestation Differential \(\Delta\): Specification Robustness}"' _n
+file write t "\label{tab:table2b}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\begin{tabular}{lccc}" _n
+file write t "\toprule" _n
+file write t `" & (1) TWFE & (2) Wooldridge & (3) Pooled \\"' _n
+file write t `" & No off-cycle & Group \(\times\) Year & County FE only \\"' _n
+file write t "\midrule" _n
+
+foreach y of local t2b_outcomes {
+    foreach s in twfe_nooc wooldridge pooled {
+        qui summ delta if spec == "`s'" & outcome == "`y'"
+        local d_`s' = r(mean)
+        qui summ delta_se if spec == "`s'" & outcome == "`y'"
+        local ds_`s' = r(mean)
+        qui summ delta_p if spec == "`s'" & outcome == "`y'"
+        local dp_`s' = r(mean)
+
+        local st_`s' ""
+        if `dp_`s'' < 0.01 local st_`s' "\sym{***}"
+        else if `dp_`s'' < 0.05 local st_`s' "\sym{**}"
+        else if `dp_`s'' < 0.10 local st_`s' "\sym{*}"
+
+        local is_rate = (strpos("`y'", "pct_") == 1 | "`y'" == "utilization_rate")
+        if `is_rate' {
+            local df_`s' : di %7.3f `d_`s''
+            local sf_`s' : di %7.3f `ds_`s''
+        }
+        else {
+            local df_`s' : di %7.1f `d_`s''
+            local sf_`s' : di %7.1f `ds_`s''
+        }
+    }
+
+    file write t "`lbl_`y'' & `=strtrim("`df_twfe_nooc'")'`st_twfe_nooc' & `=strtrim("`df_wooldridge'")'`st_wooldridge' & `=strtrim("`df_pooled'")'`st_pooled' \\" _n
+    file write t "  & (`=strtrim("`sf_twfe_nooc'")') & (`=strtrim("`sf_wooldridge'")') & (`=strtrim("`sf_pooled'")') \\" _n
+}
+
+file write t "\midrule" _n
+file write t `"County FE & Yes & Yes & Yes \\"' _n
+file write t `"Year FE & Yes & Group \(\times\) Year & No \\"' _n
+file write t `"Off-cycle counties & Excluded & Included & Included \\"' _n
+file write t `"Counties & 77 & 83 & 83 \\"' _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\footnotesize" _n
+file write t `"\item \textit{Notes.} Each cell reports \(\Delta = \beta_{\text{contested}} - \beta_{\text{uncontested}}\) via \texttt{lincom}."' _n
+file write t `"\item (1) Primary specification: standard TWFE on 77 synchronized counties."' _n
+file write t `"\item (2) All 83 counties with timing-group \(\times\) year FE \citep{wooldridge2021twoway},"' _n
+file write t `"  allowing synchronized and off-cycle counties separate year effects."' _n
+file write t `"\item (3) County FE only (no year FE). Avoids all year-FE timing issues."' _n
+file write t `"\item Open-seat county-years excluded in all specifications."' _n
+file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
+
+file close t
+restore
+
+di "Table 2b DONE: `f2b'"
+
+* Table 3 stub (merged into Table 2)
 local f3 "$TAB_DIR/table3_outcomes.tex"
 file open t using "`f3'", write replace
 file write t "% Table 3 merged into Table 2 (portrait format). This file is a stub." _n
