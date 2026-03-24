@@ -110,3 +110,11 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:tables] Portrait format (outcomes as rows) is better for 16-outcome tables. Use `file write` loop, not `esttab` (which forces outcomes as columns).
 
 [LEARN:workflow] When user says "add placeholder" to the paper, ALWAYS use: red font (\color{red}), bold header with description + timestamp, closing timestamp. Format: {\color{red}\textbf{[PLACEHOLDER --- DESCRIPTION --- YYYY-MM-DD HH:MM]} ... text ... (YYYY-MM-DD HH:MM)}
+
+[LEARN:data] SCAO jury utilization dashboard verdict columns (capital_felony, other_felony, other_cases) are BROKEN for 2024. Power BI uses MIN() aggregation for capital_felony. Shows 3 FC verdicts statewide vs 431 in caseload data. Use SCAO outgoing caseload dashboard (outgoing_felony_by_year.csv) for ALL verdict, plea, and dismissal variables. Pipeline variables (summoned through utilization_rate) are fine from jury dashboard.
+
+[LEARN:data] The SCAO 73 jury statistics form does NOT collect verdict categories at all. Only pipeline counts (summoned through questioned_in_voir_dire). Verdict columns in the jury dashboard come from a different, unreliable data source.
+
+[LEARN:identification] Δ ≈ 0 on disposition margins (FC jury trial rate, FC dismissal rate) distinguishes competence-maintenance from voter-signaling (McCannon). McCannon predicts Δ > 0 (more behavior change when challenged). Our finding: Δ = 0 — the election cycle itself is sufficient, regardless of challenger presence. This is a distinct theoretical contribution.
+
+[LEARN:identification] FC dismissal rate (-13.6pp***) is the strongest individual result. Both contested and uncontested produce identical drops (Δ = 0.000). FH dismissal rate increases under contestation only (+2.9pp**) — contested prosecutors triage non-capital cases.
