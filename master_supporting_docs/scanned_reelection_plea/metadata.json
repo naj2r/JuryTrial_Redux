@@ -1,0 +1,79 @@
+{
+  "source_pdf": "Re-election Concerns and the Failure of Plea Bargaining.pdf",
+  "source_path": "C:\\Users\\jensenn\\Dropbox\\Research Resources\\law_econ_resources\\Papers\\Prosecutors\\Re-election Concerns and the Failure of Plea Bargaining.pdf",
+  "total_pages": 5,
+  "extraction_timestamp": "2026-03-24T19:52:10.532620",
+  "scanned_pdf": false,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 4642,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 2,
+      "char_count": 5317,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 3,
+      "char_count": 5518,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 4,
+      "char_count": 5688,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 5,
+      "char_count": 621,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    }
+  ],
+  "sections": [
+    {
+      "file": "sec_01_pp01-01_introduction.md",
+      "label": "introduction",
+      "display_label": "Introduction",
+      "pages": [
+        1
+      ],
+      "is_subsplit": false,
+      "char_count": 4676
+    },
+    {
+      "file": "sec_02_pp02-03_model.md",
+      "label": "model",
+      "display_label": "Model",
+      "pages": [
+        2,
+        3
+      ],
+      "is_subsplit": false,
+      "char_count": 10905
+    },
+    {
+      "file": "sec_03_pp04-05_welfare.md",
+      "label": "welfare",
+      "display_label": "Welfare",
+      "pages": [
+        4,
+        5
+      ],
+      "is_subsplit": false,
+      "char_count": 6379
+    }
+  ],
+  "split_method": "headers"
+}
