@@ -108,8 +108,15 @@ end
 
 * =============================================================================
 * TABLE 1 — T0c: MAIN PAPER (county FE only, open seat as separate regressor)
-*   Y = β1*ElectionYear + β2*OpenSeat + county FE + ε
+*   Y = β1*IncumbentElection + β2*OpenSeat + county FE + ε
 *   Full B panel (83 counties, N=579). County FE only — no year FE.
+*
+*   CRITICAL: is_election_year_pros = 1 for ALL election years (including open
+*   seats). We use treat_pros_pressure instead, which = 1 ONLY when the
+*   incumbent is running. This ensures β1 and β2 are mutually exclusive
+*   and both relative to non-election years (the omitted category).
+*
+*   Alias: elec_incumbent = treat_pros_pressure (clearer label)
 * =============================================================================
 
 di _n "{hline 72}"
@@ -118,6 +125,15 @@ di "{hline 72}"
 
 use "$DATA_FINAL/michigan_panel_B.dta", clear
 di "Full B: " _N
+
+* Create clear alias — identical to treat_pros_pressure
+clonevar elec_incumbent = treat_pros_pressure
+label var elec_incumbent "Incumbent running for re-election (=treat_pros_pressure)"
+
+* Verify mutual exclusivity
+assert elec_incumbent + open_pros <= 1
+di "Verified: elec_incumbent and open_pros are mutually exclusive"
+tab elec_incumbent open_pros
 
 local f "$TAB_DIR/table1_baseline.tex"
 file open t using "`f'", write replace
@@ -129,7 +145,7 @@ file write t "\label{tab:table1}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\begin{tabular}{lccccc}" _n
 file write t "\toprule" _n
-file write t `" & \multicolumn{2}{c}{Election Year} & \multicolumn{2}{c}{Open Seat} & \\"' _n
+file write t `" & \multicolumn{2}{c}{Incumbent Election} & \multicolumn{2}{c}{Open Seat} & \\"' _n
 file write t `"\cmidrule(lr){2-3} \cmidrule(lr){4-5}"' _n
 file write t `"Outcome & Coef & SE & Coef & SE & \(N\) \\"' _n
 file write t "\midrule" _n
@@ -151,9 +167,9 @@ forvalues p = 1/4 {
     file write t "\multicolumn{6}{l}{\textit{`panel_lbl_`p''}} \\[0.3em]" _n
 
     foreach y of local panel_list_`p' {
-        qui reghdfe `y' is_election_year_pros open_pros, absorb(county_id) vce(cluster county_id)
-        local b1 = _b[is_election_year_pros]
-        local se1 = _se[is_election_year_pros]
+        qui reghdfe `y' elec_incumbent open_pros, absorb(county_id) vce(cluster county_id)
+        local b1 = _b[elec_incumbent]
+        local se1 = _se[elec_incumbent]
         local p1 = 2 * ttail(e(df_r), abs(`b1'/`se1'))
         local b2 = _b[open_pros]
         local se2 = _se[open_pros]
@@ -181,10 +197,11 @@ forvalues p = 1/4 {
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\footnotesize" _n
-file write t `"\item \textit{Notes.} \(Y_{ct} = \beta_1 \cdot \text{ElectionYear}_{ct} + \beta_2 \cdot \text{OpenSeat}_{ct} + \alpha_c + \varepsilon_{ct}\)."' _n
+file write t `"\item \textit{Notes.} \(Y_{ct} = \beta_1 \cdot \text{IncumbentElection}_{ct} + \beta_2 \cdot \text{OpenSeat}_{ct} + \alpha_c + \varepsilon_{ct}\)."' _n
 file write t `"\item County fixed effects only (no year FE). Standard errors clustered at county level."' _n
-file write t `"\item ElectionYear \(= 1\) when incumbent prosecutor runs for re-election."' _n
-file write t `"\item OpenSeat \(= 1\) when no incumbent runs. Omitted: non-election years."' _n
+file write t `"\item IncumbentElection \(= 1\) when incumbent prosecutor runs for re-election (\(= 0\) for open seats and non-election years)."' _n
+file write t `"\item OpenSeat \(= 1\) when no incumbent runs (\(= 0\) for incumbent elections and non-election years)."' _n
+file write t `"\item The two indicators are mutually exclusive; omitted category is non-election years."' _n
 file write t `"\item Full panel: 83 counties \(\times\) 7 years \(= 579\) obs (less outcome-specific missingness)."' _n
 file write t `"\item See Table~\ref{tab:tableA1} for sample restriction sensitivity (T0a--T0e), including TWFE."' _n
 file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
@@ -256,16 +273,18 @@ foreach y of local all_outcomes {
 }
 
 * --- T0c: full panel, open seat as regressor, county FE only ---
+* Uses elec_incumbent (= treat_pros_pressure), NOT is_election_year_pros
 use "$DATA_FINAL/michigan_panel_B.dta", clear
+clonevar elec_incumbent = treat_pros_pressure
 local nc = _N
 qui distinct county_id
 local ncc = r(ndistinct)
 
 foreach y of local all_outcomes {
-    capture qui reghdfe `y' is_election_year_pros open_pros, absorb(county_id) vce(cluster county_id)
+    capture qui reghdfe `y' elec_incumbent open_pros, absorb(county_id) vce(cluster county_id)
     if !_rc {
-        local b = _b[is_election_year_pros]
-        local s = _se[is_election_year_pros]
+        local b = _b[elec_incumbent]
+        local s = _se[elec_incumbent]
         local p = 2 * ttail(e(df_r), abs(`b'/`s'))
         file write `fh' "T0c,`y'," (`b') "," (`s') "," (`p') "," (e(N)) "," (e(N_clust)) _n
     }
@@ -273,16 +292,17 @@ foreach y of local all_outcomes {
 
 * --- T0d: off-cycle dropped, open seat as regressor, county FE only ---
 use "$DATA_FINAL/michigan_panel_B.dta", clear
+clonevar elec_incumbent = treat_pros_pressure
 drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
 local nd = _N
 qui distinct county_id
 local ncd = r(ndistinct)
 
 foreach y of local all_outcomes {
-    capture qui reghdfe `y' is_election_year_pros open_pros, absorb(county_id) vce(cluster county_id)
+    capture qui reghdfe `y' elec_incumbent open_pros, absorb(county_id) vce(cluster county_id)
     if !_rc {
-        local b = _b[is_election_year_pros]
-        local s = _se[is_election_year_pros]
+        local b = _b[elec_incumbent]
+        local s = _se[elec_incumbent]
         local p = 2 * ttail(e(df_r), abs(`b'/`s'))
         file write `fh' "T0d,`y'," (`b') "," (`s') "," (`p') "," (e(N)) "," (e(N_clust)) _n
     }
@@ -379,8 +399,9 @@ file write t `"\item Standard errors clustered at county level in parentheses."'
 file write t `"\item (1) T0a: \(Y_{ct} = \beta \cdot \text{ElecYear}_{ct} + \alpha_c + \varepsilon_{ct}\), open-seat obs dropped."' _n
 file write t `"\item (2) T0b: Same as T0a, additionally excluding 6 off-cycle election counties"' _n
 file write t `"  (Allegan, Delta, Isabella, Newaygo, Osceola, Roscommon)."' _n
-file write t `"\item (3) T0c: \(Y_{ct} = \beta_1 \cdot \text{ElecYear}_{ct} + \beta_2 \cdot \text{OpenSeat}_{ct} + \alpha_c + \varepsilon_{ct}\),"' _n
-file write t `"  full panel. Reports \(\beta_1\) only."' _n
+file write t `"\item (3) T0c: \(Y_{ct} = \beta_1 \cdot \text{IncumbentElec}_{ct} + \beta_2 \cdot \text{OpenSeat}_{ct} + \alpha_c + \varepsilon_{ct}\),"' _n
+file write t `"  full panel. Reports \(\beta_1\) (incumbent election coefficient) only."' _n
+file write t `"  IncumbentElec and OpenSeat are mutually exclusive; omitted = non-election years."' _n
 file write t `"\item (4) T0d: Same as T0c, excluding 6 off-cycle counties."' _n
 file write t `"\item (5) T0e: \(Y_{ct} = \beta \cdot \text{ElecYear}_{ct} + \alpha_c + \gamma_t + \varepsilon_{ct}\),"' _n
 file write t `"  TWFE with year FE. Identified primarily from \(\sim\)5 off-cycle counties in 2018."' _n
@@ -398,109 +419,307 @@ di "Table A1 (T0 appendix with T0e) DONE: `fa'"
 
 
 * =============================================================================
-* TABLE 2 — T2: CONTESTATION (MAIN RESULT)
+* TABLE 2 — T2: CONTESTATION (MAIN RESULT — PORTRAIT FORMAT)
 *   Y = β1*Contested + β2*Uncontested + county FE + year FE + ε
 *   Full B, open seats dropped. N=553.
 *   Reports β1, β2, AND Δ = β1 - β2 via lincom.
+*   All 16 outcomes as rows, paneled by family.
+*   THIS IS THE MOST IMPORTANT TABLE IN THE PAPER.
 * =============================================================================
 
 di _n "{hline 72}"
-di "TABLE 2: T2 CONTESTATION — MAIN RESULT"
+di "TABLE 2: T2 CONTESTATION — MAIN RESULT (portrait)"
 di "{hline 72}"
 
 use "$DATA_FINAL/michigan_panel_B.dta", clear
 drop if open_pros == 1
 di "T2 sample (open seats dropped): " _N
 
-eststo clear
-local i = 1
-foreach y of local dvs_main {
-    qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, ///
-        absorb(county_id year) vce(cluster county_id)
-    eststo t2_`i'
+local f "$TAB_DIR/table2_contestation.tex"
+file open t using "`f'", write replace
 
-    qui lincom treat_pros_contested_long - treat_pros_uncontested
-    estadd scalar delta_b = r(estimate) : t2_`i'
-    estadd scalar delta_se = r(se) : t2_`i'
-    estadd scalar delta_p = 2 * ttail(e(df_r), abs(r(estimate)/r(se))) : t2_`i'
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Effect of Electoral Contestation on Jury Outcomes (T2)}" _n
+file write t "\label{tab:table2}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\begin{tabular}{lccccccc}" _n
+file write t "\toprule" _n
+file write t `" & \multicolumn{2}{c}{Contested} & \multicolumn{2}{c}{Uncontested} & \multicolumn{2}{c}{\(\Delta\) (Con \(-\) Unc)} & \\"' _n
+file write t `"\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}"' _n
+file write t `"Outcome & Coef & SE & Coef & SE & \(\Delta\) & SE & \(N\) \\"' _n
+file write t "\midrule" _n
 
-    local ++i
+* Main paper: 8 key outcomes (3 rates + 2 verdicts + 3 composition)
+* Full 16-outcome version goes in appendix Table A2
+local t2_panel_lbl_1 "Panel A: Pipeline Rates"
+local t2_panel_list_1 "pct_sent_to_courtroom pct_questioned_in_voir_dire utilization_rate"
+local t2_panel_lbl_2 "Panel B: Verdict Counts"
+local t2_panel_list_2 "total_jury_verdicts capital_felony"
+local t2_panel_lbl_3 "Panel C: Verdict Composition"
+local t2_panel_list_3 "pct_capital_felony pct_other_felony pct_other_cases"
+local t2_npanels = 3
+
+forvalues p = 1/`t2_npanels' {
+    if `p' > 1 {
+        file write t "\\[-0.3em]" _n
+    }
+    file write t "\multicolumn{8}{l}{\textit{`t2_panel_lbl_`p''}} \\[0.3em]" _n
+
+    foreach y of local t2_panel_list_`p' {
+        qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, ///
+            absorb(county_id year) vce(cluster county_id)
+        local b1 = _b[treat_pros_contested_long]
+        local se1 = _se[treat_pros_contested_long]
+        local p1 = 2 * ttail(e(df_r), abs(`b1'/`se1'))
+        local b2 = _b[treat_pros_uncontested]
+        local se2 = _se[treat_pros_uncontested]
+        local p2 = 2 * ttail(e(df_r), abs(`b2'/`se2'))
+        local n = e(N)
+
+        * Δ via lincom
+        qui lincom treat_pros_contested_long - treat_pros_uncontested
+        local d = r(estimate)
+        local dse = r(se)
+        local dp = 2 * ttail(e(df_r), abs(`d'/`dse'))
+
+        * Stars
+        add_stars `p1'
+        local st1 "`r(stars)'"
+        add_stars `p2'
+        local st2 "`r(stars)'"
+        add_stars `dp'
+        local std "`r(stars)'"
+
+        * Format (count vs rate)
+        fmt_coef `b1' `y'
+        local b1f "`r(formatted)'"
+        fmt_coef `se1' `y'
+        local se1f "`r(formatted)'"
+        fmt_coef `b2' `y'
+        local b2f "`r(formatted)'"
+        fmt_coef `se2' `y'
+        local se2f "`r(formatted)'"
+        fmt_coef `d' `y'
+        local df "`r(formatted)'"
+        fmt_coef `dse' `y'
+        local dsef "`r(formatted)'"
+
+        file write t "`lbl_`y'' & `b1f'`st1' & (`se1f') & `b2f'`st2' & (`se2f') & `df'`std' & (`dsef') & `n' \\" _n
+    }
 }
 
-esttab t2_* using "$TAB_DIR/table2_contestation.tex", ///
-    replace booktabs alignment(D{.}{.}{-1}) ///
-    cells(b(star fmt(3)) se(par fmt(3))) ///
-    star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("Jurors Reported" "\% Told to Report" "Utilization" "Jury Verdicts" "\% Other Felony") ///
-    keep(treat_pros_contested_long treat_pros_uncontested) ///
-    coeflabels(treat_pros_contested_long "Contested" treat_pros_uncontested "Uncontested") ///
-    scalars("delta_b $\Delta$ (Contested $-$ Uncontested)" ///
-            "delta_se SE($\Delta$)" "delta_p $p(\Delta)$" ///
-            "N Observations" "N_clust Counties") ///
-    sfmt(3 3 3 0 0) ///
-    label nonotes noobs ///
-    addnotes("SEs clustered at county level in parentheses." ///
-             "County and year FE. Open-seat county-years excluded." ///
-             "$\Delta$ = Contested $-$ Uncontested via \texttt{lincom}." ///
-             "Omitted: non-election years." ///
-             "\sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)")
+file write t "\midrule" _n
+file write t `"County FE & \multicolumn{7}{c}{Yes} \\"' _n
+file write t `"Year FE & \multicolumn{7}{c}{Yes} \\"' _n
+file write t `"Clustering & \multicolumn{7}{c}{County} \\"' _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\footnotesize" _n
+file write t `"\item \textit{Notes.} \(Y_{ct} = \beta_1 \cdot \text{Contested}_{ct} + \beta_2 \cdot \text{Uncontested}_{ct} + \alpha_c + \gamma_t + \varepsilon_{ct}\)."' _n
+file write t `"\item County and year fixed effects. Standard errors clustered at county level."' _n
+file write t `"\item Contested \(= 1\) when incumbent faces a general-election challenger."' _n
+file write t `"\item Uncontested \(= 1\) when incumbent runs unopposed at all stages."' _n
+file write t `"\item Both indicators are mutually exclusive; omitted category is non-election years."' _n
+file write t `"\item Open-seat county-years excluded (26 obs). Sample: 553 obs, 83 counties."' _n
+file write t `"\item \(\Delta = \beta_1 - \beta_2\) tested via \texttt{lincom} (covariance-adjusted)."' _n
+file write t `"\item A significant \(\Delta\) indicates contestation itself shifts the outcome"' _n
+file write t `"  beyond what an uncontested election year produces."' _n
+file write t `"\item Count outcomes (summoned, reported, etc.) are null and reported in Table~\ref{tab:tableA2}."' _n
+file write t `"\item TWFE weight diagnostics: contested 0/39 negative ATT weights;"' _n
+file write t `"  uncontested 2/105 negative (share \(-0.06\%\)). See Table~\ref{tab:tableA2} for off-cycle robustness."' _n
+file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
 
-eststo clear
-di "Table 2 DONE"
+file close t
+di "Table 2 DONE: `f'"
+
+* Table 3 is now merged into Table 2 (portrait format includes all outcomes)
+* Write a stub so the \input doesn't break
+local f3 "$TAB_DIR/table3_outcomes.tex"
+file open t using "`f3'", write replace
+file write t "% Table 3 merged into Table 2 (portrait format). This file is a stub." _n
+file close t
+di "Table 3 stub DONE"
 
 
 * =============================================================================
-* TABLE 3 — T2: OUTCOME BREAKDOWN (ALL FAMILIES)
-*   Same T2 spec, all outcomes paneled.
-*   Panel A: Pipeline  Panel B: Verdicts  Panel C: Composition
+* TABLE A2 — EXHAUSTIVE SIDE-BY-SIDE: FULL vs NO-OFF-CYCLE (APPENDIX)
+*   All 16 outcomes. Both samples. All coefficients (Con, Unc, Δ).
+*   This is the definitive comparison table.
+*   Uses landscape orientation (\footnotesize) to fit 14+ columns.
 * =============================================================================
 
 di _n "{hline 72}"
-di "TABLE 3: T2 OUTCOME BREAKDOWN"
+di "TABLE A2: EXHAUSTIVE FULL vs NO-OFFCYCLE COMPARISON"
 di "{hline 72}"
 
-* Same sample already loaded (open seats dropped)
+* --- Run both samples and store results in a tempfile CSV ---
+tempname fh
+tempfile t2_compare
+file open `fh' using "`t2_compare'", write replace
+file write `fh' "sample,outcome,b_con,se_con,p_con,b_unc,se_unc,p_unc,delta,delta_se,delta_p,nobs" _n
 
-local panA "actually_reported pct_told_to_report utilization_rate"
-local panB "total_jury_verdicts capital_felony other_felony other_cases"
-local panC "pct_capital_felony pct_other_felony pct_other_cases"
+foreach samp in full nooc {
+    use "$DATA_FINAL/michigan_panel_B.dta", clear
+    drop if open_pros == 1
+    if "`samp'" == "nooc" {
+        drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+    }
+    di "`samp' sample: " _N
 
-eststo clear
-local i = 1
-foreach y in `panA' `panB' `panC' {
-    qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, ///
-        absorb(county_id year) vce(cluster county_id)
-    eststo t3_`i'
+    foreach y of local all_outcomes {
+        capture qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, ///
+            absorb(county_id year) vce(cluster county_id)
+        if !_rc {
+            local b1 = _b[treat_pros_contested_long]
+            local s1 = _se[treat_pros_contested_long]
+            local p1 = 2 * ttail(e(df_r), abs(`b1'/`s1'))
+            local b2 = _b[treat_pros_uncontested]
+            local s2 = _se[treat_pros_uncontested]
+            local p2 = 2 * ttail(e(df_r), abs(`b2'/`s2'))
+            local n = e(N)
+            qui lincom treat_pros_contested_long - treat_pros_uncontested
+            local d = r(estimate)
+            local ds = r(se)
+            local dp = 2 * ttail(e(df_r), abs(`d'/`ds'))
+            file write `fh' "`samp',`y'," (`b1') "," (`s1') "," (`p1') "," (`b2') "," (`s2') "," (`p2') "," (`d') "," (`ds') "," (`dp') "," (`n') _n
+        }
+    }
+}
+file close `fh'
 
-    qui lincom treat_pros_contested_long - treat_pros_uncontested
-    estadd scalar delta_b = r(estimate) : t3_`i'
-    estadd scalar delta_se = r(se) : t3_`i'
-    estadd scalar delta_p = 2 * ttail(e(df_r), abs(r(estimate)/r(se))) : t3_`i'
+* --- Build the table from CSV ---
+preserve
+import delimited using "`t2_compare'", clear
 
-    local ++i
+local fa2 "$TAB_DIR/tableA2_t2_offcycle.tex"
+file open t using "`fa2'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Contestation Effect: Full Panel vs Off-Cycle Excluded (Exhaustive Comparison)}" _n
+file write t "\label{tab:tableA2}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\scriptsize" _n
+file write t "\begin{tabular}{lcccccc}" _n
+file write t "\toprule" _n
+file write t `" & \multicolumn{3}{c}{Full Panel (83 counties)} & \multicolumn{3}{c}{Off-Cycle Excluded (77 counties)} \\"' _n
+file write t `"\cmidrule(lr){2-4} \cmidrule(lr){5-7}"' _n
+file write t `"Outcome & Contested & Uncontested & \(\Delta\) & Contested & Uncontested & \(\Delta\) \\"' _n
+file write t "\midrule" _n
+
+local a2_panel_lbl_1 "Panel A: Summon/Report Counts"
+local a2_panel_list_1 "`outcomes_summon'"
+local a2_panel_lbl_2 "Panel B: Pipeline Rates"
+local a2_panel_list_2 "`outcomes_rates'"
+local a2_panel_lbl_3 "Panel C: Verdict Counts"
+local a2_panel_list_3 "`outcomes_verdict'"
+local a2_panel_lbl_4 "Panel D: Verdict Composition"
+local a2_panel_list_4 "`outcomes_comp'"
+
+forvalues p = 1/4 {
+    if `p' > 1 {
+        file write t "\\[-0.3em]" _n
+    }
+    file write t "\multicolumn{7}{l}{\textit{`a2_panel_lbl_`p''}} \\[0.3em]" _n
+
+    foreach y of local a2_panel_list_`p' {
+        * Get values for both samples
+        foreach samp in full nooc {
+            foreach stat in b_con se_con p_con b_unc se_unc p_unc delta delta_se delta_p {
+                qui summ `stat' if sample == "`samp'" & outcome == "`y'"
+                local `stat'_`samp' = r(mean)
+            }
+
+            * Stars for this sample
+            local stc_`samp' ""
+            if `p_con_`samp'' < 0.01 local stc_`samp' "\sym{***}"
+            else if `p_con_`samp'' < 0.05 local stc_`samp' "\sym{**}"
+            else if `p_con_`samp'' < 0.10 local stc_`samp' "\sym{*}"
+
+            local stu_`samp' ""
+            if `p_unc_`samp'' < 0.01 local stu_`samp' "\sym{***}"
+            else if `p_unc_`samp'' < 0.05 local stu_`samp' "\sym{**}"
+            else if `p_unc_`samp'' < 0.10 local stu_`samp' "\sym{*}"
+
+            local std_`samp' ""
+            if `delta_p_`samp'' < 0.01 local std_`samp' "\sym{***}"
+            else if `delta_p_`samp'' < 0.05 local std_`samp' "\sym{**}"
+            else if `delta_p_`samp'' < 0.10 local std_`samp' "\sym{*}"
+
+            * Format
+            local is_rate = (strpos("`y'", "pct_") == 1 | "`y'" == "utilization_rate")
+            if `is_rate' {
+                local cf_`samp' : di %7.3f `b_con_`samp''
+                local uf_`samp' : di %7.3f `b_unc_`samp''
+                local df_`samp' : di %7.3f `delta_`samp''
+                local csf_`samp' : di %7.3f `se_con_`samp''
+                local usf_`samp' : di %7.3f `se_unc_`samp''
+                local dsf_`samp' : di %7.3f `delta_se_`samp''
+            }
+            else {
+                local cf_`samp' : di %7.1f `b_con_`samp''
+                local uf_`samp' : di %7.1f `b_unc_`samp''
+                local df_`samp' : di %7.1f `delta_`samp''
+                local csf_`samp' : di %7.1f `se_con_`samp''
+                local usf_`samp' : di %7.1f `se_unc_`samp''
+                local dsf_`samp' : di %7.1f `delta_se_`samp''
+            }
+        }
+
+        * Write coefficient row
+        file write t "`lbl_`y''"
+        file write t " & `=strtrim("`cf_full'")'`stc_full'"
+        file write t " & `=strtrim("`uf_full'")'`stu_full'"
+        file write t " & `=strtrim("`df_full'")'`std_full'"
+        file write t " & `=strtrim("`cf_nooc'")'`stc_nooc'"
+        file write t " & `=strtrim("`uf_nooc'")'`stu_nooc'"
+        file write t " & `=strtrim("`df_nooc'")'`std_nooc'"
+        file write t " \\" _n
+
+        * Write SE row
+        file write t " "
+        file write t " & (`=strtrim("`csf_full'")')"
+        file write t " & (`=strtrim("`usf_full'")')"
+        file write t " & (`=strtrim("`dsf_full'")')"
+        file write t " & (`=strtrim("`csf_nooc'")')"
+        file write t " & (`=strtrim("`usf_nooc'")')"
+        file write t " & (`=strtrim("`dsf_nooc'")')"
+        file write t " \\" _n
+    }
 }
 
-* Write contested coefficients
-esttab t3_* using "$TAB_DIR/table3_outcomes.tex", ///
-    replace booktabs alignment(D{.}{.}{-1}) ///
-    cells(b(star fmt(3)) se(par fmt(3))) ///
-    star(* 0.10 ** 0.05 *** 0.01) ///
-    mtitles("Jurors Rep." "\% Told" "Util." "Verdicts" "Capital" "Other Fel." "Other Cases" "\% Cap." "\% Oth.Fel." "\% Oth.Cases") ///
-    mgroups("Panel A: Pipeline" "Panel B: Verdicts" "Panel C: Composition", ///
-        pattern(1 0 0 1 0 0 0 1 0 0) ///
-        prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) ///
-    keep(treat_pros_contested_long treat_pros_uncontested) ///
-    coeflabels(treat_pros_contested_long "Contested" treat_pros_uncontested "Uncontested") ///
-    scalars("delta_b $\Delta$" "delta_se SE($\Delta$)" "delta_p $p(\Delta)$" ///
-            "N Observations" "N_clust Counties") ///
-    sfmt(3 3 3 0 0) ///
-    label nonotes noobs ///
-    addnotes("SEs clustered at county level. County and year FE. Open seats excluded." ///
-             "$\Delta$ = Contested $-$ Uncontested via \texttt{lincom}." ///
-             "\sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)")
+file write t "\midrule" _n
+file write t `"County FE & \multicolumn{3}{c}{Yes} & \multicolumn{3}{c}{Yes} \\"' _n
+file write t `"Year FE & \multicolumn{3}{c}{Yes} & \multicolumn{3}{c}{Yes} \\"' _n
+file write t `"Clustering & \multicolumn{3}{c}{County} & \multicolumn{3}{c}{County} \\"' _n
+file write t `"Off-cycle counties & \multicolumn{3}{c}{Included} & \multicolumn{3}{c}{Excluded} \\"' _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\scriptsize" _n
+file write t `"\item \textit{Notes.} Both panels: \(Y_{ct} = \beta_1 \cdot \text{Contested}_{ct} + \beta_2 \cdot \text{Uncontested}_{ct} + \alpha_c + \gamma_t + \varepsilon_{ct}\)."' _n
+file write t `"\item Standard errors in parentheses below coefficients. \(\Delta = \beta_1 - \beta_2\) via \texttt{lincom}."' _n
+file write t `"\item Open-seat county-years excluded in both panels."' _n
+file write t `"\item Right panel additionally excludes 6 off-cycle counties (Allegan, Delta, Isabella, Newaygo, Osceola, Roscommon)"' _n
+file write t `"  that hold elections in 2018 or 2022 rather than the standard 4-year presidential cycle."' _n
+file write t `"\item Individual composition coefficients shift substantially between panels (e.g., \% Capital Felony"' _n
+file write t `"  moves from null to \(p < 0.01\) when off-cycle counties are excluded), but \(\Delta\) remains stable."' _n
+file write t `"  Off-cycle counties have systematically lower composition baselines and act as leverage points"' _n
+file write t `"  in the year FE estimation."' _n
+file write t `"\item TWFE weight diagnostics (full panel): contested 0/39 negative ATT weights;"' _n
+file write t `"  uncontested 2/105 negative (share \(-0.06\%\))."' _n
+file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
 
-eststo clear
-di "Table 3 DONE"
+file close t
+restore
+
+di "Table A2 (exhaustive comparison) DONE: `fa2'"
 
 
 * =============================================================================

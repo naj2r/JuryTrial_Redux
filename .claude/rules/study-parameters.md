@@ -8,18 +8,44 @@
 - **COVID:** 2020-2021 always excluded (SCAO data does not exist for these years)
 - **Treatment:** Recurring/transitory election regimes, NOT staggered absorbing treatment
 
-## Treatment Definitions
+## Treatment Variable Codebook
 
-| Variable | Meaning | =1 When |
-|----------|---------|---------|
-| `treat_pros_pressure` | Incumbent running for re-election | Incumbent is on the ballot |
-| `open_pros` | Open-seat election | No incumbent running |
-| `treat_pros_contested_long` | General-election contested | Challenger in general election |
-| `treat_pros_contested` | Any-stage contested | Challenger in primary OR general |
-| `treat_pros_uncontested` | Uncontested incumbent | Incumbent runs unopposed at all stages |
-| `is_election_year_pros` | Election year binary | Any prosecutor election occurs |
+### Primary Variables (used in regressions)
 
-**Critical:** `treat_pros_pressure` and `open_pros` are mutually exclusive within election years. Non-election years have both = 0.
+| Variable | Meaning | =1 When | =0 When |
+|----------|---------|---------|---------|
+| `treat_pros_pressure` | Incumbent running for re-election | Incumbent is on the ballot | Non-election year OR open seat |
+| `open_pros` | Open-seat election | No incumbent running, seat is open | Non-election year OR incumbent running |
+| `treat_pros_contested_long` | General-election contested incumbent | Incumbent faces challenger in general election | All other obs |
+| `treat_pros_contested` | Any-stage contested incumbent | Incumbent faces challenger in primary OR general | All other obs |
+| `treat_pros_uncontested` | Uncontested incumbent | Incumbent runs unopposed at all stages | All other obs |
+| `is_election_year_pros` | Election year binary (ANY type) | Any prosecutor election occurs (incumbent OR open seat) | Non-election year |
+| `elec_incumbent` | Alias for `treat_pros_pressure` | Same as `treat_pros_pressure` | Same |
+
+### Mutual Exclusivity Rules
+
+| Rule | Variables | Constraint |
+|------|----------|-----------|
+| **Election decomposition** | `treat_pros_pressure` + `open_pros` | Mutually exclusive, sum ≤ 1. Non-election years have both = 0. |
+| **Contestation decomposition** | `treat_pros_contested_long` + `treat_pros_uncontested` | Mutually exclusive among incumbent elections. Sum = `treat_pros_pressure`. |
+| **Election year overlap** | `is_election_year_pros` vs `open_pros` | **NOT mutually exclusive.** `is_election_year_pros = 1` for ALL election years including open seats. 26 obs have both = 1. |
+
+### CRITICAL WARNING
+
+**`is_election_year_pros` INCLUDES open seats.** It equals 1 for all 170 election-year observations (144 incumbent + 26 open seat). Do NOT use `is_election_year_pros` as an "incumbent election" indicator — use `treat_pros_pressure` (or its alias `elec_incumbent`) instead.
+
+**`elec_incumbent`** is created as `clonevar elec_incumbent = treat_pros_pressure` in `14_paper_tables.do` for labeling clarity. It is NOT a separate variable in the build pipeline — it is an alias created at table-generation time.
+
+### Variable Hierarchy
+
+```
+is_election_year_pros = 1  (any election)
+├── treat_pros_pressure = 1  (incumbent running)
+│   ├── treat_pros_contested_long = 1  (general election challenger)
+│   ├── treat_pros_contested = 1       (any stage challenger)
+│   └── treat_pros_uncontested = 1     (fully unopposed)
+└── open_pros = 1  (no incumbent)
+```
 
 ## Model/Tier Map
 
@@ -62,6 +88,35 @@
 **Key finding:** The 6 off-cycle election counties (Allegan, Isabella, Newaygo, Osceola, Roscommon with 2018; Delta with 2022) are the **entire source** of T0 negative weights. Dropping them produces zero negative weights. The `B_no_offcycle` variant is the clean T0 specification.
 
 **Implication:** T1 is the primary specification (clean weights, full panel). T0 requires the `B_no_offcycle` variant to be TWFE-valid. The lame-duck cycle exclusion fixes sample contamination but not TWFE weight heterogeneity — these are separate issues.
+
+### T2 TWFE Weights (Contestation Model)
+
+| Treatment | Pos ATTs | Neg ATTs | Σ Neg Weights | Status |
+|-----------|----------|----------|---------------|--------|
+| Contested (general-election) | 39/39 | **0** | **0.000** | **CLEAN** |
+| Uncontested | 103/105 | 2 | -0.0006 | **CLEAN** (0.06%) |
+
+T2 is TWFE-valid on the full panel.
+
+### Timing Robustness (Off-Cycle Asynchronicity)
+
+The 6 off-cycle counties create asynchronous election timing that interacts with year FE estimation. Individual composition coefficients (% capital felony, % other felony, % other cases) are sensitive to whether off-cycle counties are included. The Δ (contested − uncontested) is robust across all specifications.
+
+**Four timing specifications tested (2026-03-25):**
+
+| Spec | Description | Δ Total Verdicts | Δ Capital Felony | Δ % Cap Felony |
+|------|-------------|-------------------|-------------------|-----------------|
+| Main (county + year FE) | Standard TWFE | -6.2** | -5.1** | -0.077*** |
+| Group × Year FE | Separate year FE for sync vs off-cycle | -6.2** | -5.3** | -0.082*** |
+| Linear Trends | County-specific trends for off-cycle | -6.4** | -5.2** | -0.077*** |
+| Wooldridge Cohort × Time | 3 cohorts × 7 years FE | -6.2** | -5.4** | -0.082*** |
+
+**Key finding:** Uncontested % capital felony moves from null (main spec) to significant (p=.003 Wooldridge) when timing heterogeneity is accounted for. Off-cycle counties have structurally lower composition baselines (capital felony share 5.8% vs 13.9%) that distort year FE when included without timing adjustment.
+
+**Current architecture (2026-03-25):**
+- T0: County FE only (no year FE). Descriptive benchmark. `elec_incumbent + open_pros`.
+- T2: County + year FE (TWFE). Main result. `contested + uncontested + Δ`. Open seats dropped.
+- Wooldridge cohort × time FE: Robustness check for T2.
 
 ## Non-Negotiable Facts
 
