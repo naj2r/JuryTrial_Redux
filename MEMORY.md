@@ -94,3 +94,15 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:stata] Stata writes p-values without leading zeros (`.39` not `0.39`). R's `read_csv` parses these as character strings. ALWAYS add `mutate(across(c(beta, se, p_value, ci_lo, ci_hi), as.numeric))` after reading Stata-generated CSVs in R/Quarto.
 
 [LEARN:identity] CLAUDE.md must stay under 150 lines. Verbose content goes into .claude/rules/ files.
+
+[LEARN:identification] `is_election_year_pros` = 1 for ALL election years including open seats (N=170). It OVERLAPS with `open_pros`. Use `treat_pros_pressure` (alias `elec_incumbent`) for incumbent-only elections. These are mutually exclusive with `open_pros`.
+
+[LEARN:identification] T0 cannot use county + year FE (TWFE) because election timing is nearly synchronized — year FE absorbs the election signal. Use county FE only for T0 (descriptive benchmark). T2 can use TWFE because contested/uncontested varies within election years.
+
+[LEARN:identification] Off-cycle counties (Allegan, Isabella, Newaygo, Osceola, Roscommon + Delta) have structurally lower composition baselines (capital felony share 5.8% vs 13.9%). They distort year FE estimation for composition outcomes. Δ (contested - uncontested) is robust; individual coefficients are sensitive. Address with timing-group × year FE or Wooldridge cohort × time.
+
+[LEARN:identification] TWFE weights for T2: contested 0/39 negative (perfect), uncontested 2/105 negative (0.06%). T2 is TWFE-valid on the full panel.
+
+[LEARN:tables] Stata `file write` eats `$` as macro references. Use `\(` and `\)` for inline LaTeX math instead of `$...$`. Or use compound quotes `` `"..."' `` to suppress expansion.
+
+[LEARN:tables] Portrait format (outcomes as rows) is better for 16-outcome tables. Use `file write` loop, not `esttab` (which forces outcomes as columns).
