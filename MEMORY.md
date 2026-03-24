@@ -108,3 +108,5 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:tables] Stata `file write` eats `$` as macro references. Use `\(` and `\)` for inline LaTeX math instead of `$...$`. Or use compound quotes `` `"..."' `` to suppress expansion.
 
 [LEARN:tables] Portrait format (outcomes as rows) is better for 16-outcome tables. Use `file write` loop, not `esttab` (which forces outcomes as columns).
+
+[LEARN:workflow] When user says "add placeholder" to the paper, ALWAYS use: red font (\color{red}), bold header with description + timestamp, closing timestamp. Format: {\color{red}\textbf{[PLACEHOLDER --- DESCRIPTION --- YYYY-MM-DD HH:MM]} ... text ... (YYYY-MM-DD HH:MM)}
