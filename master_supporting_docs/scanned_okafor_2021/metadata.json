@@ -1,0 +1,829 @@
+{
+  "source_pdf": "okafor2021_prosecutor_politics.pdf",
+  "source_path": "C:\\Users\\jensenn\\Dropbox\\Research Resources\\law_econ_resources\\Papers\\Prosecutor_Elections\\okafor2021_prosecutor_politics.pdf",
+  "total_pages": 74,
+  "extraction_timestamp": "2026-03-24T19:43:38.399507",
+  "scanned_pdf": false,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 3365,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 2,
+      "char_count": 2278,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 3,
+      "char_count": 2803,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 4,
+      "char_count": 2556,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 5,
+      "char_count": 2458,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 6,
+      "char_count": 2547,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 7,
+      "char_count": 2431,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 8,
+      "char_count": 2247,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 9,
+      "char_count": 2068,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 10,
+      "char_count": 1291,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 11,
+      "char_count": 2119,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 12,
+      "char_count": 1568,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 13,
+      "char_count": 3120,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 14,
+      "char_count": 2194,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 15,
+      "char_count": 1835,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 16,
+      "char_count": 833,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 17,
+      "char_count": 1435,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 18,
+      "char_count": 2435,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 19,
+      "char_count": 1531,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 20,
+      "char_count": 2392,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 21,
+      "char_count": 2170,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 22,
+      "char_count": 2472,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 23,
+      "char_count": 2694,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 24,
+      "char_count": 2596,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 25,
+      "char_count": 1316,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 26,
+      "char_count": 2572,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 27,
+      "char_count": 1331,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 28,
+      "char_count": 1933,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 29,
+      "char_count": 1577,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 30,
+      "char_count": 2045,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 31,
+      "char_count": 672,
+      "has_images": true,
+      "image_count": 2,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 32,
+      "char_count": 2462,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 33,
+      "char_count": 1846,
+      "has_images": true,
+      "image_count": 2,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 34,
+      "char_count": 2296,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 35,
+      "char_count": 2456,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 36,
+      "char_count": 775,
+      "has_images": true,
+      "image_count": 2,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 37,
+      "char_count": 2113,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 38,
+      "char_count": 3092,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 39,
+      "char_count": 1541,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 40,
+      "char_count": 2493,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 41,
+      "char_count": 889,
+      "has_images": true,
+      "image_count": 2,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 42,
+      "char_count": 1589,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 43,
+      "char_count": 2485,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 44,
+      "char_count": 1574,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 45,
+      "char_count": 2026,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 46,
+      "char_count": 695,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 47,
+      "char_count": 2490,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 48,
+      "char_count": 2416,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 49,
+      "char_count": 1364,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 50,
+      "char_count": 2348,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 51,
+      "char_count": 2445,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 52,
+      "char_count": 2540,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 53,
+      "char_count": 2474,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 54,
+      "char_count": 2480,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 55,
+      "char_count": 915,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 56,
+      "char_count": 3794,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 57,
+      "char_count": 2736,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 58,
+      "char_count": 2339,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 59,
+      "char_count": 2798,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 60,
+      "char_count": 1937,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 61,
+      "char_count": 444,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 62,
+      "char_count": 762,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 63,
+      "char_count": 1837,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 64,
+      "char_count": 1891,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 65,
+      "char_count": 829,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 66,
+      "char_count": 866,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 67,
+      "char_count": 1355,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 68,
+      "char_count": 1834,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 69,
+      "char_count": 1921,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 70,
+      "char_count": 811,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 71,
+      "char_count": 837,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 72,
+      "char_count": 1576,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 73,
+      "char_count": 526,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 74,
+      "char_count": 1269,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    }
+  ],
+  "sections": [
+    {
+      "file": "sec_01_pp01-01_abstract.md",
+      "label": "abstract",
+      "display_label": "Abstract",
+      "pages": [
+        1
+      ],
+      "is_subsplit": false,
+      "char_count": 3399
+    },
+    {
+      "file": "sec_02_pp02-05_introduction_pt1.md",
+      "label": "introduction_pt1",
+      "display_label": "Introduction (Part 1)",
+      "pages": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "is_subsplit": true,
+      "char_count": 10237
+    },
+    {
+      "file": "sec_03_pp06-07_introduction_pt2.md",
+      "label": "introduction_pt2",
+      "display_label": "Introduction (Part 2)",
+      "pages": [
+        6,
+        7
+      ],
+      "is_subsplit": true,
+      "char_count": 5048
+    },
+    {
+      "file": "sec_04_pp08-09_institutional.md",
+      "label": "institutional",
+      "display_label": "Institutional",
+      "pages": [
+        8,
+        9
+      ],
+      "is_subsplit": false,
+      "char_count": 4385
+    },
+    {
+      "file": "sec_05_pp10-11_data.md",
+      "label": "data",
+      "display_label": "Data",
+      "pages": [
+        10,
+        11
+      ],
+      "is_subsplit": false,
+      "char_count": 3484
+    },
+    {
+      "file": "sec_06_pp12-13_empirical.md",
+      "label": "empirical",
+      "display_label": "Empirical",
+      "pages": [
+        12,
+        13
+      ],
+      "is_subsplit": false,
+      "char_count": 4762
+    },
+    {
+      "file": "sec_07_pp14-17_results_pt1.md",
+      "label": "results_pt1",
+      "display_label": "Results (Part 1)",
+      "pages": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "is_subsplit": true,
+      "char_count": 6447
+    },
+    {
+      "file": "sec_08_pp18-21_results_pt2.md",
+      "label": "results_pt2",
+      "display_label": "Results (Part 2)",
+      "pages": [
+        18,
+        19,
+        20,
+        21
+      ],
+      "is_subsplit": true,
+      "char_count": 8678
+    },
+    {
+      "file": "sec_09_pp22-25_results_pt3.md",
+      "label": "results_pt3",
+      "display_label": "Results (Part 3)",
+      "pages": [
+        22,
+        23,
+        24,
+        25
+      ],
+      "is_subsplit": true,
+      "char_count": 9228
+    },
+    {
+      "file": "sec_10_pp26-27_results_pt4.md",
+      "label": "results_pt4",
+      "display_label": "Results (Part 4)",
+      "pages": [
+        26,
+        27
+      ],
+      "is_subsplit": true,
+      "char_count": 3977
+    },
+    {
+      "file": "sec_11_pp28-31_mechanisms_pt1.md",
+      "label": "mechanisms_pt1",
+      "display_label": "Mechanisms (Part 1)",
+      "pages": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "is_subsplit": true,
+      "char_count": 6377
+    },
+    {
+      "file": "sec_12_pp32-35_mechanisms_pt2.md",
+      "label": "mechanisms_pt2",
+      "display_label": "Mechanisms (Part 2)",
+      "pages": [
+        32,
+        33,
+        34,
+        35
+      ],
+      "is_subsplit": true,
+      "char_count": 9210
+    },
+    {
+      "file": "sec_13_pp36-39_mechanisms_pt3.md",
+      "label": "mechanisms_pt3",
+      "display_label": "Mechanisms (Part 3)",
+      "pages": [
+        36,
+        37,
+        38,
+        39
+      ],
+      "is_subsplit": true,
+      "char_count": 7671
+    },
+    {
+      "file": "sec_14_pp40-43_mechanisms_pt4.md",
+      "label": "mechanisms_pt4",
+      "display_label": "Mechanisms (Part 4)",
+      "pages": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "is_subsplit": true,
+      "char_count": 7606
+    },
+    {
+      "file": "sec_15_pp44-44_mechanisms_pt5.md",
+      "label": "mechanisms_pt5",
+      "display_label": "Mechanisms (Part 5)",
+      "pages": [
+        44
+      ],
+      "is_subsplit": true,
+      "char_count": 1610
+    },
+    {
+      "file": "sec_16_pp45-48_conclusion_pt1.md",
+      "label": "conclusion_pt1",
+      "display_label": "Conclusion (Part 1)",
+      "pages": [
+        45,
+        46,
+        47,
+        48
+      ],
+      "is_subsplit": true,
+      "char_count": 7777
+    },
+    {
+      "file": "sec_17_pp49-49_conclusion_pt2.md",
+      "label": "conclusion_pt2",
+      "display_label": "Conclusion (Part 2)",
+      "pages": [
+        49
+      ],
+      "is_subsplit": true,
+      "char_count": 1400
+    },
+    {
+      "file": "sec_18_pp50-53_references_pt1.md",
+      "label": "references_pt1",
+      "display_label": "References (Part 1)",
+      "pages": [
+        50,
+        51,
+        52,
+        53
+      ],
+      "is_subsplit": true,
+      "char_count": 9957
+    },
+    {
+      "file": "sec_19_pp54-57_references_pt2.md",
+      "label": "references_pt2",
+      "display_label": "References (Part 2)",
+      "pages": [
+        54,
+        55,
+        56,
+        57
+      ],
+      "is_subsplit": true,
+      "char_count": 10075
+    },
+    {
+      "file": "sec_20_pp58-58_references_pt3.md",
+      "label": "references_pt3",
+      "display_label": "References (Part 3)",
+      "pages": [
+        58
+      ],
+      "is_subsplit": true,
+      "char_count": 2375
+    },
+    {
+      "file": "sec_21_pp59-60_appendix_b.md",
+      "label": "appendix_b",
+      "display_label": "Appendix B",
+      "pages": [
+        59,
+        60
+      ],
+      "is_subsplit": false,
+      "char_count": 4809
+    },
+    {
+      "file": "sec_22_pp61-64_appendix_c_pt1.md",
+      "label": "appendix_c_pt1",
+      "display_label": "Appendix C (Part 1)",
+      "pages": [
+        61,
+        62,
+        63,
+        64
+      ],
+      "is_subsplit": true,
+      "char_count": 5084
+    },
+    {
+      "file": "sec_23_pp65-68_appendix_c_pt2.md",
+      "label": "appendix_c_pt2",
+      "display_label": "Appendix C (Part 2)",
+      "pages": [
+        65,
+        66,
+        67,
+        68
+      ],
+      "is_subsplit": true,
+      "char_count": 5034
+    },
+    {
+      "file": "sec_24_pp69-72_appendix_c_pt3.md",
+      "label": "appendix_c_pt3",
+      "display_label": "Appendix C (Part 3)",
+      "pages": [
+        69,
+        70,
+        71,
+        72
+      ],
+      "is_subsplit": true,
+      "char_count": 5295
+    },
+    {
+      "file": "sec_25_pp73-74_appendix_c_pt4.md",
+      "label": "appendix_c_pt4",
+      "display_label": "Appendix C (Part 4)",
+      "pages": [
+        73,
+        74
+      ],
+      "is_subsplit": true,
+      "char_count": 1869
+    }
+  ],
+  "split_method": "headers"
+}
