@@ -1593,7 +1593,7 @@ else {
 
     * Save bootstrap p-values to CSV
     tempname fhbt
-    local fbt "$RES_DIR/mi_boottest_results.csv"
+    local fbt "$OUTPUT/results/mi_boottest_results.csv"
     file open `fhbt' using "`fbt'", write replace
     file write `fhbt' "outcome,treatment,beta,se,p_cluster,p_boot,nobs" _n
 
@@ -1641,6 +1641,224 @@ else {
     file close `fhbt'
     di "Boottest results saved to: `fbt'"
 }
+
+
+* =============================================================================
+* CONTROLLED SPECIFICATIONS — Caseload + Population Controls
+*   Adds incoming_felony + pending_felony (levels, NOT logged) and
+*   log_county_pop as separate control sets across T0 and T2.
+*   Output: CSV for comparison + appendix table A5
+* =============================================================================
+
+di _n "{hline 72}"
+di "CONTROLLED SPECIFICATIONS: Caseload + Population"
+di "{hline 72}"
+
+* Save results to CSV
+local fctl "$OUTPUT/results/mi_controlled_comparison.csv"
+tempname fhctl
+file open `fhctl' using "`fctl'", write replace
+file write `fhctl' "model,spec,outcome,b_con,se_con,p_con,b_unc,se_unc,p_unc,delta,delta_se,delta_p,nobs" _n
+
+* --- T0 (county FE only, full B, 83 counties) ---
+foreach ctrl_type in base caseload pop caseload_pop {
+    use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
+
+    * T0 setup: county FE only
+    if "`ctrl_type'" == "base"         local controls ""
+    if "`ctrl_type'" == "caseload"     local controls "incoming_felony pending_felony"
+    if "`ctrl_type'" == "pop"          local controls "log_county_pop"
+    if "`ctrl_type'" == "caseload_pop" local controls "incoming_felony pending_felony log_county_pop"
+
+    local spec_label "T0_`ctrl_type'"
+
+    foreach y of local all_outcomes {
+        capture qui reghdfe `y' elec_incumbent open_pros `controls', absorb(county_id) vce(cluster county_id)
+        if !_rc {
+            local b1 = _b[elec_incumbent]
+            local s1 = _se[elec_incumbent]
+            local p1 = 2 * ttail(e(df_r), abs(`b1'/`s1'))
+            * open_pros coefficient (T0 has both)
+            local b2 = _b[open_pros]
+            local s2 = _se[open_pros]
+            local p2 = 2 * ttail(e(df_r), abs(`b2'/`s2'))
+            qui lincom elec_incumbent - open_pros
+            local d = r(estimate)
+            local ds = r(se)
+            local dp = 2 * ttail(e(df_r), abs(`d'/`ds'))
+            file write `fhctl' "T0,`ctrl_type',`y'," (`b1') "," (`s1') "," (`p1') "," (`b2') "," (`s2') "," (`p2') "," (`d') "," (`ds') "," (`dp') "," (e(N)) _n
+        }
+    }
+}
+
+* --- T2 (county + year FE, 77 sync, open seats dropped) ---
+foreach ctrl_type in base caseload pop caseload_pop {
+    use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
+    drop if open_pros == 1
+    drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+
+    if "`ctrl_type'" == "base"         local controls ""
+    if "`ctrl_type'" == "caseload"     local controls "incoming_felony pending_felony"
+    if "`ctrl_type'" == "pop"          local controls "log_county_pop"
+    if "`ctrl_type'" == "caseload_pop" local controls "incoming_felony pending_felony log_county_pop"
+
+    local spec_label "T2_`ctrl_type'"
+
+    foreach y of local all_outcomes {
+        capture qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested `controls', absorb(county_id year) vce(cluster county_id)
+        if !_rc {
+            local b1 = _b[treat_pros_contested_long]
+            local s1 = _se[treat_pros_contested_long]
+            local p1 = 2 * ttail(e(df_r), abs(`b1'/`s1'))
+            local b2 = _b[treat_pros_uncontested]
+            local s2 = _se[treat_pros_uncontested]
+            local p2 = 2 * ttail(e(df_r), abs(`b2'/`s2'))
+            qui lincom treat_pros_contested_long - treat_pros_uncontested
+            local d = r(estimate)
+            local ds = r(se)
+            local dp = 2 * ttail(e(df_r), abs(`d'/`ds'))
+            file write `fhctl' "T2,`ctrl_type',`y'," (`b1') "," (`s1') "," (`p1') "," (`b2') "," (`s2') "," (`p2') "," (`d') "," (`ds') "," (`dp') "," (e(N)) _n
+        }
+    }
+}
+
+file close `fhctl'
+di "Controlled comparison saved to: `fctl'"
+
+* --- Build Table A5: T2 Base vs Controlled (key outcomes) ---
+preserve
+import delimited using "`fctl'", clear
+
+local fa5 "$TAB_DIR/tableA5_controlled.tex"
+file open t using "`fa5'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Sensitivity to Caseload and Population Controls (T2, 77 Sync Counties)}" _n
+file write t "\label{tab:tableA5}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\tiny" _n
+file write t "\begin{tabular}{lcccc}" _n
+file write t "\toprule" _n
+file write t `" & (1) & (2) & (3) & (4) \\"' _n
+file write t `" & Base & + Caseload & + Pop & + Both \\"' _n
+file write t "\midrule" _n
+
+* Panel A: Contested coefficient
+file write t "\multicolumn{5}{l}{\textit{Panel A: Contested (\(\beta_1\))}} \\[0.3em]" _n
+
+local key_outs "fc_jury_share fc_dismiss_rate fc_plea_share severity_share fc_jury_adj_share fc_plea_adj_share fh_jury_share fh_dismiss_rate utilization_rate"
+
+foreach y of local key_outs {
+    * Get label
+    local lbl "`y'"
+    if "`y'" == "fc_jury_share" local lbl "FC Jury Trial Rate"
+    if "`y'" == "fc_dismiss_rate" local lbl "FC Dismissal Rate"
+    if "`y'" == "fc_plea_share" local lbl "FC Plea Rate"
+    if "`y'" == "severity_share" local lbl "Severity Share"
+    if "`y'" == "fc_jury_adj_share" local lbl "FC Jury Share (Adj.)"
+    if "`y'" == "fc_plea_adj_share" local lbl "FC Plea Share (Adj.)"
+    if "`y'" == "fh_jury_share" local lbl "FH Jury Trial Rate"
+    if "`y'" == "fh_dismiss_rate" local lbl "FH Dismissal Rate"
+    if "`y'" == "utilization_rate" local lbl "Utilization Rate"
+
+    file write t "`lbl'"
+    foreach ctrl in base caseload pop caseload_pop {
+        qui summ b_con if model == "T2" & spec == "`ctrl'" & outcome == "`y'"
+        if r(N) > 0 {
+            local bval = r(mean)
+            qui summ p_con if model == "T2" & spec == "`ctrl'" & outcome == "`y'"
+            local pval = r(mean)
+            local st ""
+            if `pval' < 0.01 local st "\sym{***}"
+            else if `pval' < 0.05 local st "\sym{**}"
+            else if `pval' < 0.10 local st "\sym{*}"
+            local cf : di %6.3f `bval'
+            file write t " & `=strtrim("`cf'")'`st'"
+        }
+        else file write t " & "
+    }
+    file write t " \\" _n
+
+    * SE row
+    file write t " "
+    foreach ctrl in base caseload pop caseload_pop {
+        qui summ se_con if model == "T2" & spec == "`ctrl'" & outcome == "`y'"
+        if r(N) > 0 {
+            local sval = r(mean)
+            local sf : di %6.3f `sval'
+            file write t " & (`=strtrim("`sf'")')"
+        }
+        else file write t " & "
+    }
+    file write t " \\" _n
+}
+
+* Panel B: Δ
+file write t "\\[0.5em]" _n
+file write t "\multicolumn{5}{l}{\textit{Panel B: \(\Delta\) (Contested \(-\) Uncontested)}} \\[0.3em]" _n
+
+foreach y of local key_outs {
+    local lbl "`y'"
+    if "`y'" == "fc_jury_share" local lbl "FC Jury Trial Rate"
+    if "`y'" == "fc_dismiss_rate" local lbl "FC Dismissal Rate"
+    if "`y'" == "fc_plea_share" local lbl "FC Plea Rate"
+    if "`y'" == "severity_share" local lbl "Severity Share"
+    if "`y'" == "fc_jury_adj_share" local lbl "FC Jury Share (Adj.)"
+    if "`y'" == "fc_plea_adj_share" local lbl "FC Plea Share (Adj.)"
+    if "`y'" == "fh_jury_share" local lbl "FH Jury Trial Rate"
+    if "`y'" == "fh_dismiss_rate" local lbl "FH Dismissal Rate"
+    if "`y'" == "utilization_rate" local lbl "Utilization Rate"
+
+    file write t "`lbl'"
+    foreach ctrl in base caseload pop caseload_pop {
+        qui summ delta if model == "T2" & spec == "`ctrl'" & outcome == "`y'"
+        if r(N) > 0 {
+            local dval = r(mean)
+            qui summ delta_p if model == "T2" & spec == "`ctrl'" & outcome == "`y'"
+            local dpval = r(mean)
+            local st ""
+            if `dpval' < 0.01 local st "\sym{***}"
+            else if `dpval' < 0.05 local st "\sym{**}"
+            else if `dpval' < 0.10 local st "\sym{*}"
+            local df : di %6.3f `dval'
+            file write t " & `=strtrim("`df'")'`st'"
+        }
+        else file write t " & "
+    }
+    file write t " \\" _n
+
+    file write t " "
+    foreach ctrl in base caseload pop caseload_pop {
+        qui summ delta_se if model == "T2" & spec == "`ctrl'" & outcome == "`y'"
+        if r(N) > 0 {
+            local dsval = r(mean)
+            local dsf : di %6.3f `dsval'
+            file write t " & (`=strtrim("`dsf'")')"
+        }
+        else file write t " & "
+    }
+    file write t " \\" _n
+}
+
+file write t "\midrule" _n
+file write t "County FE & Yes & Yes & Yes & Yes \\" _n
+file write t "Year FE & Yes & Yes & Yes & Yes \\" _n
+file write t "Caseload controls & No & Yes & No & Yes \\" _n
+file write t `"log(pop) control & No & No & Yes & Yes \\"' _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\tiny" _n
+file write t `"\item 77 sync counties, open seats excluded. Caseload = incoming\_felony + pending\_felony (levels)."' _n
+file write t `"\item \(\Delta = \beta_1 - \beta_2\) via \texttt{lincom}. \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
+
+file close t
+restore
+
+di "Table A5 DONE: `fa5'"
 
 
 di _n "========================================"

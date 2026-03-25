@@ -197,6 +197,18 @@ foreach v in fc_jury_adj_share fc_plea_adj_share fh_jury_adj_share fh_plea_adj_s
 
 
 * ==========================================================================
+* STEP 3d: Create log_county_pop (safe — no zeros in population)
+* ==========================================================================
+
+di _n "Step 3d: Creating log_county_pop..."
+capture drop log_county_pop
+gen log_county_pop = ln(county_pop)
+label variable log_county_pop "Log county population (Census ACS)"
+qui count if missing(log_county_pop)
+di "  log_county_pop: " r(N) " missing of " _N
+
+
+* ==========================================================================
 * STEP 4: Create elec_incumbent alias
 * ==========================================================================
 
@@ -225,7 +237,7 @@ local vars_caseload "incoming_felony pending_felony clearance_rate outgoing_felo
 local vars_disposition "fc_jury fh_jury fc_plea fh_plea fc_dismissed fh_dismissed"
 local vars_disp_rates "fc_jury_share fh_jury_share fc_dismiss_rate fh_dismiss_rate fc_plea_share fh_plea_share severity_share"
 local vars_adj "fc_jury_adj_share fc_plea_adj_share"
-local vars_other "county_id county year county_pop"
+local vars_other "county_id county year county_pop log_county_pop"
 
 local all_required "`vars_pipeline' `vars_rates' `vars_election' `vars_caseload' `vars_disposition' `vars_disp_rates' `vars_adj' `vars_other'"
 

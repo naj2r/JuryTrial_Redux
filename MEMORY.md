@@ -126,3 +126,9 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:stata] All regression panels should be built from ONE unified augmented dataset. Do NOT load different .dta files for different tables — fragile, bad for replication. Use `05b_build_augmented_panel.do` to merge all sources (pipeline, caseload, disposition, election) into `michigan_panel_B_augmented.dta`. Pipeline position: after 05 + 03d, before 06.
 
 [LEARN:tables] AER formatting standard: booktabs only (\toprule, \midrule, \bottomrule), no vertical lines, threeparttable for notes, SEs in parentheses below coefficients, stars (*p<0.10, **p<0.05, ***p<0.01), column headers (1)/(2)/(3), notes section with sample/specification/clustering description. Use siunitx S columns for decimal alignment when needed.
+
+[LEARN:humanizer] When updating humanizer patterns in agent/skill files, NEVER replace existing content. All updates must be ADDITIVE — append new categories and patterns AFTER the existing ones. Preserve every existing pattern, rule, and deduction. If the existing file has 4 categories with 24 patterns, the result must have those same 24 patterns PLUS any new ones. Merge, never substitute.
+
+[LEARN:voice] Reduce em-dashes. The user's writing voice does not overuse em-dashes. Claude-generated prose tends to insert em-dashes as parenthetical separators where commas or periods would be more natural. In placeholder text: max 2 em-dashes per paragraph. If a sentence already has an em-dash, the next parenthetical should use commas or a new sentence.
+
+[LEARN:results] Controlled specifications (incoming_felony + pending_felony + log_county_pop) produce ZERO meaningful shifts on any T2 headline result. FC Dismissal Rate, FC Jury Trial Rate, Severity Share, and all Δ values are identical to 3 decimal places across base, caseload, pop, and combined controls. The disposition shift is entirely control-invariant.
