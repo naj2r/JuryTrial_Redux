@@ -62,7 +62,7 @@ local grp4 "fc_plea fh_plea fc_dismissed fh_dismissed"
 
 * Group 5: Disposition rates & composition (caseload)
 local grp5_lbl "Disposition Rates and Composition"
-local grp5 "fc_jury_share fh_jury_share fc_plea_share fh_plea_share fc_dismiss_rate fh_dismiss_rate severity_share"
+local grp5 "fc_jury_share fh_jury_share fc_plea_share fh_plea_share fc_dismiss_rate fh_dismiss_rate severity_share fc_jury_adj_share fc_plea_adj_share fh_jury_adj_share fh_plea_adj_share"
 
 local all_outcomes "`grp1' `grp2' `grp3' `grp4' `grp5'"
 local n_groups = 5
@@ -93,6 +93,10 @@ local lbl_fh_plea_share               "FH Plea Rate"
 local lbl_fc_dismiss_rate             "FC Dismissal Rate"
 local lbl_fh_dismiss_rate             "FH Dismissal Rate"
 local lbl_severity_share              "Severity Share (FC/Total Jury)"
+local lbl_fc_jury_adj_share           "FC Jury Share (Adjud.)"
+local lbl_fc_plea_adj_share           "FC Plea Share (Adjud.)"
+local lbl_fh_jury_adj_share           "FH Jury Share (Adjud.)"
+local lbl_fh_plea_adj_share           "FH Plea Share (Adjud.)"
 
 * --- Star function ---
 capture program drop add_stars
