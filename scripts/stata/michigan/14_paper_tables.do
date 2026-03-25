@@ -1773,7 +1773,7 @@ foreach y of local key_outs {
             if `pval' < 0.01 local st "\sym{***}"
             else if `pval' < 0.05 local st "\sym{**}"
             else if `pval' < 0.10 local st "\sym{*}"
-            local cf : di %6.3f `bval'
+            local cf : di %7.4f `bval'
             file write t " & `=strtrim("`cf'")'`st'"
         }
         else file write t " & "
@@ -1786,7 +1786,7 @@ foreach y of local key_outs {
         qui summ se_con if model == "T2" & spec == "`ctrl'" & outcome == "`y'"
         if r(N) > 0 {
             local sval = r(mean)
-            local sf : di %6.3f `sval'
+            local sf : di %7.4f `sval'
             file write t " & (`=strtrim("`sf'")')"
         }
         else file write t " & "
@@ -1821,7 +1821,7 @@ foreach y of local key_outs {
             if `dpval' < 0.01 local st "\sym{***}"
             else if `dpval' < 0.05 local st "\sym{**}"
             else if `dpval' < 0.10 local st "\sym{*}"
-            local df : di %6.3f `dval'
+            local df : di %7.4f `dval'
             file write t " & `=strtrim("`df'")'`st'"
         }
         else file write t " & "
@@ -1833,7 +1833,7 @@ foreach y of local key_outs {
         qui summ delta_se if model == "T2" & spec == "`ctrl'" & outcome == "`y'"
         if r(N) > 0 {
             local dsval = r(mean)
-            local dsf : di %6.3f `dsval'
+            local dsf : di %7.4f `dsval'
             file write t " & (`=strtrim("`dsf'")')"
         }
         else file write t " & "
