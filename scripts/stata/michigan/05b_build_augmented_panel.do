@@ -141,6 +141,30 @@ foreach v in fc_jury fh_jury fc_plea fh_plea fc_dismissed fh_dismissed ///
 
 
 * ==========================================================================
+* STEP 3b: Drop deprecated jury dashboard verdict variables
+*   These came from the base panel but are UNRELIABLE for 2024:
+*   Power BI uses MIN() aggregation for capital_felony (reports 3 statewide
+*   vs 431 in the caseload data). All verdict/plea/dismissal analysis should
+*   use the caseload-sourced variables (fc_jury, fh_jury, etc.) instead.
+*   Dropping prevents accidental use of the broken variables.
+* ==========================================================================
+
+di _n "Step 3b: Dropping deprecated jury dashboard verdict variables..."
+
+local deprecated_vars "total_jury_verdicts capital_felony other_felony other_cases"
+local deprecated_vars "`deprecated_vars' pct_capital_felony pct_other_felony pct_other_cases"
+* Also drop per-10k versions if they exist
+local deprecated_vars "`deprecated_vars' total_jury_verdicts_p10k capital_felony_p10k other_felony_p10k other_cases_p10k"
+
+foreach v of local deprecated_vars {
+    capture drop `v'
+    if !_rc di "  Dropped: `v'"
+}
+
+di "  Use fc_jury, fh_jury, fc_plea, fc_dismissed, etc. (caseload-sourced) instead."
+
+
+* ==========================================================================
 * STEP 4: Create elec_incumbent alias
 * ==========================================================================
 
