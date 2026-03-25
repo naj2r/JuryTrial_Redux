@@ -65,6 +65,17 @@ Work through issues **in document order**. For each fix:
 - Convert informal references to proper keys
 - If paper isn't in bib, flag for addition
 
+### AI Pattern Avoidance
+When rewording copy-paste chunks, also strip documented AI giveaways in economics manuscripts (Feyzollahi & Rafizadeh 2025; Walther et al.):
+- Replace "underscores/underscore" with shows, confirms, supports, or is evidence that
+- Replace "serves as" with "is" where the meaning is equivalent
+- Replace trailing "-ing significance clauses" ("...highlighting the importance of...") with a direct declarative sentence
+- Replace "nuanced" with a specific qualifier
+- Do not use: intriguing, intertwined, garner, foster, tapestry, swiftly, leverage (figurative)
+- Break up rule-of-three patterns — not every list needs 3 items
+- Limit em dashes to 1-2 per paragraph
+- Do not use "not X but Y" reframe more than once per document
+
 ---
 
 ## Phase 3: Delegate

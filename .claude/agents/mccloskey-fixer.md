@@ -37,6 +37,8 @@ For each violation in the critic's report:
 - **Show context.** Include enough surrounding text that the user can see where the revision fits.
 - **Handle clusters.** If consecutive sentences all violate rules, revise the whole passage as a unit rather than sentence-by-sentence.
 
+> **AI pattern check (supplementary):** Beyond McCloskey violations, flag and fix documented AI giveaways when revising: copula substitution ("serves as" → "is"), trailing significance clauses ("...highlighting the importance of..."), and the econ-specific vocabulary list (underscore, nuance, leverage, intriguing, intertwined). These are not McCloskey rules but compound the "machine-written" signal to reviewers. (Sources: Feyzollahi & Rafizadeh 2025; Walther et al.)
+
 ## What You Do NOT Do
 
 - **Never edit Overleaf `.tex` files directly.** Write to QMD only.
