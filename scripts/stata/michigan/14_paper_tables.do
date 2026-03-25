@@ -914,6 +914,735 @@ restore
 di "Table A2 DONE: `fa2'"
 
 
+* =============================================================================
+* TABLE 4a/4b — HETEROGENEITY BY POPULATION (T2, high vs low pop)
+* =============================================================================
+
+di _n "{hline 72}"
+di "TABLE 4: HETEROGENEITY (pop split, T2 on 77 sync counties)"
+di "{hline 72}"
+
+* Get median population for the synchronized sample
+use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
+drop if open_pros == 1
+drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+
+* Compute county-level mean population, then find median
+bysort county_id: egen _mean_pop = mean(county_pop)
+qui summ _mean_pop, detail
+local med_pop = r(p50)
+di "Median county population: `med_pop'"
+
+gen highpop = (_mean_pop >= `med_pop')
+drop _mean_pop
+
+* Run T2 on each subsample, collect results
+tempname fh4
+tempfile het_csv
+file open `fh4' using "`het_csv'", write replace
+file write `fh4' "subsample,outcome,b_con,se_con,p_con,b_unc,se_unc,p_unc,delta,delta_se,delta_p,nobs" _n
+
+foreach sub in high low {
+    preserve
+    if "`sub'" == "high" keep if highpop == 1
+    if "`sub'" == "low"  keep if highpop == 0
+
+    foreach y of local all_outcomes {
+        capture qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(county_id year) vce(cluster county_id)
+        if !_rc {
+            local b1 = _b[treat_pros_contested_long]
+            local s1 = _se[treat_pros_contested_long]
+            local p1 = 2 * ttail(e(df_r), abs(`b1'/`s1'))
+            local b2 = _b[treat_pros_uncontested]
+            local s2 = _se[treat_pros_uncontested]
+            local p2 = 2 * ttail(e(df_r), abs(`b2'/`s2'))
+            qui lincom treat_pros_contested_long - treat_pros_uncontested
+            local d = r(estimate)
+            local ds = r(se)
+            local dp = 2 * ttail(e(df_r), abs(`d'/`ds'))
+            file write `fh4' "`sub',`y'," (`b1') "," (`s1') "," (`p1') "," (`b2') "," (`s2') "," (`p2') "," (`d') "," (`ds') "," (`dp') "," (e(N)) _n
+        }
+    }
+    restore
+}
+file close `fh4'
+
+* Build Table 4a (high pop) and 4b (low pop) from CSV
+preserve
+import delimited using "`het_csv'", clear
+
+* Restore from the CSV collection loop before starting table generation
+restore
+
+* --- Table 4a: HIGH POP — single coefficient (T2 collinear in this subsample) ---
+* In large counties, treat_pros_uncontested is collinear with county+year FE
+* because uncontested elections follow a predictable county×year pattern.
+* Use single-coefficient model: treat_pros_pressure (any incumbent election).
+
+local f4a "$TAB_DIR/table4a_het_highpop.tex"
+file open t using "`f4a'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Election Effects in Above-Median Population Counties}" _n
+file write t "\label{tab:table4a}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\footnotesize" _n
+file write t "\begin{tabular}{lcc}" _n
+file write t "\toprule" _n
+file write t `"Outcome & Coef & SE \\"' _n
+file write t "\midrule" _n
+
+use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
+drop if open_pros == 1
+drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+bysort county_id: egen _mean_pop = mean(county_pop)
+qui summ _mean_pop, detail
+local med = r(p50)
+keep if _mean_pop >= `med'
+
+local het_hi_outs "fc_jury_share fc_dismiss_rate fc_plea_share severity_share fh_jury_share fh_dismiss_rate utilization_rate"
+local lbl_fc_jury_share "FC Jury Trial Rate"
+local lbl_fc_dismiss_rate "FC Dismissal Rate"
+local lbl_fc_plea_share "FC Plea Rate"
+local lbl_severity_share "Severity Share"
+local lbl_fh_jury_share "FH Jury Trial Rate"
+local lbl_fh_dismiss_rate "FH Dismissal Rate"
+local lbl_utilization_rate "Utilization Rate"
+
+local het_n = 0
+foreach y of local het_hi_outs {
+    capture qui reghdfe `y' treat_pros_pressure, absorb(county_id year) vce(cluster county_id)
+    if !_rc {
+        local bval = _b[treat_pros_pressure]
+        local sval = _se[treat_pros_pressure]
+        local pval = 2 * ttail(e(df_r), abs(`bval'/`sval'))
+        if `het_n' == 0 local het_n = e(N)
+        local st ""
+        if `pval' < 0.01 local st "\sym{***}"
+        else if `pval' < 0.05 local st "\sym{**}"
+        else if `pval' < 0.10 local st "\sym{*}"
+        local is_rate = (strpos("`y'", "_share") > 0 | strpos("`y'", "_rate") > 0)
+        if `is_rate' {
+            local cf : di %6.3f `bval'
+            local sf : di %6.3f `sval'
+        }
+        else {
+            local cf : di %6.1f `bval'
+            local sf : di %6.1f `sval'
+        }
+        file write t "`lbl_`y'' & `=strtrim("`cf'")'`st' & (`=strtrim("`sf'")') \\" _n
+    }
+}
+
+file write t "\midrule" _n
+file write t "County FE & \multicolumn{2}{c}{Yes} \\" _n
+file write t "Year FE & \multicolumn{2}{c}{Yes} \\" _n
+file write t "Clustering & \multicolumn{2}{c}{County} \\" _n
+file write t "Observations & \multicolumn{2}{c}{`het_n'} \\" _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\footnotesize" _n
+file write t `"\item Single-coefficient model: \(\beta\) = incumbent election vs non-election years."' _n
+file write t `"\item Contestation decomposition not identified in large counties (uncontested"' _n
+file write t `"  collinear with county \(\times\) year FE). See Table~\ref{tab:table4b} for small-county decomposition."' _n
+file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
+file close t
+di "Table 4a DONE (single-coef): `f4a'"
+
+* --- Table 4b: LOW POP — full T2 decomposition ---
+* Now build the low-pop table from the CSV data collected earlier
+preserve
+import delimited using "`het_csv'", clear
+
+foreach sub in low {
+    local tbl_label "b"
+    local tbl_title "Below-Median Population Counties"
+    local tbl_ref "tab:table4b"
+
+    local f4 "$TAB_DIR/table4`tbl_label'_het_`sub'pop.tex"
+    file open t using "`f4'", write replace
+
+    file write t "\begin{table}[htbp]\centering" _n
+    file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+    file write t "\caption{Contestation and Case Outcomes: `tbl_title'}" _n
+    file write t "\label{`tbl_ref'}" _n
+    file write t "\begin{threeparttable}" _n
+    file write t "\footnotesize" _n
+    file write t "\begin{tabular}{lcccccc}" _n
+    file write t "\toprule" _n
+    file write t `" & \multicolumn{2}{c}{Contested} & \multicolumn{2}{c}{Uncontested} & \multicolumn{2}{c}{\(\Delta\) (Con \(-\) Unc)} \\"' _n
+    file write t `"\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}"' _n
+    file write t `"Outcome & Coef & SE & Coef & SE & \(\Delta\) & SE \\"' _n
+    file write t "\midrule" _n
+
+    * Key outcomes only for main paper version
+    local key_outcomes "fc_jury_share fc_dismiss_rate fc_plea_share severity_share fh_jury_share fh_dismiss_rate utilization_rate fc_jury fh_jury"
+
+    local grp1 "fc_jury_share fc_dismiss_rate fc_plea_share severity_share"
+    local grp2 "fh_jury_share fh_dismiss_rate"
+    local grp3 "utilization_rate fc_jury fh_jury"
+
+    local lbl_fc_jury_share "FC Jury Trial Rate"
+    local lbl_fc_dismiss_rate "FC Dismissal Rate"
+    local lbl_fc_plea_share "FC Plea Rate"
+    local lbl_severity_share "Severity Share"
+    local lbl_fh_jury_share "FH Jury Trial Rate"
+    local lbl_fh_dismiss_rate "FH Dismissal Rate"
+    local lbl_utilization_rate "Utilization Rate"
+    local lbl_fc_jury "FC Jury Verdicts"
+    local lbl_fh_jury "FH Jury Verdicts"
+
+    local panel_idx = 0
+    foreach grp_name in "FC Disposition" "FH Disposition" "Pipeline \& Verdicts" {
+        local panel_idx = `panel_idx' + 1
+        file write t "\multicolumn{7}{l}{\textit{`grp_name'}} \\[0.3em]" _n
+
+        if `panel_idx' == 1 local grp_vars "`grp1'"
+        if `panel_idx' == 2 local grp_vars "`grp2'"
+        if `panel_idx' == 3 local grp_vars "`grp3'"
+
+        foreach y of local grp_vars {
+            qui summ b_con if outcome == "`y'" & subsample == "`sub'"
+            if r(N) == 0 continue
+
+            * Use summarize (reliable) instead of levelsof (fragile for numerics)
+            qui summ b_con if outcome == "`y'" & subsample == "`sub'"
+            local bcon = r(mean)
+            qui summ se_con if outcome == "`y'" & subsample == "`sub'"
+            local secon = r(mean)
+            qui summ p_con if outcome == "`y'" & subsample == "`sub'"
+            local pcon = r(mean)
+            qui summ b_unc if outcome == "`y'" & subsample == "`sub'"
+            local bunc = r(mean)
+            qui summ se_unc if outcome == "`y'" & subsample == "`sub'"
+            local seunc = r(mean)
+            qui summ p_unc if outcome == "`y'" & subsample == "`sub'"
+            local punc = r(mean)
+            qui summ delta if outcome == "`y'" & subsample == "`sub'"
+            local dval = r(mean)
+            qui summ delta_se if outcome == "`y'" & subsample == "`sub'"
+            local dse = r(mean)
+            qui summ delta_p if outcome == "`y'" & subsample == "`sub'"
+            local dp = r(mean)
+
+            * Stars
+            local st_c ""
+            if `pcon' < 0.01 local st_c "\sym{***}"
+            else if `pcon' < 0.05 local st_c "\sym{**}"
+            else if `pcon' < 0.10 local st_c "\sym{*}"
+
+            local st_u ""
+            if `punc' < 0.01 local st_u "\sym{***}"
+            else if `punc' < 0.05 local st_u "\sym{**}"
+            else if `punc' < 0.10 local st_u "\sym{*}"
+
+            local st_d ""
+            if `dp' < 0.01 local st_d "\sym{***}"
+            else if `dp' < 0.05 local st_d "\sym{**}"
+            else if `dp' < 0.10 local st_d "\sym{*}"
+
+            * Format
+            local cf_c : di %6.3f `bcon'
+            local sf_c : di %6.3f `secon'
+            local cf_u : di %6.3f `bunc'
+            local sf_u : di %6.3f `seunc'
+            local df_d : di %6.3f `dval'
+            local sf_d : di %6.3f `dse'
+
+            file write t "`lbl_`y'' & `=strtrim("`cf_c'")'`st_c' & (`=strtrim("`sf_c'")') & `=strtrim("`cf_u'")'`st_u' & (`=strtrim("`sf_u'")') & `=strtrim("`df_d'")'`st_d' & (`=strtrim("`sf_d'")') \\" _n
+        }
+        file write t "\\[0.3em]" _n
+    }
+
+    * Footer
+    qui summ nobs if subsample == "`sub'" & outcome == "fc_jury_share"
+    local n4 = r(mean)
+    file write t "\midrule" _n
+    file write t "County FE & \multicolumn{6}{c}{Yes} \\" _n
+    file write t "Year FE & \multicolumn{6}{c}{Yes} \\" _n
+    file write t "Clustering & \multicolumn{6}{c}{County} \\" _n
+    file write t "Observations & \multicolumn{6}{c}{`n4'} \\" _n
+    file write t "\bottomrule" _n
+    file write t "\end{tabular}" _n
+    file write t "\begin{tablenotes}\footnotesize" _n
+    file write t `"\item 77 synchronized counties split at median population. Open seats and off-cycle counties excluded."' _n
+    file write t `"\item \(\Delta = \beta_1 - \beta_2\) via \texttt{lincom}. \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+    file write t "\end{tablenotes}" _n
+    file write t "\end{threeparttable}" _n
+    file write t "\end{table}" _n
+
+    file close t
+    di "Table 4`tbl_label' DONE: `f4'"
+}
+restore
+
+* =============================================================================
+* TABLE 6 — ROBUSTNESS SUMMARY (T2, key outcomes across sample variants)
+* =============================================================================
+
+di _n "{hline 72}"
+di "TABLE 6: ROBUSTNESS SUMMARY (T2 across sample variants)"
+di "{hline 72}"
+
+tempname fh6
+tempfile rob_csv
+file open `fh6' using "`rob_csv'", write replace
+file write `fh6' "variant,outcome,b_con,se_con,p_con,b_unc,se_unc,p_unc,delta,delta_se,delta_p,nobs" _n
+
+* Variant 1: Main (77 sync, open dropped)
+* Variant 2: All 83 counties + Wooldridge group x year FE
+* Variant 3: Drop 2016 cycle
+* Variant 4: Drop 2024 cycle
+
+foreach var_num in 1 2 3 4 {
+    use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
+    drop if open_pros == 1
+
+    if `var_num' == 1 {
+        drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+        local vname "Main (77 sync)"
+        local absrb "county_id year"
+    }
+    if `var_num' == 2 {
+        * Wooldridge: group x year FE
+        gen offcycle = inlist(county_id, 3, 37, 62, 66, 74, 21)
+        egen group_year = group(offcycle year)
+        local vname "Wooldridge (83)"
+        local absrb "county_id group_year"
+    }
+    if `var_num' == 3 {
+        drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+        drop if year == 2016
+        local vname "No 2016"
+        local absrb "county_id year"
+    }
+    if `var_num' == 4 {
+        drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+        drop if year == 2024
+        local vname "No 2024"
+        local absrb "county_id year"
+    }
+
+    foreach y of local all_outcomes {
+        capture qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(`absrb') vce(cluster county_id)
+        if !_rc {
+            local b1 = _b[treat_pros_contested_long]
+            local s1 = _se[treat_pros_contested_long]
+            local p1 = 2 * ttail(e(df_r), abs(`b1'/`s1'))
+            local b2 = _b[treat_pros_uncontested]
+            local s2 = _se[treat_pros_uncontested]
+            local p2 = 2 * ttail(e(df_r), abs(`b2'/`s2'))
+            qui lincom treat_pros_contested_long - treat_pros_uncontested
+            local d = r(estimate)
+            local ds = r(se)
+            local dp = 2 * ttail(e(df_r), abs(`d'/`ds'))
+            file write `fh6' "`vname',`y'," (`b1') "," (`s1') "," (`p1') "," (`b2') "," (`s2') "," (`p2') "," (`d') "," (`ds') "," (`dp') "," (e(N)) _n
+        }
+    }
+}
+file close `fh6'
+
+* Build LaTeX Table 6 — key outcomes only, Δ column across 4 variants
+preserve
+import delimited using "`rob_csv'", clear
+
+local f6 "$TAB_DIR/table6_robustness.tex"
+file open t using "`f6'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Robustness: Contestation Effects Across Sample Definitions}" _n
+file write t "\label{tab:table6}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\footnotesize" _n
+file write t "\begin{tabular}{lcccc}" _n
+file write t "\toprule" _n
+file write t `" & (1) & (2) & (3) & (4) \\"' _n
+file write t `" & Main & Wooldridge & No 2016 & No 2024 \\"' _n
+file write t `" & (77 sync) & (83, grp\(\times\)yr) & (77 sync) & (77 sync) \\"' _n
+file write t "\midrule" _n
+
+* For each key outcome, show Contested coefficient across 4 variants
+local key6 "fc_jury_share fc_dismiss_rate fc_plea_share severity_share utilization_rate fc_jury fh_jury"
+local lbl_fc_jury_share "FC Jury Trial Rate"
+local lbl_fc_dismiss_rate "FC Dismissal Rate"
+local lbl_fc_plea_share "FC Plea Rate"
+local lbl_severity_share "Severity Share"
+local lbl_utilization_rate "Utilization Rate"
+local lbl_fc_jury "FC Jury Verdicts"
+local lbl_fh_jury "FH Jury Verdicts"
+
+file write t "\multicolumn{5}{l}{\textit{Panel A: Contested coefficient (\(\beta_1\))}} \\[0.3em]" _n
+
+foreach y of local key6 {
+    file write t "`lbl_`y''"
+    foreach vname in "Main (77 sync)" "Wooldridge (83)" "No 2016" "No 2024" {
+        qui summ b_con if outcome == "`y'" & variant == "`vname'"
+        if r(N) > 0 {
+            local bval = r(mean)
+            qui summ se_con if outcome == "`y'" & variant == "`vname'"
+            local sval = r(mean)
+            qui summ p_con if outcome == "`y'" & variant == "`vname'"
+            local pval = r(mean)
+            local st ""
+            if `pval' < 0.01 local st "\sym{***}"
+            else if `pval' < 0.05 local st "\sym{**}"
+            else if `pval' < 0.10 local st "\sym{*}"
+            local cf : di %6.3f `bval'
+            local sf : di %6.3f `sval'
+            file write t " & `=strtrim("`cf'")'`st'"
+        }
+        else file write t " & "
+    }
+    file write t " \\" _n
+    * SE row
+    file write t " "
+    foreach vname in "Main (77 sync)" "Wooldridge (83)" "No 2016" "No 2024" {
+        qui summ se_con if outcome == "`y'" & variant == "`vname'"
+        if r(N) > 0 {
+            local sval = r(mean)
+            local sf : di %6.3f `sval'
+            file write t " & (`=strtrim("`sf'")')"
+        }
+        else file write t " & "
+    }
+    file write t " \\" _n
+}
+
+file write t "\\[0.5em]" _n
+file write t "\multicolumn{5}{l}{\textit{Panel B: \(\Delta\) (Contested \(-\) Uncontested)}} \\[0.3em]" _n
+
+foreach y of local key6 {
+    file write t "`lbl_`y''"
+    foreach vname in "Main (77 sync)" "Wooldridge (83)" "No 2016" "No 2024" {
+        qui summ delta if outcome == "`y'" & variant == "`vname'"
+        if r(N) > 0 {
+            local dval = r(mean)
+            qui summ delta_se if outcome == "`y'" & variant == "`vname'"
+            local dsval = r(mean)
+            qui summ delta_p if outcome == "`y'" & variant == "`vname'"
+            local dpval = r(mean)
+            local st ""
+            if `dpval' < 0.01 local st "\sym{***}"
+            else if `dpval' < 0.05 local st "\sym{**}"
+            else if `dpval' < 0.10 local st "\sym{*}"
+            local df : di %6.3f `dval'
+            local dsf : di %6.3f `dsval'
+            file write t " & `=strtrim("`df'")'`st'"
+        }
+        else file write t " & "
+    }
+    file write t " \\" _n
+    file write t " "
+    foreach vname in "Main (77 sync)" "Wooldridge (83)" "No 2016" "No 2024" {
+        qui summ delta_se if outcome == "`y'" & variant == "`vname'"
+        if r(N) > 0 {
+            local dsval = r(mean)
+            local dsf : di %6.3f `dsval'
+            file write t " & (`=strtrim("`dsf'")')"
+        }
+        else file write t " & "
+    }
+    file write t " \\" _n
+}
+
+file write t "\midrule" _n
+file write t "County FE & Yes & Yes & Yes & Yes \\" _n
+file write t `"Year FE & Yes & Grp\(\times\)Yr & Yes & Yes \\"' _n
+file write t "Off-cycle & Excl. & Incl. & Excl. & Excl. \\" _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\footnotesize" _n
+file write t `"\item Open seats excluded. \(\Delta = \beta_1 - \beta_2\) via \texttt{lincom}."' _n
+file write t `"\item Col (2) uses timing-group \(\times\) year FE (Wooldridge 2021)."' _n
+file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
+
+file close t
+restore
+di "Table 6 DONE: `f6'"
+
+
+* =============================================================================
+* TABLE 8 — FALSIFICATION (incoming caseload as DV)
+* =============================================================================
+
+di _n "{hline 72}"
+di "TABLE 8: FALSIFICATION (caseload DVs)"
+di "{hline 72}"
+
+* Augmented panel now has caseload vars (merged via 05b_build_augmented_panel.do)
+use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
+drop if open_pros == 1
+drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+
+local f8 "$TAB_DIR/table8_falsification.tex"
+file open t using "`f8'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Falsification: Criminal Caseload as Dependent Variable}" _n
+file write t "\label{tab:table8}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\begin{tabular}{lccc}" _n
+file write t "\toprule" _n
+file write t `" & (1) & (2) & (3) \\"' _n
+file write t `" & Incoming & Pending & Clearance \\"' _n
+file write t `" & Felonies & Felonies & Rate \\"' _n
+file write t "\midrule" _n
+
+* T2 on caseload DVs
+local falsif_dvs "incoming_felony pending_felony clearance_rate"
+local dv_idx = 0
+foreach dv of local falsif_dvs {
+    local dv_idx = `dv_idx' + 1
+    capture qui reghdfe `dv' treat_pros_contested_long treat_pros_uncontested, absorb(county_id year) vce(cluster county_id)
+    if !_rc {
+        local b1_`dv_idx' = _b[treat_pros_contested_long]
+        local s1_`dv_idx' = _se[treat_pros_contested_long]
+        local p1_`dv_idx' = 2 * ttail(e(df_r), abs(`b1_`dv_idx''/`s1_`dv_idx''))
+        local b2_`dv_idx' = _b[treat_pros_uncontested]
+        local s2_`dv_idx' = _se[treat_pros_uncontested]
+        local p2_`dv_idx' = 2 * ttail(e(df_r), abs(`b2_`dv_idx''/`s2_`dv_idx''))
+        qui lincom treat_pros_contested_long - treat_pros_uncontested
+        local d_`dv_idx' = r(estimate)
+        local ds_`dv_idx' = r(se)
+        local dp_`dv_idx' = 2 * ttail(e(df_r), abs(`d_`dv_idx''/`ds_`dv_idx''))
+        local n_`dv_idx' = e(N)
+    }
+    else {
+        local b1_`dv_idx' = .
+        local b2_`dv_idx' = .
+        local d_`dv_idx' = .
+        local n_`dv_idx' = 0
+    }
+}
+
+* Write rows: Contested, SE, Uncontested, SE, Delta, SE
+* Column 3 (clearance rate) needs 3 decimals; columns 1-2 (counts) need 1 decimal
+foreach coef_type in "Contested" "Uncontested" "Difference" {
+    if "`coef_type'" == "Contested" {
+        file write t "Contested"
+        forval i = 1/3 {
+            local st ""
+            if `p1_`i'' < 0.01 local st "\sym{***}"
+            else if `p1_`i'' < 0.05 local st "\sym{**}"
+            else if `p1_`i'' < 0.10 local st "\sym{*}"
+            if `i' == 3 local cf : di %6.3f `b1_`i''
+            else        local cf : di %6.1f `b1_`i''
+            file write t " & `=strtrim("`cf'")'`st'"
+        }
+        file write t " \\" _n
+        file write t " "
+        forval i = 1/3 {
+            if `i' == 3 local sf : di %6.3f `s1_`i''
+            else        local sf : di %6.1f `s1_`i''
+            file write t " & (`=strtrim("`sf'")')"
+        }
+        file write t " \\" _n
+    }
+    if "`coef_type'" == "Uncontested" {
+        file write t "Uncontested"
+        forval i = 1/3 {
+            local st ""
+            if `p2_`i'' < 0.01 local st "\sym{***}"
+            else if `p2_`i'' < 0.05 local st "\sym{**}"
+            else if `p2_`i'' < 0.10 local st "\sym{*}"
+            if `i' == 3 local cf : di %6.3f `b2_`i''
+            else        local cf : di %6.1f `b2_`i''
+            file write t " & `=strtrim("`cf'")'`st'"
+        }
+        file write t " \\" _n
+        file write t " "
+        forval i = 1/3 {
+            if `i' == 3 local sf : di %6.3f `s2_`i''
+            else        local sf : di %6.1f `s2_`i''
+            file write t " & (`=strtrim("`sf'")')"
+        }
+        file write t " \\" _n
+    }
+    if "`coef_type'" == "Difference" {
+        file write t `"\(\Delta\) (Con \(-\) Unc)"'
+        forval i = 1/3 {
+            local st ""
+            if `dp_`i'' < 0.01 local st "\sym{***}"
+            else if `dp_`i'' < 0.05 local st "\sym{**}"
+            else if `dp_`i'' < 0.10 local st "\sym{*}"
+            if `i' == 3 local cf : di %6.3f `d_`i''
+            else        local cf : di %6.1f `d_`i''
+            file write t " & `=strtrim("`cf'")'`st'"
+        }
+        file write t " \\" _n
+        file write t " "
+        forval i = 1/3 {
+            if `i' == 3 local sf : di %6.3f `ds_`i''
+            else        local sf : di %6.1f `ds_`i''
+            file write t " & (`=strtrim("`sf'")')"
+        }
+        file write t " \\" _n
+    }
+}
+
+file write t "\midrule" _n
+file write t "County FE & Yes & Yes & Yes \\" _n
+file write t "Year FE & Yes & Yes & Yes \\" _n
+file write t "Clustering & County & County & County \\" _n
+file write t `"Observations & `n_1' & `n_2' & `n_3' \\"' _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\footnotesize" _n
+file write t `"\item Caseload variables from SCAO. 77 synchronized counties, open seats excluded."' _n
+file write t `"\item Incoming = new circuit court felony filings. Pending = stock of unresolved cases."' _n
+file write t `"\item Clearance rate = outgoing/incoming. Null results rule out demand-side confounds."' _n
+file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
+
+file close t
+di "Table 8 DONE: `f8'"
+
+
+* =============================================================================
+* TABLE A4 — T5 WITHIN-ELECTION (appendix, incumbent vs open seat)
+* =============================================================================
+
+di _n "{hline 72}"
+di "TABLE A4: T5 WITHIN-ELECTION (election years only)"
+di "{hline 72}"
+
+use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
+* Restrict to election years
+keep if is_election_year_pros == 1 | open_pros == 1
+
+local fA4 "$TAB_DIR/tableA4_within_election.tex"
+file open t using "`fA4'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Within-Election Comparison: Incumbent vs Open Seat (Descriptive)}" _n
+file write t "\label{tab:tableA4}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\footnotesize" _n
+file write t "\begin{tabular}{lccc}" _n
+file write t "\toprule" _n
+file write t `"Outcome & Coef & SE & N \\"' _n
+file write t "\midrule" _n
+
+local t5_outcomes "fc_jury_share fc_dismiss_rate fc_plea_share severity_share fh_jury_share fh_dismiss_rate utilization_rate fc_jury fh_jury actually_reported pct_told_to_report"
+
+foreach y of local t5_outcomes {
+    capture qui reghdfe `y' treat_pros_pressure, absorb(county_id year) vce(cluster county_id)
+    if !_rc {
+        local bval = _b[treat_pros_pressure]
+        local sval = _se[treat_pros_pressure]
+        local pval = 2 * ttail(e(df_r), abs(`bval'/`sval'))
+        local nval = e(N)
+        local st ""
+        if `pval' < 0.01 local st "\sym{***}"
+        else if `pval' < 0.05 local st "\sym{**}"
+        else if `pval' < 0.10 local st "\sym{*}"
+        local cf : di %6.3f `bval'
+        local sf : di %6.3f `sval'
+        file write t "`lbl_`y'' & `=strtrim("`cf'")'`st' & (`=strtrim("`sf'")') & `nval' \\" _n
+    }
+}
+
+file write t "\midrule" _n
+file write t "County FE & \multicolumn{3}{c}{Yes} \\" _n
+file write t "Year FE & \multicolumn{3}{c}{Yes} \\" _n
+file write t "Clustering & \multicolumn{3}{c}{County} \\" _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\footnotesize" _n
+file write t `"\item Sample restricted to election years only. Omitted: open-seat elections."' _n
+file write t `"\item \(\beta\) = effect of incumbent running vs open seat. \(\approx\)170 obs (26 open-seat county-years)."' _n
+file write t `"\item Exploratory --- small open-seat sample limits credibility."' _n
+file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
+
+file close t
+di "Table A4 DONE: `fA4'"
+
+
+* =============================================================================
+* WILD CLUSTER BOOTSTRAP — T2 headline results
+* =============================================================================
+
+di _n "{hline 72}"
+di "BOOTTEST: Wild cluster bootstrap for T2 headline results"
+di "{hline 72}"
+
+* Check if boottest is installed
+capture which boottest
+if _rc {
+    di as error "boottest not installed — skipping bootstrap. Install with: ssc install boottest"
+}
+else {
+    use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
+    drop if open_pros == 1
+    drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
+
+    * Save bootstrap p-values to CSV
+    tempname fhbt
+    local fbt "$RES_DIR/mi_boottest_results.csv"
+    file open `fhbt' using "`fbt'", write replace
+    file write `fhbt' "outcome,treatment,beta,se,p_cluster,p_boot,nobs" _n
+
+    local boot_outcomes "fc_jury_share fc_dismiss_rate fc_plea_share severity_share utilization_rate fc_jury fh_jury"
+
+    foreach y of local boot_outcomes {
+        di "  Bootstrapping: `y'"
+        capture qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(county_id year) vce(cluster county_id)
+        if !_rc {
+            local nval = e(N)
+
+            * Contested coefficient
+            local b1 = _b[treat_pros_contested_long]
+            local s1 = _se[treat_pros_contested_long]
+            local p1 = 2 * ttail(e(df_r), abs(`b1'/`s1'))
+            capture boottest treat_pros_contested_long, cluster(county_id) reps(999) seed(42) noci quietly
+            if !_rc {
+                local pb1 = r(p)
+            }
+            else local pb1 = .
+            file write `fhbt' "`y',contested," (`b1') "," (`s1') "," (`p1') "," (`pb1') "," (`nval') _n
+
+            * Uncontested coefficient
+            local b2 = _b[treat_pros_uncontested]
+            local s2 = _se[treat_pros_uncontested]
+            local p2 = 2 * ttail(e(df_r), abs(`b2'/`s2'))
+            capture boottest treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci quietly
+            if !_rc {
+                local pb2 = r(p)
+            }
+            else local pb2 = .
+            file write `fhbt' "`y',uncontested," (`b2') "," (`s2') "," (`p2') "," (`pb2') "," (`nval') _n
+
+            * Delta test
+            capture boottest treat_pros_contested_long - treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci quietly
+            if !_rc {
+                local pbd = r(p)
+            }
+            else local pbd = .
+            qui lincom treat_pros_contested_long - treat_pros_uncontested
+            file write `fhbt' "`y',delta," (r(estimate)) "," (r(se)) "," (2*ttail(e(df_r),abs(r(estimate)/r(se)))) "," (`pbd') "," (`nval') _n
+        }
+    }
+
+    file close `fhbt'
+    di "Boottest results saved to: `fbt'"
+}
+
+
 di _n "========================================"
 di "  ALL TABLES DONE"
 di "========================================"

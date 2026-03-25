@@ -120,3 +120,9 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:identification] FC dismissal rate (-13.6pp***) is the strongest individual result. Both contested and uncontested produce identical drops (Δ = 0.000). FH dismissal rate increases under contestation only (+2.9pp**) — contested prosecutors triage non-capital cases.
 
 [LEARN:git] Always use SSH for git remotes, not HTTPS. SSH key exists at ~/.ssh/id_ed25519 and is authenticated with GitHub (naj2r). When setting up a new repo or encountering OAuth popups, run: `git remote set-url origin git@github.com:naj2r/REPO.git`
+
+[LEARN:stata] NEVER use `levelsof` to extract numeric values from a dataset into locals. `levelsof` is for string/categorical values. For numeric extraction from a single-row filter, use `qui summ varname if condition` then `local val = r(mean)`. The `levelsof` approach causes `<0.01 invalid name` errors when the local is empty or when Stata tries to parse a numeric literal as a name.
+
+[LEARN:stata] All regression panels should be built from ONE unified augmented dataset. Do NOT load different .dta files for different tables — fragile, bad for replication. Use `05b_build_augmented_panel.do` to merge all sources (pipeline, caseload, disposition, election) into `michigan_panel_B_augmented.dta`. Pipeline position: after 05 + 03d, before 06.
+
+[LEARN:tables] AER formatting standard: booktabs only (\toprule, \midrule, \bottomrule), no vertical lines, threeparttable for notes, SEs in parentheses below coefficients, stars (*p<0.10, **p<0.05, ***p<0.01), column headers (1)/(2)/(3), notes section with sample/specification/clustering description. Use siunitx S columns for decimal alignment when needed.
