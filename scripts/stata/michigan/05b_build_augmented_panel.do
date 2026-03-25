@@ -165,6 +165,38 @@ di "  Use fc_jury, fh_jury, fc_plea, fc_dismissed, etc. (caseload-sourced) inste
 
 
 * ==========================================================================
+* STEP 3c: Compute adjudicated shares (jury + bench + plea denominator)
+*   These exclude dismissals from the denominator, focusing on the
+*   plea-trial margin: among cases that proceed to resolution, what
+*   share goes to jury trial vs plea?
+* ==========================================================================
+
+di _n "Step 3c: Computing adjudicated shares..."
+
+* FC adjudicated = jury + bench + plea (excluding dismissals)
+capture gen fc_adjudicated = fc_jury + fc_bench + fc_plea
+capture gen fh_adjudicated = fh_jury + fh_bench + fh_plea
+
+* FC jury share among adjudicated cases
+capture gen fc_jury_adj_share = fc_jury / fc_adjudicated if fc_adjudicated > 0
+capture gen fc_plea_adj_share = fc_plea / fc_adjudicated if fc_adjudicated > 0
+
+* FH jury share among adjudicated cases
+capture gen fh_jury_adj_share = fh_jury / fh_adjudicated if fh_adjudicated > 0
+capture gen fh_plea_adj_share = fh_plea / fh_adjudicated if fh_adjudicated > 0
+
+label variable fc_jury_adj_share "FC jury share among adjudicated (excl. dismissals)"
+label variable fc_plea_adj_share "FC plea share among adjudicated (excl. dismissals)"
+label variable fh_jury_adj_share "FH jury share among adjudicated (excl. dismissals)"
+label variable fh_plea_adj_share "FH plea share among adjudicated (excl. dismissals)"
+
+foreach v in fc_jury_adj_share fc_plea_adj_share fh_jury_adj_share fh_plea_adj_share {
+    qui count if !missing(`v')
+    di "  `v': " r(N) " non-missing of " _N
+}
+
+
+* ==========================================================================
 * STEP 4: Create elec_incumbent alias
 * ==========================================================================
 
