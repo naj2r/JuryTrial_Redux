@@ -146,13 +146,14 @@ di "{hline 72}"
 use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
 di "Full B augmented: " _N
 
-local f "$TAB_DIR/table1_baseline.tex"
+* --- Table 1a: Pipeline + Verdicts ---
+local f "$TAB_DIR/table1a_baseline_pipeline.tex"
 file open t using "`f'", write replace
 
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
-file write t "\caption{Baseline Election Effect (T0)}" _n
-file write t "\label{tab:table1}" _n
+file write t "\caption{Baseline Election Effect: Pipeline and Verdicts}" _n
+file write t "\label{tab:table1a}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\footnotesize" _n
 file write t "\begin{tabular}{lccccc}" _n
@@ -162,7 +163,8 @@ file write t `"\cmidrule(lr){2-3} \cmidrule(lr){4-5}"' _n
 file write t `"Outcome & Coef & SE & Coef & SE & \(N\) \\"' _n
 file write t "\midrule" _n
 
-forvalues g = 1/`n_groups' {
+* --- Write groups 1-3 (pipeline + verdicts) into Table 1a ---
+forvalues g = 1/3 {
     if `g' > 1 {
         file write t "\\[-0.3em]" _n
     }
@@ -210,15 +212,86 @@ file write t "\begin{tablenotes}\scriptsize" _n
 file write t `"\item \textit{Notes.} \(Y_{ct} = \beta_1 \cdot \text{IncumbentElec}_{ct} + \beta_2 \cdot \text{OpenSeat}_{ct} + \alpha_c + \varepsilon_{ct}\)."' _n
 file write t `"\item County FE only (no year FE). SEs clustered at county level."' _n
 file write t `"\item IncumbentElec and OpenSeat are mutually exclusive; omitted = non-election years."' _n
-file write t `"\item Pipeline variables from SCAO jury dashboard. Verdict/plea/dismissal from SCAO outgoing caseload dashboard."' _n
-file write t `"\item See Table~\ref{tab:tableA1} for sample restriction sensitivity."' _n
+file write t `"\item Pipeline from SCAO jury dashboard. Verdicts from SCAO outgoing caseload dashboard."' _n
+file write t `"\item Continued in Table~\ref{tab:table1b}. Sensitivity in Table~\ref{tab:tableA1}."' _n
 file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
 file write t "\end{tablenotes}" _n
 file write t "\end{threeparttable}" _n
 file write t "\end{table}" _n
-
 file close t
-di "Table 1 DONE: `f'"
+di "Table 1a DONE: `f'"
+
+* --- Table 1b: Pleas + Disposition Rates ---
+local f1b "$TAB_DIR/table1b_baseline_disposition.tex"
+file open t using "`f1b'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Baseline Election Effect: Case Disposition}" _n
+file write t "\label{tab:table1b}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\footnotesize" _n
+file write t "\begin{tabular}{lccccc}" _n
+file write t "\toprule" _n
+file write t `" & \multicolumn{2}{c}{Incumbent Election} & \multicolumn{2}{c}{Open Seat} & \\"' _n
+file write t `"\cmidrule(lr){2-3} \cmidrule(lr){4-5}"' _n
+file write t `"Outcome & Coef & SE & Coef & SE & \(N\) \\"' _n
+file write t "\midrule" _n
+
+forvalues g = 4/`n_groups' {
+    if `g' > 4 {
+        file write t "\\[-0.3em]" _n
+    }
+    file write t "\multicolumn{6}{l}{\textit{`grp`g'_lbl'}} \\[0.3em]" _n
+
+    foreach y of local grp`g' {
+        capture qui reghdfe `y' elec_incumbent open_pros, absorb(county_id) vce(cluster county_id)
+        if _rc {
+            di "  SKIP `y' (not in data or collinear)"
+            continue
+        }
+        local b1 = _b[elec_incumbent]
+        local se1 = _se[elec_incumbent]
+        local p1 = 2 * ttail(e(df_r), abs(`b1'/`se1'))
+        local b2 = _b[open_pros]
+        local se2 = _se[open_pros]
+        local p2 = 2 * ttail(e(df_r), abs(`b2'/`se2'))
+        local n = e(N)
+
+        add_stars `p1'
+        local st1 "`r(stars)'"
+        add_stars `p2'
+        local st2 "`r(stars)'"
+
+        fmt_coef `b1' `y'
+        local b1f "`r(formatted)'"
+        fmt_coef `se1' `y'
+        local se1f "`r(formatted)'"
+        fmt_coef `b2' `y'
+        local b2f "`r(formatted)'"
+        fmt_coef `se2' `y'
+        local se2f "`r(formatted)'"
+
+        file write t "`lbl_`y'' & `b1f'`st1' & (`se1f') & `b2f'`st2' & (`se2f') & `n' \\" _n
+    }
+}
+
+file write t "\midrule" _n
+file write t `"County FE & \multicolumn{5}{c}{Yes} \\"' _n
+file write t `"Year FE & \multicolumn{5}{c}{No} \\"' _n
+file write t `"Clustering & \multicolumn{5}{c}{County} \\"' _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\scriptsize" _n
+file write t `"\item \textit{Notes.} Same specification as Table~\ref{tab:table1a}."' _n
+file write t `"\item Plea/dismissal from SCAO outgoing caseload dashboard."' _n
+file write t `"\item Adjudicated shares use denominator = jury + bench + plea (excludes dismissals)."' _n
+file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
+file close t
+di "Table 1b DONE: `f1b'"
 
 
 * =============================================================================
@@ -234,13 +307,14 @@ drop if open_pros == 1
 drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
 di "T2 primary: " _N
 
-local f "$TAB_DIR/table2_contestation.tex"
+* --- Table 2a: Pipeline + Verdicts ---
+local f "$TAB_DIR/table2a_contestation_pipeline.tex"
 file open t using "`f'", write replace
 
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
-file write t "\caption{Effect of Electoral Contestation on Jury and Case Outcomes}" _n
-file write t "\label{tab:table2}" _n
+file write t "\caption{Electoral Contestation: Pipeline and Verdicts}" _n
+file write t "\label{tab:table2a}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\footnotesize" _n
 file write t "\begin{tabular}{lccccccc}" _n
@@ -250,8 +324,97 @@ file write t `"\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}"' _n
 file write t `"Outcome & Coef & SE & Coef & SE & \(\Delta\) & SE & \(N\) \\"' _n
 file write t "\midrule" _n
 
-forvalues g = 1/`n_groups' {
+* --- Write groups 1-3 into Table 2a ---
+forvalues g = 1/3 {
     if `g' > 1 {
+        file write t "\\[-0.3em]" _n
+    }
+    file write t "\multicolumn{8}{l}{\textit{`grp`g'_lbl'}} \\[0.3em]" _n
+
+    foreach y of local grp`g' {
+        capture qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, ///
+            absorb(county_id year) vce(cluster county_id)
+        if _rc {
+            di "  SKIP `y'"
+            continue
+        }
+        local b1 = _b[treat_pros_contested_long]
+        local se1 = _se[treat_pros_contested_long]
+        local p1 = 2 * ttail(e(df_r), abs(`b1'/`se1'))
+        local b2 = _b[treat_pros_uncontested]
+        local se2 = _se[treat_pros_uncontested]
+        local p2 = 2 * ttail(e(df_r), abs(`b2'/`se2'))
+        local n = e(N)
+
+        qui lincom treat_pros_contested_long - treat_pros_uncontested
+        local d = r(estimate)
+        local dse = r(se)
+        local dp = 2 * ttail(e(df_r), abs(`d'/`dse'))
+
+        add_stars `p1'
+        local st1 "`r(stars)'"
+        add_stars `p2'
+        local st2 "`r(stars)'"
+        add_stars `dp'
+        local std "`r(stars)'"
+
+        fmt_coef `b1' `y'
+        local b1f "`r(formatted)'"
+        fmt_coef `se1' `y'
+        local se1f "`r(formatted)'"
+        fmt_coef `b2' `y'
+        local b2f "`r(formatted)'"
+        fmt_coef `se2' `y'
+        local se2f "`r(formatted)'"
+        fmt_coef `d' `y'
+        local df "`r(formatted)'"
+        fmt_coef `dse' `y'
+        local dsef "`r(formatted)'"
+
+        file write t "`lbl_`y'' & `b1f'`st1' & (`se1f') & `b2f'`st2' & (`se2f') & `df'`std' & (`dsef') & `n' \\" _n
+    }
+}
+
+file write t "\midrule" _n
+file write t `"County FE & \multicolumn{7}{c}{Yes} \\"' _n
+file write t `"Year FE & \multicolumn{7}{c}{Yes} \\"' _n
+file write t `"Clustering & \multicolumn{7}{c}{County} \\"' _n
+file write t `"Off-cycle counties & \multicolumn{7}{c}{Excluded} \\"' _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\scriptsize" _n
+file write t `"\item \textit{Notes.} \(Y_{ct} = \beta_1 \cdot \text{Contested}_{ct} + \beta_2 \cdot \text{Uncontested}_{ct} + \alpha_c + \gamma_t + \varepsilon_{ct}\)."' _n
+file write t `"\item 77 synchronized counties. Open seats and 6 off-cycle counties excluded."' _n
+file write t `"\item \(\Delta = \beta_1 - \beta_2\) via \texttt{lincom} (covariance-adjusted)."' _n
+file write t `"\item Pipeline from SCAO jury dashboard. Verdicts from SCAO outgoing caseload dashboard."' _n
+file write t `"\item Continued in Table~\ref{tab:table2b}. \(\Delta\) robustness in Appendix Table~\ref{tab:tableA3}."' _n
+file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
+file close t
+di "Table 2a DONE: `f'"
+
+* --- Table 2b: Pleas + Disposition Rates ---
+local f2b "$TAB_DIR/table2b_contestation_disposition.tex"
+file open t using "`f2b'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Electoral Contestation: Case Disposition}" _n
+file write t "\label{tab:table2b}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\footnotesize" _n
+file write t "\begin{tabular}{lccccccc}" _n
+file write t "\toprule" _n
+file write t `" & \multicolumn{2}{c}{Contested} & \multicolumn{2}{c}{Uncontested} & \multicolumn{2}{c}{\(\Delta\) (Con \(-\) Unc)} & \\"' _n
+file write t `"\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}"' _n
+file write t `"Outcome & Coef & SE & Coef & SE & \(\Delta\) & SE & \(N\) \\"' _n
+file write t "\midrule" _n
+
+* --- Write groups 4-5 into Table 2b ---
+forvalues g = 4/`n_groups' {
+    if `g' > 4 {
         file write t "\\[-0.3em]" _n
     }
     file write t "\multicolumn{8}{l}{\textit{`grp`g'_lbl'}} \\[0.3em]" _n
@@ -379,13 +542,13 @@ file close `fh2b'
 preserve
 import delimited using "`delta_csv'", clear
 
-local f2b "$TAB_DIR/table2b_delta_robustness.tex"
-file open t using "`f2b'", write replace
+local fA3 "$TAB_DIR/tableA3_delta_robustness.tex"
+file open t using "`fA3'", write replace
 
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t `"\caption{Contestation Differential \(\Delta\): Specification Robustness}"' _n
-file write t "\label{tab:table2b}" _n
+file write t "\label{tab:tableA3}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\scriptsize" _n
 file write t "\begin{tabular}{lccc}" _n
