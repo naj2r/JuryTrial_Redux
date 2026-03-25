@@ -118,3 +118,5 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:identification] Δ ≈ 0 on disposition margins (FC jury trial rate, FC dismissal rate) distinguishes competence-maintenance from voter-signaling (McCannon). McCannon predicts Δ > 0 (more behavior change when challenged). Our finding: Δ = 0 — the election cycle itself is sufficient, regardless of challenger presence. This is a distinct theoretical contribution.
 
 [LEARN:identification] FC dismissal rate (-13.6pp***) is the strongest individual result. Both contested and uncontested produce identical drops (Δ = 0.000). FH dismissal rate increases under contestation only (+2.9pp**) — contested prosecutors triage non-capital cases.
+
+[LEARN:git] Always use SSH for git remotes, not HTTPS. SSH key exists at ~/.ssh/id_ed25519 and is authenticated with GitHub (naj2r). When setting up a new repo or encountering OAuth popups, run: `git remote set-url origin git@github.com:naj2r/REPO.git`
