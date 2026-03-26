@@ -1746,12 +1746,13 @@ else {
             local ds = r(se)
             local dp = 2 * ttail(e(df_r), abs(`d'/`ds'))
 
+            * Delta bootstrap: use constraint syntax (parentheses) for linear combination
             local pbd_null = .
-            capture boottest treat_pros_contested_long - treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci quietly
+            capture boottest (treat_pros_contested_long - treat_pros_uncontested = 0), cluster(county_id) reps(999) seed(42) noci quietly
             if !_rc local pbd_null = r(p)
 
             local pbd_nonull = .
-            capture boottest treat_pros_contested_long - treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci nonull quietly
+            capture boottest (treat_pros_contested_long - treat_pros_uncontested = 0), cluster(county_id) reps(999) seed(42) noci nonull quietly
             if !_rc local pbd_nonull = r(p)
 
             file write `fhbt' "`y',delta," (`d') "," (`ds') "," (`dp') "," (`pbd_null') "," (`pbd_nonull') "," (`nval') _n
