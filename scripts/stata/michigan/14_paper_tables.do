@@ -258,6 +258,8 @@ file write t `"\cmidrule(lr){2-3} \cmidrule(lr){4-5}"' _n
 file write t `"Outcome & Coef & SE & Coef & SE & \(N\) \\"' _n
 file write t "\midrule" _n
 
+local r2_min_1b = 1
+local r2_max_1b = 0
 forvalues g = 4/`n_groups' {
     if `g' > 4 {
         file write t "\\[-0.3em]" _n
@@ -277,6 +279,9 @@ forvalues g = 4/`n_groups' {
         local se2 = _se[open_pros]
         local p2 = 2 * ttail(e(df_r), abs(`b2'/`se2'))
         local n = e(N)
+        local r2w = e(r2_within)
+        if `r2w' < `r2_min_1b' local r2_min_1b = `r2w'
+        if `r2w' > `r2_max_1b' local r2_max_1b = `r2w'
 
         add_stars `p1'
         local st1 "`r(stars)'"
@@ -300,6 +305,9 @@ file write t "\midrule" _n
 file write t `"County FE & \multicolumn{5}{c}{Yes} \\"' _n
 file write t `"Year FE & \multicolumn{5}{c}{No} \\"' _n
 file write t `"Clustering & \multicolumn{5}{c}{County} \\"' _n
+local r2f_lo : di %5.3f `r2_min_1b'
+local r2f_hi : di %5.3f `r2_max_1b'
+file write t `"Within-\(R^2\) range & \multicolumn{5}{c}{[`=strtrim("`r2f_lo'")', `=strtrim("`r2f_hi'")']} \\"' _n
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\scriptsize" _n
@@ -345,6 +353,8 @@ file write t `"Outcome & Coef & SE & Coef & SE & \(\Delta\) & SE & \(N\) \\"' _n
 file write t "\midrule" _n
 
 * --- Write groups 1-3 into Table 2a ---
+local r2_min_2a = 1
+local r2_max_2a = 0
 forvalues g = 1/3 {
     if `g' > 1 {
         file write t "\\[-0.3em]" _n
@@ -358,6 +368,9 @@ forvalues g = 1/3 {
             di "  SKIP `y'"
             continue
         }
+        local r2w = e(r2_within)
+        if `r2w' < `r2_min_2a' local r2_min_2a = `r2w'
+        if `r2w' > `r2_max_2a' local r2_max_2a = `r2w'
         local b1 = _b[treat_pros_contested_long]
         local se1 = _se[treat_pros_contested_long]
         local p1 = 2 * ttail(e(df_r), abs(`b1'/`se1'))
@@ -400,6 +413,9 @@ file write t `"County FE & \multicolumn{7}{c}{Yes} \\"' _n
 file write t `"Year FE & \multicolumn{7}{c}{Yes} \\"' _n
 file write t `"Clustering & \multicolumn{7}{c}{County} \\"' _n
 file write t `"Off-cycle counties & \multicolumn{7}{c}{Excluded} \\"' _n
+local r2f_lo : di %5.3f `r2_min_2a'
+local r2f_hi : di %5.3f `r2_max_2a'
+file write t `"Within-\(R^2\) range & \multicolumn{7}{c}{[`=strtrim("`r2f_lo'")', `=strtrim("`r2f_hi'")']} \\"' _n
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\scriptsize" _n
@@ -407,7 +423,7 @@ file write t `"\item \textit{Notes.} Specification~\eqref{eq:T2}: \(Y_{ct} = \be
 file write t `"\item 77 synchronized counties. Open seats and 6 off-cycle counties excluded."' _n
 file write t `"\item \(\Delta = \beta_1 - \beta_2\) via \texttt{lincom} (covariance-adjusted)."' _n
 file write t `"\item Pipeline from SCAO jury dashboard. Verdicts from SCAO outgoing caseload dashboard."' _n
-file write t `"\item Continued in Table~\ref{tab:table2b}. \(\Delta\) robustness in Appendix Table~\ref{tab:tableA3}."' _n
+file write t `"\item Continued in Table~\ref{tab:t2-disposition}. \(\Delta\) robustness in Appendix Table~\ref{tab:delta-robust}."' _n
 file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
 file write t "\end{tablenotes}" _n
 file write t "\end{threeparttable}" _n
@@ -433,6 +449,8 @@ file write t `"Outcome & Coef & SE & Coef & SE & \(\Delta\) & SE & \(N\) \\"' _n
 file write t "\midrule" _n
 
 * --- Write groups 4-5 into Table 2b ---
+local r2_min_2b = 1
+local r2_max_2b = 0
 forvalues g = 4/`n_groups' {
     if `g' > 4 {
         file write t "\\[-0.3em]" _n
@@ -446,6 +464,9 @@ forvalues g = 4/`n_groups' {
             di "  SKIP `y'"
             continue
         }
+        local r2w = e(r2_within)
+        if `r2w' < `r2_min_2b' local r2_min_2b = `r2w'
+        if `r2w' > `r2_max_2b' local r2_max_2b = `r2w'
         local b1 = _b[treat_pros_contested_long]
         local se1 = _se[treat_pros_contested_long]
         local p1 = 2 * ttail(e(df_r), abs(`b1'/`se1'))
@@ -488,6 +509,9 @@ file write t `"County FE & \multicolumn{7}{c}{Yes} \\"' _n
 file write t `"Year FE & \multicolumn{7}{c}{Yes} \\"' _n
 file write t `"Clustering & \multicolumn{7}{c}{County} \\"' _n
 file write t `"Off-cycle counties & \multicolumn{7}{c}{Excluded} \\"' _n
+local r2f_lo : di %5.3f `r2_min_2b'
+local r2f_hi : di %5.3f `r2_max_2b'
+file write t `"Within-\(R^2\) range & \multicolumn{7}{c}{[`=strtrim("`r2f_lo'")', `=strtrim("`r2f_hi'")']} \\"' _n
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\scriptsize" _n
@@ -1009,6 +1033,9 @@ tempfile het_csv
 file open `fh4' using "`het_csv'", write replace
 file write `fh4' "subsample,outcome,b_con,se_con,p_con,b_unc,se_unc,p_unc,delta,delta_se,delta_p,nobs" _n
 
+local r2_min_4b = 1
+local r2_max_4b = 0
+
 foreach sub in high low {
     preserve
     if "`sub'" == "high" keep if highpop == 1
@@ -1017,6 +1044,11 @@ foreach sub in high low {
     foreach y of local all_outcomes {
         capture qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(county_id year) vce(cluster county_id)
         if !_rc {
+            if "`sub'" == "low" {
+                local r2w = e(r2_within)
+                if `r2w' < `r2_min_4b' local r2_min_4b = `r2w'
+                if `r2w' > `r2_max_4b' local r2_max_4b = `r2w'
+            }
             local b1 = _b[treat_pros_contested_long]
             local s1 = _se[treat_pros_contested_long]
             local p1 = 2 * ttail(e(df_r), abs(`b1'/`s1'))
@@ -1233,6 +1265,9 @@ foreach sub in low {
     file write t "Year FE & \multicolumn{6}{c}{Yes} \\" _n
     file write t "Clustering & \multicolumn{6}{c}{County} \\" _n
     file write t "Observations & \multicolumn{6}{c}{`n4'} \\" _n
+    local r2f_lo : di %5.3f `r2_min_4b'
+    local r2f_hi : di %5.3f `r2_max_4b'
+    file write t `"Within-\(R^2\) range & \multicolumn{6}{c}{[`=strtrim("`r2f_lo'")', `=strtrim("`r2f_hi'")']} \\"' _n
     file write t "\bottomrule" _n
     file write t "\end{tabular}" _n
     file write t "\begin{tablenotes}\footnotesize" _n
@@ -1264,6 +1299,9 @@ file write `fh6' "variant,outcome,b_con,se_con,p_con,b_unc,se_unc,p_unc,delta,de
 * Variant 2: All 83 counties + Wooldridge group x year FE
 * Variant 3: Drop 2016 cycle
 * Variant 4: Drop 2024 cycle
+
+local r2_min_6 = 1
+local r2_max_6 = 0
 
 foreach var_num in 1 2 3 4 {
     use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
@@ -1297,6 +1335,9 @@ foreach var_num in 1 2 3 4 {
     foreach y of local all_outcomes {
         capture qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(`absrb') vce(cluster county_id)
         if !_rc {
+            local r2w = e(r2_within)
+            if `r2w' < `r2_min_6' local r2_min_6 = `r2w'
+            if `r2w' > `r2_max_6' local r2_max_6 = `r2w'
             local b1 = _b[treat_pros_contested_long]
             local s1 = _se[treat_pros_contested_long]
             local p1 = 2 * ttail(e(df_r), abs(`b1'/`s1'))
@@ -1421,6 +1462,9 @@ file write t "\midrule" _n
 file write t "County FE & Yes & Yes & Yes & Yes \\" _n
 file write t `"Year FE & Yes & Grp\(\times\)Yr & Yes & Yes \\"' _n
 file write t "Off-cycle & Excl. & Incl. & Excl. & Excl. \\" _n
+local r2f_lo : di %5.3f `r2_min_6'
+local r2f_hi : di %5.3f `r2_max_6'
+file write t `"Within-\(R^2\) range & \multicolumn{4}{c}{[`=strtrim("`r2f_lo'")', `=strtrim("`r2f_hi'")']} \\"' _n
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\footnotesize" _n
@@ -1486,12 +1530,18 @@ label variable FD_L_incoming "First-differenced prior-year incoming"
 * NOTE: Pending felonies REMOVED from falsification table.
 * Pending is a mechanism-consistent auxiliary outcome (fewer dismissals build backlog),
 * not an independent falsification test. Reported in text footnote.
+local r2_min_8 = 1
+local r2_max_8 = 0
+
 local falsif_dvs "incoming_felony clearance_rate L_incoming_felony FD_incoming FD_L_incoming"
 local dv_idx = 0
 foreach dv of local falsif_dvs {
     local dv_idx = `dv_idx' + 1
     capture qui reghdfe `dv' treat_pros_contested_long treat_pros_uncontested, absorb(county_id year) vce(cluster county_id)
     if !_rc {
+        local r2w = e(r2_within)
+        if `r2w' < `r2_min_8' local r2_min_8 = `r2w'
+        if `r2w' > `r2_max_8' local r2_max_8 = `r2w'
         local b1_`dv_idx' = _b[treat_pros_contested_long]
         local s1_`dv_idx' = _se[treat_pros_contested_long]
         local p1_`dv_idx' = 2 * ttail(e(df_r), abs(`b1_`dv_idx''/`s1_`dv_idx''))
@@ -1582,6 +1632,9 @@ file write t "County FE & Yes & Yes & Yes & Yes & Yes \\" _n
 file write t "Year FE & Yes & Yes & Yes & Yes & Yes \\" _n
 file write t "Clustering & County & County & County & County & County \\" _n
 file write t `"Observations & `n_1' & `n_2' & `n_3' & `n_4' & `n_5' \\"' _n
+local r2f_lo : di %5.3f `r2_min_8'
+local r2f_hi : di %5.3f `r2_max_8'
+file write t `"Within-\(R^2\) range & \multicolumn{5}{c}{[`=strtrim("`r2f_lo'")', `=strtrim("`r2f_hi'")']} \\"' _n
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\footnotesize" _n
@@ -1626,11 +1679,17 @@ file write t "\toprule" _n
 file write t `"Outcome & Coef & SE & N \\"' _n
 file write t "\midrule" _n
 
+local r2_min_a4 = 1
+local r2_max_a4 = 0
+
 local t5_outcomes "fc_jury_share fc_dismiss_rate fc_plea_share severity_share fh_jury_share fh_dismiss_rate utilization_rate fc_jury fh_jury actually_reported pct_told_to_report"
 
 foreach y of local t5_outcomes {
     capture qui reghdfe `y' treat_pros_pressure, absorb(county_id year) vce(cluster county_id)
     if !_rc {
+        local r2w = e(r2_within)
+        if `r2w' < `r2_min_a4' local r2_min_a4 = `r2w'
+        if `r2w' > `r2_max_a4' local r2_max_a4 = `r2w'
         local bval = _b[treat_pros_pressure]
         local sval = _se[treat_pros_pressure]
         local pval = 2 * ttail(e(df_r), abs(`bval'/`sval'))
@@ -1649,6 +1708,9 @@ file write t "\midrule" _n
 file write t "County FE & \multicolumn{3}{c}{Yes} \\" _n
 file write t "Year FE & \multicolumn{3}{c}{Yes} \\" _n
 file write t "Clustering & \multicolumn{3}{c}{County} \\" _n
+local r2f_lo : di %5.3f `r2_min_a4'
+local r2f_hi : di %5.3f `r2_max_a4'
+file write t `"Within-\(R^2\) range & \multicolumn{3}{c}{[`=strtrim("`r2f_lo'")', `=strtrim("`r2f_hi'")']} \\"' _n
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\footnotesize" _n
@@ -2404,15 +2466,23 @@ foreach y of local key_jk {
     local is_rate = (strpos("`y'", "pct_") == 1 | "`y'" == "utilization_rate" | strpos("`y'", "_share") > 0 | strpos("`y'", "_rate") > 0)
     if `is_rate' {
         local ff_t0 : di %6.3f `full_t0'
-        local fr_t0 "[" %6.3f `min_t0' ", " %6.3f `max_t0' "]"
+        local _lo_t0 : di %6.3f `min_t0'
+        local _hi_t0 : di %6.3f `max_t0'
+        local fr_t0 "[`=strtrim("`_lo_t0'")', `=strtrim("`_hi_t0'")']"
         local ff_t2 : di %6.3f `full_t2'
-        local fr_t2 "[" %6.3f `min_t2' ", " %6.3f `max_t2' "]"
+        local _lo_t2 : di %6.3f `min_t2'
+        local _hi_t2 : di %6.3f `max_t2'
+        local fr_t2 "[`=strtrim("`_lo_t2'")', `=strtrim("`_hi_t2'")']"
     }
     else {
         local ff_t0 : di %6.1f `full_t0'
-        local fr_t0 "[" %6.1f `min_t0' ", " %6.1f `max_t0' "]"
+        local _lo_t0 : di %6.1f `min_t0'
+        local _hi_t0 : di %6.1f `max_t0'
+        local fr_t0 "[`=strtrim("`_lo_t0'")', `=strtrim("`_hi_t0'")']"
         local ff_t2 : di %6.1f `full_t2'
-        local fr_t2 "[" %6.1f `min_t2' ", " %6.1f `max_t2' "]"
+        local _lo_t2 : di %6.1f `min_t2'
+        local _hi_t2 : di %6.1f `max_t2'
+        local fr_t2 "[`=strtrim("`_lo_t2'")', `=strtrim("`_hi_t2'")']"
     }
 
     file write t "`lbl_`y'' & `=strtrim("`ff_t0'")' & `=strtrim("`fr_t0'")' & `flips_t0'/10"

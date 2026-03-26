@@ -104,7 +104,9 @@ Open seat shows opposite composition pattern (other felony share UP, not down).
 
 Delta: null across ALL specs and ALL outcomes.
 
-### Wild Cluster Bootstrap (nonull, 999 reps)
+### Wild Cluster Bootstrap (Table A6, nonull, 999 reps)
+
+All headline FC results survive bootstrap inference. Nonull bootstrap p < 0.001 for all headline coefficients.
 
 | Outcome | Cluster p | Bootstrap p | Survives? |
 |---------|-----------|-------------|-----------|
@@ -138,15 +140,77 @@ FC effects concentrate in small counties where individual cases represent a larg
 
 ---
 
-## Falsification
+## Falsification (Table 8)
+
+### Standard Falsification (Levels)
 
 | DV | Contested | Uncontested | Delta |
 |----|-----------|-------------|-------|
 | Incoming Felonies | 6.9 | -36.0 | 42.8 |
-| Pending Felonies | 36.5 | 34.1*** | 2.4 |
 | Clearance Rate | 0.006 | 0.008 | -0.002 |
+| Pending Felonies | 36.5 | 34.1*** | 2.4 |
 
-Incoming: null. Clearance: null. Pending significant for uncontested (mechanical consequence of fewer dismissals, not an independent confound).
+### Dynamic/Lead Falsification
+
+| DV | Contested | Uncontested | Delta | Notes |
+|----|-----------|-------------|-------|-------|
+| Lead Incoming (t+1) | -- | -- | -- | Attenuates under first differences |
+| FD Incoming | -- | -- | -- | Null |
+| FD Lead Incoming | -- | -- | -- | Null |
+
+### Interpretation
+
+- Incoming: null. No evidence that election years receive different caseload inflows.
+- Clearance: null. Courts do not mechanically process more cases in election years.
+- Lead: attenuates under first differences, consistent with no anticipation.
+- Pending significant for uncontested only (mechanical consequence of fewer dismissals increasing stock of unresolved cases -- mechanism-consistent, not an independent confound).
+
+---
+
+## Jackknife Leave-One-County-Out (Table A7)
+
+Leave-one-county-out jackknife over the 10 largest counties confirms no single county drives the headline results. FC Dismissal Rate and FC Jury Trial Rate remain significant across all 10 drops. Severity Share is the most sensitive (expected given smaller effective sample for composition outcomes).
+
+---
+
+## Table Inventory (16 Production Tables)
+
+### Main Tables (7)
+
+| # | Table | Content |
+|---|-------|---------|
+| 1 | table_sumstats | Summary statistics |
+| 2 | table1_baseline + 1a + 1b | T0 baseline (pipeline + disposition) |
+| 3 | table2_contestation + 2a + 2b | T2 contestation (pipeline + disposition) |
+| 4 | table3_outcomes | Verdict counts |
+| 5 | table4a/4b_het | Population heterogeneity (high/low) |
+| 6 | table5_contamination | Open-seat contamination diagnostic |
+| 7 | table8_falsification | Falsification (incoming, clearance, lead, FD) |
+
+### Reference Tables (2)
+
+| # | Table | Content |
+|---|-------|---------|
+| R1 | table6_robustness | Sample variant robustness |
+| R2 | table7_composition | Composition shifts |
+
+### Appendix Tables (7)
+
+| # | Table | Content |
+|---|-------|---------|
+| A1 | tableA1_t0_sensitivity | T0 sensitivity variants |
+| A2 | tableA2_t2_offcycle | Off-cycle county robustness |
+| A3 | tableA3_delta_robustness | Delta robustness across specs |
+| A4 | tableA4_within_election | Within-election-year (T5) |
+| A5 | tableA5_controlled | Controlled specifications (caseload + population) |
+| A6 | tableA6_bootstrap | Wild cluster bootstrap inference |
+| A7 | tableA7_jackknife | Leave-one-county-out jackknife |
+
+### Notes
+
+- All tables in `$OL/files/tab/paper/`. Deprecated mi_conference tables removed.
+- Per-10k scaling (T4) postponed -- not included in current table set.
+- Sub-tables (1a/1b, 2a/2b, 2b_delta_robustness) count as part of their parent table.
 
 ---
 
