@@ -657,21 +657,25 @@ foreach y of local all_outcomes {
 }
 
 * T0c: full panel, open seat as regressor, county FE
+* Reports BOTH elec_incumbent AND open_pros coefficients
 use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
 foreach y of local all_outcomes {
     capture qui reghdfe `y' elec_incumbent open_pros, absorb(county_id) vce(cluster county_id)
     if !_rc {
         file write `fha1' "T0c,`y'," (_b[elec_incumbent]) "," (_se[elec_incumbent]) "," (2*ttail(e(df_r),abs(_b[elec_incumbent]/_se[elec_incumbent]))) "," (e(N)) _n
+        file write `fha1' "T0c_open,`y'," (_b[open_pros]) "," (_se[open_pros]) "," (2*ttail(e(df_r),abs(_b[open_pros]/_se[open_pros]))) "," (e(N)) _n
     }
 }
 
 * T0d: off-cycle dropped, open seat as regressor, county FE
+* Reports BOTH elec_incumbent AND open_pros coefficients
 use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
 drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
 foreach y of local all_outcomes {
     capture qui reghdfe `y' elec_incumbent open_pros, absorb(county_id) vce(cluster county_id)
     if !_rc {
         file write `fha1' "T0d,`y'," (_b[elec_incumbent]) "," (_se[elec_incumbent]) "," (2*ttail(e(df_r),abs(_b[elec_incumbent]/_se[elec_incumbent]))) "," (e(N)) _n
+        file write `fha1' "T0d_open,`y'," (_b[open_pros]) "," (_se[open_pros]) "," (2*ttail(e(df_r),abs(_b[open_pros]/_se[open_pros]))) "," (e(N)) _n
     }
 }
 
@@ -699,7 +703,8 @@ file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Baseline Election Effect: Sample Restriction Sensitivity}" _n
 file write t "\label{tab:t0-sensitivity}" _n
 file write t "\begin{threeparttable}" _n
-file write t "\scriptsize" _n
+file write t "\tiny" _n
+file write t "\resizebox{\textwidth}{!}{" _n
 file write t "\begin{tabular}{lccccc}" _n
 file write t "\toprule" _n
 file write t `" & (1) & (2) & (3) & (4) & (5) \\"' _n
@@ -714,6 +719,7 @@ forvalues g = 1/`n_groups' {
     file write t "\multicolumn{6}{l}{\textit{`grp`g'_lbl'}} \\[0.3em]" _n
 
     foreach y of local grp`g' {
+        * Get incumbent/election-year coef for all 5 versions
         foreach v in a b c d e {
             qui count if version == "T0`v'" & outcome == "`y'"
             if r(N) > 0 {
@@ -746,8 +752,43 @@ forvalues g = 1/`n_groups' {
             }
         }
 
+        * Get open-seat coef for T0c and T0d (cols 3-4)
+        foreach v in c d {
+            qui count if version == "T0`v'_open" & outcome == "`y'"
+            if r(N) > 0 {
+                qui summ beta if version == "T0`v'_open" & outcome == "`y'"
+                local bo_`v' = r(mean)
+                qui summ se if version == "T0`v'_open" & outcome == "`y'"
+                local seo_`v' = r(mean)
+                qui summ pval if version == "T0`v'_open" & outcome == "`y'"
+                local po_`v' = r(mean)
+            }
+            else {
+                local bo_`v' = .
+                local seo_`v' = .
+                local po_`v' = 1
+            }
+            local sto_`v' ""
+            if `po_`v'' < 0.01 local sto_`v' "\sym{***}"
+            else if `po_`v'' < 0.05 local sto_`v' "\sym{**}"
+            else if `po_`v'' < 0.10 local sto_`v' "\sym{*}"
+            if `is_rate' {
+                local bfo_`v' : di %7.3f `bo_`v''
+                local sfo_`v' : di %7.3f `seo_`v''
+            }
+            else {
+                local bfo_`v' : di %7.1f `bo_`v''
+                local sfo_`v' : di %7.1f `seo_`v''
+            }
+        }
+
+        * Row 1: Incumbent/election-year coefficient
         file write t "`lbl_`y'' & `=strtrim("`bf_a'")'`st_a' & `=strtrim("`bf_b'")'`st_b' & `=strtrim("`bf_c'")'`st_c' & `=strtrim("`bf_d'")'`st_d' & `=strtrim("`bf_e'")'`st_e' \\" _n
         file write t "  & (`=strtrim("`sf_a'")') & (`=strtrim("`sf_b'")') & (`=strtrim("`sf_c'")') & (`=strtrim("`sf_d'")') & (`=strtrim("`sf_e'")') \\" _n
+
+        * Row 2 (cols 3-4 only): Open-seat coefficient
+        file write t "\quad \textit{Open Seat} & & & `=strtrim("`bfo_c'")'`sto_c' & `=strtrim("`bfo_d'")'`sto_d' & \\" _n
+        file write t "  & & & (`=strtrim("`sfo_c'")') & (`=strtrim("`sfo_d'")') & \\" _n
     }
 }
 
@@ -756,10 +797,13 @@ file write t `"Open seats & Dropped & Dropped & Regressor & Regressor & Dropped 
 file write t `"Off-cycle counties & Included & Excluded & Included & Excluded & Included \\"' _n
 file write t `"Fixed effects & County & County & County & County & County + Year \\"' _n
 file write t "\bottomrule" _n
-file write t "\end{tabular}" _n
-file write t "\begin{tablenotes}\scriptsize" _n
-file write t `"\item \textit{Notes.} (1)--(4) county FE only. (5) adds year FE (TWFE)."' _n
+file write t "\end{tabular}}" _n
+file write t "\begin{tablenotes}\tiny" _n
+file write t `"\item (1)--(4): county FE only; (5): county + year FE (TWFE)."' _n
+file write t `"\item (3)--(4): both incumbent election and open-seat coefficients shown (italic rows)."' _n
 file write t `"\item SEs clustered at county level. Pipeline from jury dashboard; verdict/plea from caseload dashboard."' _n
+file write t `"\item Sign instability in (5) relative to (1)--(4) reflects limited within-year variation at the"' _n
+file write t `"  election-year level, motivating the contestation decomposition (Tables~\ref{tab:t2-pipeline}--\ref{tab:t2-disposition})."' _n
 file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
 file write t "\end{tablenotes}" _n
 file write t "\end{threeparttable}" _n
