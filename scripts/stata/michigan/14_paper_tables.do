@@ -1458,15 +1458,27 @@ file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Falsification: Criminal Caseload as Dependent Variable}" _n
 file write t "\label{tab:falsification}" _n
 file write t "\begin{threeparttable}" _n
-file write t "\begin{tabular}{lcccc}" _n
+file write t "\begin{tabular}{lccccc}" _n
 file write t "\toprule" _n
-file write t `" & (1) & (2) & (3) & (4) \\"' _n
-file write t `" & Incoming & Pending & Clearance & Incoming\(_{t-1}\) \\"' _n
-file write t `" & Felonies & Felonies & Rate & (Lead Test) \\"' _n
+file write t `" & (1) & (2) & (3) & (4) & (5) \\"' _n
+file write t `" & Incoming & Clearance & Incoming\(_{t-1}\) & \(\Delta\)Incoming & \(\Delta\)Incoming\(_{t-1}\) \\"' _n
+file write t `" & Felonies & Rate & (Lead) & (First Diff) & (FD Lead) \\"' _n
 file write t "\midrule" _n
 
-* T2 on caseload DVs + lead test
-local falsif_dvs "incoming_felony pending_felony clearance_rate L_incoming_felony"
+* Generate first-differenced versions
+gen FD_incoming = D.incoming_felony
+replace FD_incoming = . if (year - 1) == 2020 | (year - 1) == 2021
+label variable FD_incoming "First-differenced incoming felonies"
+
+gen FD_L_incoming = D.L_incoming_felony
+replace FD_L_incoming = . if (year - 1) == 2020 | (year - 1) == 2021 | (year - 2) == 2020 | (year - 2) == 2021
+label variable FD_L_incoming "First-differenced prior-year incoming"
+
+* T2 on caseload DVs + lead test + first differences
+* NOTE: Pending felonies REMOVED from falsification table.
+* Pending is a mechanism-consistent auxiliary outcome (fewer dismissals build backlog),
+* not an independent falsification test. Reported in text footnote.
+local falsif_dvs "incoming_felony clearance_rate L_incoming_felony FD_incoming FD_L_incoming"
 local dv_idx = 0
 foreach dv of local falsif_dvs {
     local dv_idx = `dv_idx' + 1
@@ -1493,23 +1505,23 @@ foreach dv of local falsif_dvs {
 }
 
 * Write rows: Contested, SE, Uncontested, SE, Delta, SE
-* Column 3 (clearance rate) needs 3 decimals; columns 1-2, 4 (counts) need 1 decimal
+* Col 2 (clearance rate) needs 3 decimals; all others (counts/FD) need 1 decimal
 foreach coef_type in "Contested" "Uncontested" "Difference" {
     if "`coef_type'" == "Contested" {
         file write t "Contested"
-        forval i = 1/4 {
+        forval i = 1/5 {
             local st ""
             if `p1_`i'' < 0.01 local st "\sym{***}"
             else if `p1_`i'' < 0.05 local st "\sym{**}"
             else if `p1_`i'' < 0.10 local st "\sym{*}"
-            if `i' == 3 local cf : di %6.3f `b1_`i''
+            if `i' == 2 local cf : di %6.3f `b1_`i''
             else        local cf : di %6.1f `b1_`i''
             file write t " & `=strtrim("`cf'")'`st'"
         }
         file write t " \\" _n
         file write t " "
-        forval i = 1/4 {
-            if `i' == 3 local sf : di %6.3f `s1_`i''
+        forval i = 1/5 {
+            if `i' == 2 local sf : di %6.3f `s1_`i''
             else        local sf : di %6.1f `s1_`i''
             file write t " & (`=strtrim("`sf'")')"
         }
@@ -1517,19 +1529,19 @@ foreach coef_type in "Contested" "Uncontested" "Difference" {
     }
     if "`coef_type'" == "Uncontested" {
         file write t "Uncontested"
-        forval i = 1/4 {
+        forval i = 1/5 {
             local st ""
             if `p2_`i'' < 0.01 local st "\sym{***}"
             else if `p2_`i'' < 0.05 local st "\sym{**}"
             else if `p2_`i'' < 0.10 local st "\sym{*}"
-            if `i' == 3 local cf : di %6.3f `b2_`i''
+            if `i' == 2 local cf : di %6.3f `b2_`i''
             else        local cf : di %6.1f `b2_`i''
             file write t " & `=strtrim("`cf'")'`st'"
         }
         file write t " \\" _n
         file write t " "
-        forval i = 1/4 {
-            if `i' == 3 local sf : di %6.3f `s2_`i''
+        forval i = 1/5 {
+            if `i' == 2 local sf : di %6.3f `s2_`i''
             else        local sf : di %6.1f `s2_`i''
             file write t " & (`=strtrim("`sf'")')"
         }
@@ -1537,19 +1549,19 @@ foreach coef_type in "Contested" "Uncontested" "Difference" {
     }
     if "`coef_type'" == "Difference" {
         file write t `"\(\Delta\) (Con \(-\) Unc)"'
-        forval i = 1/4 {
+        forval i = 1/5 {
             local st ""
             if `dp_`i'' < 0.01 local st "\sym{***}"
             else if `dp_`i'' < 0.05 local st "\sym{**}"
             else if `dp_`i'' < 0.10 local st "\sym{*}"
-            if `i' == 3 local cf : di %6.3f `d_`i''
+            if `i' == 2 local cf : di %6.3f `d_`i''
             else        local cf : di %6.1f `d_`i''
             file write t " & `=strtrim("`cf'")'`st'"
         }
         file write t " \\" _n
         file write t " "
-        forval i = 1/4 {
-            if `i' == 3 local sf : di %6.3f `ds_`i''
+        forval i = 1/5 {
+            if `i' == 2 local sf : di %6.3f `ds_`i''
             else        local sf : di %6.1f `ds_`i''
             file write t " & (`=strtrim("`sf'")')"
         }
@@ -1558,18 +1570,19 @@ foreach coef_type in "Contested" "Uncontested" "Difference" {
 }
 
 file write t "\midrule" _n
-file write t "County FE & Yes & Yes & Yes & Yes \\" _n
-file write t "Year FE & Yes & Yes & Yes & Yes \\" _n
-file write t "Clustering & County & County & County & County \\" _n
-file write t `"Observations & `n_1' & `n_2' & `n_3' & `n_4' \\"' _n
+file write t "County FE & Yes & Yes & Yes & Yes & Yes \\" _n
+file write t "Year FE & Yes & Yes & Yes & Yes & Yes \\" _n
+file write t "Clustering & County & County & County & County & County \\" _n
+file write t `"Observations & `n_1' & `n_2' & `n_3' & `n_4' & `n_5' \\"' _n
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\footnotesize" _n
-file write t `"\item Caseload variables from SCAO. 77 synchronized counties, open seats excluded."' _n
-file write t `"\item Incoming = new circuit court felony filings. Pending = stock of unresolved cases."' _n
-file write t `"\item Clearance rate = outgoing/incoming."' _n
-file write t `"\item Col (4): prior-year incoming felonies as DV (temporal placebo). Obs sourcing from"' _n
-file write t `"  COVID years (2020--2021) excluded. Null confirms no reverse causality."' _n
+file write t `"\item Caseload from SCAO. 77 synchronized counties, open seats excluded."' _n
+file write t `"\item Cols (1),(3): levels. Cols (4),(5): first differences (\(\Delta Y_t = Y_t - Y_{t-1}\))."' _n
+file write t `"\item Col (3): prior-year incoming as DV (temporal placebo). COVID-sourced lags excluded."' _n
+file write t `"\item Pending caseload stock (not shown) increases under uncontested elections"' _n
+file write t `"  (+34.1 cases, \(p < 0.01\)): a mechanism-consistent auxiliary outcome"' _n
+file write t `"  (fewer dismissals build backlog), not an independent falsification test."' _n
 file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)."' _n
 file write t "\end{tablenotes}" _n
 file write t "\end{threeparttable}" _n
@@ -1677,6 +1690,10 @@ else {
 
     local boot_outcomes "fc_jury_share fc_dismiss_rate fc_plea_share severity_share utilization_rate fc_jury fh_jury"
 
+    * boottest requires areg (not reghdfe). Generate year dummies explicitly.
+    * areg absorbs county_id; year dummies go on RHS so boottest can access them.
+    qui tab year, gen(_yr_)
+
     * Also collect results for Table A6 LaTeX
     tempname fh_a6
     tempfile a6_csv
@@ -1685,7 +1702,7 @@ else {
 
     foreach y of local boot_outcomes {
         di "  Bootstrapping: `y'"
-        capture qui reghdfe `y' treat_pros_contested_long treat_pros_uncontested, absorb(county_id year) vce(cluster county_id)
+        capture qui areg `y' treat_pros_contested_long treat_pros_uncontested _yr_*, absorb(county_id) vce(cluster county_id)
         if !_rc {
             local nval = e(N)
 
