@@ -176,6 +176,8 @@ file write t `"Outcome & Coef & SE & Coef & SE & \(N\) \\"' _n
 file write t "\midrule" _n
 
 * --- Write groups 1-3 (pipeline + verdicts) into Table 1a ---
+local r2_min_1a = 1
+local r2_max_1a = 0
 forvalues g = 1/3 {
     if `g' > 1 {
         file write t "\\[-0.3em]" _n
@@ -195,6 +197,9 @@ forvalues g = 1/3 {
         local se2 = _se[open_pros]
         local p2 = 2 * ttail(e(df_r), abs(`b2'/`se2'))
         local n = e(N)
+        local r2w = e(r2_within)
+        if `r2w' < `r2_min_1a' local r2_min_1a = `r2w'
+        if `r2w' > `r2_max_1a' local r2_max_1a = `r2w'
 
         add_stars `p1'
         local st1 "`r(stars)'"
@@ -218,6 +223,9 @@ file write t "\midrule" _n
 file write t `"County FE & \multicolumn{5}{c}{Yes} \\"' _n
 file write t `"Year FE & \multicolumn{5}{c}{No} \\"' _n
 file write t `"Clustering & \multicolumn{5}{c}{County} \\"' _n
+local r2f_lo : di %5.3f `r2_min_1a'
+local r2f_hi : di %5.3f `r2_max_1a'
+file write t `"Within-\(R^2\) range & \multicolumn{5}{c}{[`=strtrim("`r2f_lo'")', `=strtrim("`r2f_hi'")']} \\"' _n
 file write t "\bottomrule" _n
 file write t "\end{tabular}" _n
 file write t "\begin{tablenotes}\scriptsize" _n
@@ -1720,7 +1728,7 @@ else {
             local pb1_nonull = .
             local ci1_lo = .
             local ci1_hi = .
-            capture boottest treat_pros_contested_long, cluster(county_id) reps(999) seed(42) nonull quietly
+            capture boottest treat_pros_contested_long, cluster(county_id) reps(999) seed(42) nonull nograph quietly
             if !_rc {
                 local pb1_nonull = r(p)
                 * CI stored in r(CI) matrix: row 1 = [lo, hi]
@@ -1746,7 +1754,7 @@ else {
             local pb2_nonull = .
             local ci2_lo = .
             local ci2_hi = .
-            capture boottest treat_pros_uncontested, cluster(county_id) reps(999) seed(42) nonull quietly
+            capture boottest treat_pros_uncontested, cluster(county_id) reps(999) seed(42) nonull nograph quietly
             if !_rc {
                 local pb2_nonull = r(p)
                 capture matrix _ci = r(CI)
@@ -1773,7 +1781,7 @@ else {
             local pbd_nonull = .
             local cid_lo = .
             local cid_hi = .
-            capture boottest (treat_pros_contested_long - treat_pros_uncontested = 0), cluster(county_id) reps(999) seed(42) nonull quietly
+            capture boottest (treat_pros_contested_long - treat_pros_uncontested = 0), cluster(county_id) reps(999) seed(42) nonull nograph quietly
             if !_rc {
                 local pbd_nonull = r(p)
                 capture matrix _ci = r(CI)
