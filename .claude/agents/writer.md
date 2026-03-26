@@ -117,7 +117,8 @@ AI substitutes elaborate constructions for simple is/are/has (documented 10%+ de
 **Rule:** If you can replace the construction with "is", "are", or "has" without losing meaning, do it.
 
 ### Category 4: Rhetorical / structural patterns
-- **Em dash overuse:** Max 1-2 per paragraph. Replace excess with commas or parentheses.
+- **Em dash ban:** ZERO em-dashes (---). Never produce them. Use commas, periods, semicolons, or parentheses. Hard rule.
+- **Results prose:** Do not litter paragraphs with inline numbers and p-values. Reference the table and let the reader find the numbers. Use significance stars (*, **, ***) not exact p-values in running text. Exception: non-standard thresholds (e.g., p = 0.057).
 - **Rule of three everywhere:** Break up triplets. Not every list needs exactly 3 items.
 - **"Not X but Y" reframe:** e.g., "This is not a weakness but a feature of the design." Strong Claude signature. Once per paper maximum.
 - **Uniform sentence length:** Mix short (8-12 words) with longer (20-30 words). AI produces every sentence at 18-22.

@@ -17,6 +17,52 @@
 
 ---
 
+## Michigan Court Structure and Case Type Definitions
+
+### Court Types
+
+| Court | SCAO Code | Jurisdiction | Prosecutor Role | Data Source |
+|-------|-----------|-------------|-----------------|-------------|
+| **Circuit Court** | C01-C57 | All felonies (FC, FH), civil >$25K | Felony prosecution and trial | `outgoing_felony_by_year.csv` |
+| **District Court** | D01-D98 | Misdemeanors, felony preliminary exams, arraignments | Misdemeanor prosecution + felony prelim hearings | `outgoing_district_felony_by_year.csv` |
+| **Probate Court** | P01-P83 | Estates, guardianship, juvenile, mental health | Limited (juvenile cases) | Not used |
+
+### Circuit-to-County Mapping
+
+Michigan has 57 judicial circuits serving 83 counties. Multi-county circuits exist (e.g., C12 covers Baraga + Houghton + Keweenaw; C23 covers Alcona + Arenac + Iosco + Oscoda). **The SCAO caseload dashboard reports data at the county level, not the circuit level** — each county within a multi-county circuit receives its own county-specific counts. Verified: counties within the same circuit have different verdict counts (not duplicated circuit totals). Each county maps to exactly one circuit court code. Source: SCAO Trial Court Map (December 2023), `docs/trial-court-map-w-regions.pdf`.
+
+### District-to-County Mapping
+
+District courts have a many-to-one relationship with counties: large counties have multiple district courts (Wayne = 24, Oakland = 11, Macomb = 8), small counties have one each. The SCAO data tags each record with county name, so aggregation to county-year is a simple sum across district courts within county.
+
+### Case Type Definitions
+
+**Circuit court case types (used in this paper):**
+
+| Code | Full Name | Definition | Examples |
+|------|-----------|-----------|----------|
+| **FC** | Capital Felonies | Life-offense-eligible felonies | Murder, armed robbery, CSC-1, drug trafficking (large quantity) |
+| **FH** | Non-capital Felonies | All other felonies not life-eligible | Assault, burglary, fraud, drug possession, felony DUI (if bound over) |
+
+**District court case types (NOT in main analysis):**
+
+| Code | Full Name | Notes |
+|------|-----------|-------|
+| **FD** | Felony Drunk Driving | Handled at district court; if bound over to circuit, reclassified as FC or FH |
+| **FT** | Felony Traffic | Handled at district court; if bound over to circuit, reclassified as FC or FH |
+| **FY** | Felony Criminal Cases | Non-traffic felonies at district level; includes prelim hearings before bindover |
+
+**Key rule:** The FD/FT/FY classification exists ONLY at the district court level. Once a case is bound over to circuit court, it enters as FC or FH based on severity (life-eligible or not). Circuit court data contains only FC and FH — no traffic-specific categories.
+
+### What This Means for the Analysis
+
+- **Pipeline variables** (summoned through utilization_rate): from ALL court types via the jury dashboard. A juror summoned for a district court misdemeanor trial counts the same as one summoned for a circuit court capital felony trial.
+- **Disposition variables** (fc_jury, fc_plea, fc_dismissed, etc.): from circuit courts ONLY. These capture felony case resolution after the case has reached circuit court.
+- **District court upstream decisions** (bindover, felony plea acceptance, charge reduction to misdemeanor): available in `outgoing_district_felony_by_year.csv` but NOT included in the current analysis. These represent the upstream mechanism that determines which cases reach circuit court.
+- **Limitation:** The analysis captures circuit-court-level case routing but does not observe district court decisions that filter which cases reach the circuit level. If prosecutors adjust district-level screening under electoral pressure, our estimates capture only the downstream portion of the behavioral shift.
+
+---
+
 ## Group 1: Pipeline Counts (5 variables) — Jury Dashboard
 
 | Variable | Label | Source | N (typical) | Notes |

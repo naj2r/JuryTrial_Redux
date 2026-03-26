@@ -73,7 +73,7 @@ When rewording copy-paste chunks, also strip documented AI giveaways in economic
 - Replace "nuanced" with a specific qualifier
 - Do not use: intriguing, intertwined, garner, foster, tapestry, swiftly, leverage (figurative)
 - Break up rule-of-three patterns — not every list needs 3 items
-- Limit em dashes to 1-2 per paragraph
+- ZERO em-dashes (---). Never use them. Replace with commas, periods, semicolons, or parentheses. Hard rule.
 - Do not use "not X but Y" reframe more than once per document
 
 ---
