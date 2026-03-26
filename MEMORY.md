@@ -133,4 +133,8 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 
 [LEARN:voice] Results prose style: do NOT litter paragraphs with inline numbers and p-values. Reference the table ("Table 4 shows...") and let the reader find the numbers. Use significance stars (*, **, ***) when mentioning a result in text, not exact p-values. Exception: p-values at non-standard thresholds (e.g., p = 0.057) where the star convention is ambiguous. Never write sentences like "the coefficient is -0.136 (SE = 0.021, p < 0.001, 95% CI [-0.176, -0.096])" in running text.
 
+[LEARN:tables] HARD RULE: The do-file that generates tables (14_paper_tables.do) must ALWAYS match the current results. Every time a model, sample restriction, label, or outcome list changes, the do-file must be updated AND re-run BEFORE any prose is written referencing those tables. Never write prose from memory or old numbers. Never let the do-file and the Overleaf .tex files diverge. The do-file is the single source of truth for all table content. See quality_reports/MODEL_SPECIFICATIONS.md for the authoritative spec.
+
+[LEARN:tables] HARD RULE: Labels in 14_paper_tables.do must match labels in Overleaf. The do-file OVERWRITES the .tex files on every run. If a label is changed in Overleaf but not in the do-file, the next run destroys the fix. Always change labels in the do-file FIRST, then run, then verify the Overleaf files match.
+
 [LEARN:results] Controlled specifications (incoming_felony + pending_felony + log_county_pop) produce ZERO meaningful shifts on any T2 headline result. FC Dismissal Rate, FC Jury Trial Rate, Severity Share, and all Δ values are identical to 3 decimal places across base, caseload, pop, and combined controls. The disposition shift is entirely control-invariant.

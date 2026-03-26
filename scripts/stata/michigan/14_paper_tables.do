@@ -152,8 +152,8 @@ file open t using "`f'", write replace
 
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
-file write t "\caption{Baseline Election Effect: Pipeline and Verdicts}" _n
-file write t "\label{tab:table1a}" _n
+file write t "\caption{Baseline Election Effect: Pipeline and Verdicts (County FE Only, No Year FE)}" _n
+file write t "\label{tab:t0-pipeline}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\footnotesize" _n
 file write t "\begin{tabular}{lccccc}" _n
@@ -227,8 +227,8 @@ file open t using "`f1b'", write replace
 
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
-file write t "\caption{Baseline Election Effect: Case Disposition}" _n
-file write t "\label{tab:table1b}" _n
+file write t "\caption{Baseline Election Effect: Case Disposition Rates (County FE Only, No Year FE)}" _n
+file write t "\label{tab:t0-disposition}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\footnotesize" _n
 file write t "\begin{tabular}{lccccc}" _n
@@ -314,7 +314,7 @@ file open t using "`f'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Electoral Contestation: Pipeline and Verdicts}" _n
-file write t "\label{tab:table2a}" _n
+file write t "\label{tab:t2-pipeline}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\footnotesize" _n
 file write t "\begin{tabular}{lccccccc}" _n
@@ -402,7 +402,7 @@ file open t using "`f2b'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Electoral Contestation: Case Disposition}" _n
-file write t "\label{tab:table2b}" _n
+file write t "\label{tab:t2-disposition}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\footnotesize" _n
 file write t "\begin{tabular}{lccccccc}" _n
@@ -548,7 +548,7 @@ file open t using "`fA3'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t `"\caption{Contestation Differential \(\Delta\): Specification Robustness}"' _n
-file write t "\label{tab:tableA3}" _n
+file write t "\label{tab:delta-robust}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\scriptsize" _n
 file write t "\begin{tabular}{lccc}" _n
@@ -697,12 +697,14 @@ file open t using "`fa1'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Baseline Election Effect: Sample Restriction Sensitivity}" _n
-file write t "\label{tab:tableA1}" _n
+file write t "\label{tab:t0-sensitivity}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\scriptsize" _n
 file write t "\begin{tabular}{lccccc}" _n
 file write t "\toprule" _n
-file write t `" & (1) T0a & (2) T0b & (3) T0c & (4) T0d & (5) T0e \\"' _n
+file write t `" & (1) & (2) & (3) & (4) & (5) \\"' _n
+file write t `" & Open Seats & Open + Off-Cycle & Open Seat as & Open Regressor & TWFE \\"' _n
+file write t `" & Dropped & Dropped & Regressor & No Off-Cycle & (+ Year FE) \\"' _n
 file write t "\midrule" _n
 
 forvalues g = 1/`n_groups' {
@@ -817,7 +819,7 @@ file open t using "`fa2'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Contestation: Full Panel vs Off-Cycle Excluded}" _n
-file write t "\label{tab:tableA2}" _n
+file write t "\label{tab:t2-offcycle}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\tiny" _n
 file write t "\begin{tabular}{lcccccc}" _n
@@ -985,7 +987,7 @@ file open t using "`f4a'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Election Effects in Above-Median Population Counties}" _n
-file write t "\label{tab:table4a}" _n
+file write t "\label{tab:het-highpop}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\footnotesize" _n
 file write t "\begin{tabular}{lcc}" _n
@@ -1256,7 +1258,7 @@ file open t using "`f6'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Robustness: Contestation Effects Across Sample Definitions}" _n
-file write t "\label{tab:table6}" _n
+file write t "\label{tab:robustness}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\footnotesize" _n
 file write t "\begin{tabular}{lcccc}" _n
@@ -1388,7 +1390,7 @@ file open t using "`f8'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Falsification: Criminal Caseload as Dependent Variable}" _n
-file write t "\label{tab:table8}" _n
+file write t "\label{tab:falsification}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\begin{tabular}{lccc}" _n
 file write t "\toprule" _n
@@ -1527,7 +1529,7 @@ file open t using "`fA4'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Within-Election Comparison: Incumbent vs Open Seat (Descriptive)}" _n
-file write t "\label{tab:tableA4}" _n
+file write t "\label{tab:within-election}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\footnotesize" _n
 file write t "\begin{tabular}{lccc}" _n
@@ -1574,30 +1576,44 @@ di "Table A4 DONE: `fA4'"
 
 
 * =============================================================================
-* WILD CLUSTER BOOTSTRAP — T2 headline results
+* WILD CLUSTER BOOTSTRAP + TABLE A6
+* Runs BOTH null-imposed (default) and nonull (unrestricted) variants.
+* Generates CSV + LaTeX table comparing cluster p, null-boot p, nonull-boot p.
+*
+* Why both: Null-imposed bootstrap forces H0: beta=0, which is conservative
+* but produces inflated p-values when the true effect is large (Djogbenou,
+* MacKinnon & Nielsen 2019). The nonull variant resamples from the actual
+* fitted model and provides valid inference regardless of effect magnitude
+* (MacKinnon, Nielsen & Webb 2023).
 * =============================================================================
 
 di _n "{hline 72}"
-di "BOOTTEST: Wild cluster bootstrap for T2 headline results"
+di "BOOTTEST + TABLE A6: Wild cluster bootstrap (null + nonull)"
 di "{hline 72}"
 
-* Check if boottest is installed
 capture which boottest
 if _rc {
-    di as error "boottest not installed — skipping bootstrap. Install with: ssc install boottest"
+    di as error "boottest not installed. Install with: ssc install boottest"
+    di as error "Skipping bootstrap and Table A6."
 }
 else {
     use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
     drop if open_pros == 1
     drop if inlist(county_id, 3, 37, 62, 66, 74, 21)
 
-    * Save bootstrap p-values to CSV
+    * CSV for full results
     tempname fhbt
     local fbt "$OUTPUT/results/mi_boottest_results.csv"
     file open `fhbt' using "`fbt'", write replace
-    file write `fhbt' "outcome,treatment,beta,se,p_cluster,p_boot,nobs" _n
+    file write `fhbt' "outcome,treatment,beta,se,p_cluster,p_boot_null,p_boot_nonull,nobs" _n
 
     local boot_outcomes "fc_jury_share fc_dismiss_rate fc_plea_share severity_share utilization_rate fc_jury fh_jury"
+
+    * Also collect results for Table A6 LaTeX
+    tempname fh_a6
+    tempfile a6_csv
+    file open `fh_a6' using "`a6_csv'", write replace
+    file write `fh_a6' "outcome,treatment,p_cluster,p_null,p_nonull" _n
 
     foreach y of local boot_outcomes {
         di "  Bootstrapping: `y'"
@@ -1605,41 +1621,137 @@ else {
         if !_rc {
             local nval = e(N)
 
-            * Contested coefficient
+            * --- Contested ---
             local b1 = _b[treat_pros_contested_long]
             local s1 = _se[treat_pros_contested_long]
             local p1 = 2 * ttail(e(df_r), abs(`b1'/`s1'))
-            capture boottest treat_pros_contested_long, cluster(county_id) reps(999) seed(42) noci quietly
-            if !_rc {
-                local pb1 = r(p)
-            }
-            else local pb1 = .
-            file write `fhbt' "`y',contested," (`b1') "," (`s1') "," (`p1') "," (`pb1') "," (`nval') _n
 
-            * Uncontested coefficient
+            * Null-imposed bootstrap
+            local pb1_null = .
+            capture boottest treat_pros_contested_long, cluster(county_id) reps(999) seed(42) noci quietly
+            if !_rc local pb1_null = r(p)
+
+            * Nonull bootstrap
+            local pb1_nonull = .
+            capture boottest treat_pros_contested_long, cluster(county_id) reps(999) seed(42) noci nonull quietly
+            if !_rc local pb1_nonull = r(p)
+
+            file write `fhbt' "`y',contested," (`b1') "," (`s1') "," (`p1') "," (`pb1_null') "," (`pb1_nonull') "," (`nval') _n
+            file write `fh_a6' "`y',contested," (`p1') "," (`pb1_null') "," (`pb1_nonull') _n
+
+            * --- Uncontested ---
             local b2 = _b[treat_pros_uncontested]
             local s2 = _se[treat_pros_uncontested]
             local p2 = 2 * ttail(e(df_r), abs(`b2'/`s2'))
-            capture boottest treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci quietly
-            if !_rc {
-                local pb2 = r(p)
-            }
-            else local pb2 = .
-            file write `fhbt' "`y',uncontested," (`b2') "," (`s2') "," (`p2') "," (`pb2') "," (`nval') _n
 
-            * Delta test
-            capture boottest treat_pros_contested_long - treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci quietly
-            if !_rc {
-                local pbd = r(p)
-            }
-            else local pbd = .
+            local pb2_null = .
+            capture boottest treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci quietly
+            if !_rc local pb2_null = r(p)
+
+            local pb2_nonull = .
+            capture boottest treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci nonull quietly
+            if !_rc local pb2_nonull = r(p)
+
+            file write `fhbt' "`y',uncontested," (`b2') "," (`s2') "," (`p2') "," (`pb2_null') "," (`pb2_nonull') "," (`nval') _n
+            file write `fh_a6' "`y',uncontested," (`p2') "," (`pb2_null') "," (`pb2_nonull') _n
+
+            * --- Delta ---
             qui lincom treat_pros_contested_long - treat_pros_uncontested
-            file write `fhbt' "`y',delta," (r(estimate)) "," (r(se)) "," (2*ttail(e(df_r),abs(r(estimate)/r(se)))) "," (`pbd') "," (`nval') _n
+            local d = r(estimate)
+            local ds = r(se)
+            local dp = 2 * ttail(e(df_r), abs(`d'/`ds'))
+
+            local pbd_null = .
+            capture boottest treat_pros_contested_long - treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci quietly
+            if !_rc local pbd_null = r(p)
+
+            local pbd_nonull = .
+            capture boottest treat_pros_contested_long - treat_pros_uncontested, cluster(county_id) reps(999) seed(42) noci nonull quietly
+            if !_rc local pbd_nonull = r(p)
+
+            file write `fhbt' "`y',delta," (`d') "," (`ds') "," (`dp') "," (`pbd_null') "," (`pbd_nonull') "," (`nval') _n
+            file write `fh_a6' "`y',delta," (`dp') "," (`pbd_null') "," (`pbd_nonull') _n
         }
     }
 
     file close `fhbt'
-    di "Boottest results saved to: `fbt'"
+    file close `fh_a6'
+    di "Boottest CSV saved to: `fbt'"
+
+    * --- Build Table A6 from collected results ---
+    preserve
+    import delimited using "`a6_csv'", clear
+
+    local fA6 "$TAB_DIR/tableA6_bootstrap.tex"
+    file open t using "`fA6'", write replace
+
+    file write t "\begin{table}[htbp]\centering" _n
+    file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+    file write t "\caption{Wild Cluster Bootstrap Inference: Null-Imposed vs Unrestricted}" _n
+    file write t "\label{tab:bootstrap}" _n
+    file write t "\begin{threeparttable}" _n
+    file write t "\footnotesize" _n
+    file write t "\begin{tabular}{llccc}" _n
+    file write t "\toprule" _n
+    file write t `" & & (1) & (2) & (3) \\"' _n
+    file write t `"Outcome & Treatment & Cluster & Boot (null) & Boot (nonull) \\"' _n
+    file write t "\midrule" _n
+
+    local lbl_fc_jury_share "FC Jury Trial Rate"
+    local lbl_fc_dismiss_rate "FC Dismissal Rate"
+    local lbl_fc_plea_share "FC Plea Rate"
+    local lbl_severity_share "Severity Share"
+    local lbl_utilization_rate "Utilization Rate"
+    local lbl_fc_jury "FC Jury Verdicts"
+    local lbl_fh_jury "FH Jury Verdicts"
+
+    local lbl_contested "Contested"
+    local lbl_uncontested "Uncontested"
+    local lbl_delta "\(\Delta\)"
+
+    foreach y of local boot_outcomes {
+        local first_row = 1
+        foreach tr in contested uncontested delta {
+            qui summ p_cluster if outcome == "`y'" & treatment == "`tr'"
+            if r(N) > 0 {
+                local pc : di %5.3f r(mean)
+                qui summ p_null if outcome == "`y'" & treatment == "`tr'"
+                local pn : di %5.3f r(mean)
+                qui summ p_nonull if outcome == "`y'" & treatment == "`tr'"
+                local pnn : di %5.3f r(mean)
+
+                if `first_row' {
+                    file write t "`lbl_`y'' & `lbl_`tr'' & `=strtrim("`pc'")' & `=strtrim("`pn'")' & `=strtrim("`pnn'")' \\" _n
+                    local first_row = 0
+                }
+                else {
+                    file write t " & `lbl_`tr'' & `=strtrim("`pc'")' & `=strtrim("`pn'")' & `=strtrim("`pnn'")' \\" _n
+                }
+            }
+        }
+        file write t "\\[-0.3em]" _n
+    }
+
+    file write t "\midrule" _n
+    file write t "\multicolumn{5}{l}{\textit{Sample: 77 synchronized counties, open seats excluded.}} \\" _n
+    file write t "\multicolumn{5}{l}{\textit{999 bootstrap replications, Rademacher weights, seed 42.}} \\" _n
+    file write t "\bottomrule" _n
+    file write t "\end{tabular}" _n
+    file write t "\begin{tablenotes}\footnotesize" _n
+    file write t `"\item Col (1): conventional cluster-robust \(p\)-values from \texttt{reghdfe}."' _n
+    file write t `"\item Col (2): wild cluster bootstrap, null imposed (\(H_0: \beta = 0\) forced in bootstrap DGP)."' _n
+    file write t `"\item Col (3): wild cluster bootstrap, unrestricted (resamples from fitted model without"' _n
+    file write t `"  imposing \(H_0\)). When the true effect is large, null-imposed bootstrap inflates"' _n
+    file write t `"  \(p\)-values because the bootstrap DGP is misspecified \citep{djogbenou2019asymptotic}."' _n
+    file write t `"  The unrestricted variant provides valid inference regardless of effect magnitude"' _n
+    file write t `"  \citep{mackinnon2022cluster}."' _n
+    file write t "\end{tablenotes}" _n
+    file write t "\end{threeparttable}" _n
+    file write t "\end{table}" _n
+
+    file close t
+    restore
+    di "Table A6 DONE: `fA6'"
 }
 
 
@@ -1735,7 +1847,7 @@ file open t using "`fa5'", write replace
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Sensitivity to Caseload and Population Controls (T2, 77 Sync Counties)}" _n
-file write t "\label{tab:tableA5}" _n
+file write t "\label{tab:controls}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\tiny" _n
 file write t "\begin{tabular}{lcccc}" _n
