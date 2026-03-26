@@ -1706,7 +1706,7 @@ else {
     tempname fh_a6
     tempfile a6_csv
     file open `fh_a6' using "`a6_csv'", write replace
-    file write `fh_a6' "outcome,treatment,p_cluster,p_null,p_nonull" _n
+    file write `fh_a6' "outcome,treatment,beta,se,p_cluster,p_nonull,ci_lo,ci_hi" _n
 
     foreach y of local boot_outcomes {
         di "  Bootstrapping: `y'"
