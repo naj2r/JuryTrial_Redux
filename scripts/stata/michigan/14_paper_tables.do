@@ -98,6 +98,18 @@ local lbl_fc_plea_adj_share           "FC Plea Share (Adjud.)"
 local lbl_fh_jury_adj_share           "FH Jury Share (Adjud.)"
 local lbl_fh_plea_adj_share           "FH Plea Share (Adjud.)"
 
+* Treatment variable labels (for summary stats)
+local lbl_elec_incumbent              "Incumbent Election"
+local lbl_open_pros                   "Open Seat"
+local lbl_treat_pros_contested_long   "Contested (General)"
+local lbl_treat_pros_uncontested      "Uncontested"
+
+* Control/caseload variable labels
+local lbl_incoming_felony             "Incoming Felony Filings"
+local lbl_pending_felony              "Pending Felony Cases"
+local lbl_clearance_rate              "Clearance Rate"
+local lbl_county_pop                  "County Population"
+
 * --- Star function ---
 capture program drop add_stars
 program define add_stars, rclass
@@ -698,13 +710,13 @@ import delimited using "`t0_csv'", clear
 local fa1 "$TAB_DIR/tableA1_t0_sensitivity.tex"
 file open t using "`fa1'", write replace
 
+file write t "\begin{landscape}" _n
 file write t "\begin{table}[htbp]\centering" _n
 file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
 file write t "\caption{Baseline Election Effect: Sample Restriction Sensitivity}" _n
 file write t "\label{tab:t0-sensitivity}" _n
 file write t "\begin{threeparttable}" _n
 file write t "\tiny" _n
-file write t "\resizebox{\textwidth}{!}{" _n
 file write t "\begin{tabular}{lccccc}" _n
 file write t "\toprule" _n
 file write t `" & (1) & (2) & (3) & (4) & (5) \\"' _n
@@ -808,6 +820,7 @@ file write t `"\item \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01
 file write t "\end{tablenotes}" _n
 file write t "\end{threeparttable}" _n
 file write t "\end{table}" _n
+file write t "\end{landscape}" _n
 
 file close t
 restore
@@ -2015,6 +2028,171 @@ file close t
 restore
 
 di "Table A5 DONE: `fa5'"
+
+
+* =============================================================================
+* SUMMARY STATISTICS TABLE (replaces deprecated mi_table_sumstats.tex)
+* Uses augmented panel with both pipeline (jury dashboard) and
+* disposition (caseload dashboard) variables.
+* =============================================================================
+
+di _n "{hline 72}"
+di "SUMMARY STATISTICS TABLE"
+di "{hline 72}"
+
+use "$DATA_FINAL/michigan_panel_B_augmented.dta", clear
+
+local fss "$TAB_DIR/table_sumstats.tex"
+file open t using "`fss'", write replace
+
+file write t "\begin{table}[htbp]\centering" _n
+file write t "\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}" _n
+file write t "\caption{Summary Statistics}" _n
+file write t "\label{tab:sumstats}" _n
+file write t "\begin{threeparttable}" _n
+file write t "\footnotesize" _n
+file write t "\begin{tabular}{lcccccc}" _n
+file write t "\toprule" _n
+file write t `"Variable & Mean & SD & Min & Max & \(N\) & Source \\"' _n
+file write t "\midrule" _n
+
+* Define variable groups with labels and sources
+* Group 1: Treatment
+file write t "\multicolumn{7}{l}{\textit{Treatment Variables}} \\[0.3em]" _n
+
+foreach v in elec_incumbent open_pros treat_pros_contested_long treat_pros_uncontested {
+    qui summ `v'
+    local mn : di %6.3f r(mean)
+    local sd : di %6.3f r(sd)
+    local mi : di %6.0f r(min)
+    local ma : di %6.0f r(max)
+    local nn = r(N)
+    file write t "`lbl_`v'' & `=strtrim("`mn'")' & `=strtrim("`sd'")' & `=strtrim("`mi'")' & `=strtrim("`ma'")' & `nn' & Elections \\" _n
+}
+
+* Group 2: Pipeline counts
+file write t "\\[0.3em]\multicolumn{7}{l}{\textit{Jury Pipeline Counts (SCAO Form 73)}} \\[0.3em]" _n
+
+foreach v in summoned told_to_report actually_reported sent_to_courtroom questioned_in_voir_dire {
+    qui summ `v'
+    local mn : di %9.1f r(mean)
+    local sd : di %9.1f r(sd)
+    local mi : di %9.0f r(min)
+    local ma : di %9.0f r(max)
+    local nn = r(N)
+    file write t "`lbl_`v'' & `=strtrim("`mn'")' & `=strtrim("`sd'")' & `=strtrim("`mi'")' & `=strtrim("`ma'")' & `nn' & Jury \\" _n
+}
+
+* Group 3: Pipeline rates
+file write t "\\[0.3em]\multicolumn{7}{l}{\textit{Jury Pipeline Rates (SCAO Form 73)}} \\[0.3em]" _n
+
+foreach v in pct_told_to_report pct_sent_to_courtroom pct_questioned_in_voir_dire utilization_rate {
+    qui summ `v'
+    local mn : di %6.3f r(mean)
+    local sd : di %6.3f r(sd)
+    local mi : di %6.3f r(min)
+    local ma : di %6.3f r(max)
+    local nn = r(N)
+    file write t "`lbl_`v'' & `=strtrim("`mn'")' & `=strtrim("`sd'")' & `=strtrim("`mi'")' & `=strtrim("`ma'")' & `nn' & Jury \\" _n
+}
+
+* Group 4: Verdict/trial counts (caseload dashboard)
+file write t "\\[0.3em]\multicolumn{7}{l}{\textit{Verdict and Trial Counts (SCAO Outgoing Caseload)}} \\[0.3em]" _n
+
+foreach v in fc_jury fh_jury fc_bench fh_bench felony_jury_total {
+    qui summ `v'
+    local mn : di %6.1f r(mean)
+    local sd : di %6.1f r(sd)
+    local mi : di %6.0f r(min)
+    local ma : di %6.0f r(max)
+    local nn = r(N)
+    file write t "`lbl_`v'' & `=strtrim("`mn'")' & `=strtrim("`sd'")' & `=strtrim("`mi'")' & `=strtrim("`ma'")' & `nn' & Caseload \\" _n
+}
+
+* Group 5: Plea/dismissal counts
+file write t "\\[0.3em]\multicolumn{7}{l}{\textit{Plea and Dismissal Counts (SCAO Outgoing Caseload)}} \\[0.3em]" _n
+
+foreach v in fc_plea fh_plea fc_dismissed fh_dismissed {
+    qui summ `v'
+    local mn : di %6.1f r(mean)
+    local sd : di %6.1f r(sd)
+    local mi : di %6.0f r(min)
+    local ma : di %6.0f r(max)
+    local nn = r(N)
+    file write t "`lbl_`v'' & `=strtrim("`mn'")' & `=strtrim("`sd'")' & `=strtrim("`mi'")' & `=strtrim("`ma'")' & `nn' & Caseload \\" _n
+}
+
+* Group 6: Disposition rates
+file write t "\\[0.3em]\multicolumn{7}{l}{\textit{Disposition Rates and Composition}} \\[0.3em]" _n
+
+foreach v in fc_jury_share fh_jury_share fc_plea_share fh_plea_share fc_dismiss_rate fh_dismiss_rate severity_share {
+    qui summ `v'
+    local mn : di %6.3f r(mean)
+    local sd : di %6.3f r(sd)
+    local mi : di %6.3f r(min)
+    local ma : di %6.3f r(max)
+    local nn = r(N)
+    file write t "`lbl_`v'' & `=strtrim("`mn'")' & `=strtrim("`sd'")' & `=strtrim("`mi'")' & `=strtrim("`ma'")' & `nn' & Derived \\" _n
+}
+
+* Group 7: Adjudicated shares
+file write t "\\[0.3em]\multicolumn{7}{l}{\textit{Adjudicated Shares (excl. dismissals)}} \\[0.3em]" _n
+
+foreach v in fc_jury_adj_share fc_plea_adj_share fh_jury_adj_share fh_plea_adj_share {
+    qui summ `v'
+    local mn : di %6.3f r(mean)
+    local sd : di %6.3f r(sd)
+    local mi : di %6.3f r(min)
+    local ma : di %6.3f r(max)
+    local nn = r(N)
+    file write t "`lbl_`v'' & `=strtrim("`mn'")' & `=strtrim("`sd'")' & `=strtrim("`mi'")' & `=strtrim("`ma'")' & `nn' & Derived \\" _n
+}
+
+* Group 8: Caseload controls
+file write t "\\[0.3em]\multicolumn{7}{l}{\textit{Caseload Controls}} \\[0.3em]" _n
+
+foreach v in incoming_felony pending_felony clearance_rate county_pop {
+    qui summ `v'
+    if "`v'" == "county_pop" {
+        local mn : di %9.0f r(mean)
+        local sd : di %9.0f r(sd)
+        local mi : di %9.0f r(min)
+        local ma : di %9.0f r(max)
+    }
+    else if "`v'" == "clearance_rate" {
+        local mn : di %6.3f r(mean)
+        local sd : di %6.3f r(sd)
+        local mi : di %6.3f r(min)
+        local ma : di %6.3f r(max)
+    }
+    else {
+        local mn : di %9.1f r(mean)
+        local sd : di %9.1f r(sd)
+        local mi : di %9.0f r(min)
+        local ma : di %9.0f r(max)
+    }
+    local nn = r(N)
+    local src "Caseload"
+    if "`v'" == "county_pop" local src "Census"
+    file write t "`lbl_`v'' & `=strtrim("`mn'")' & `=strtrim("`sd'")' & `=strtrim("`mi'")' & `=strtrim("`ma'")' & `nn' & `src' \\" _n
+}
+
+file write t "\midrule" _n
+file write t "\multicolumn{7}{l}{\textit{Panel: 83 counties \(\times\) 7 years (2016--2019, 2022--2024). N = 579 max.}} \\" _n
+file write t "\bottomrule" _n
+file write t "\end{tabular}" _n
+file write t "\begin{tablenotes}\footnotesize" _n
+file write t `"\item Jury pipeline variables from SCAO Jury Statistics Dashboard (Form 73)."' _n
+file write t `"\item Verdict, plea, and dismissal variables from SCAO Interactive Court Data Dashboard (outgoing caseload)."' _n
+file write t `"\item FC = Capital Felonies (life-sentence-eligible). FH = Non-capital Felonies. Circuit courts only."' _n
+file write t `"\item Adjudicated shares use denominator = jury + bench + plea (excludes dismissals)."' _n
+file write t `"\item N varies by outcome due to missing pipeline denominators and caseload coverage."' _n
+file write t "\end{tablenotes}" _n
+file write t "\end{threeparttable}" _n
+file write t "\end{table}" _n
+
+file close t
+di "Summary Stats DONE: `fss'"
 
 
 di _n "========================================"
