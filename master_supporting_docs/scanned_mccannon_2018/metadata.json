@@ -1,0 +1,194 @@
+{
+  "source_pdf": "mccannon2018_informative_contests.pdf",
+  "source_path": "C:\\Users\\jensenn\\Dropbox\\Research Resources\\law_econ_resources\\Papers\\Prosecutor_Elections\\mccannon2018_informative_contests.pdf",
+  "total_pages": 16,
+  "extraction_timestamp": "2026-03-24T19:49:41.078019",
+  "scanned_pdf": false,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 3112,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 2,
+      "char_count": 5687,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 3,
+      "char_count": 5490,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 4,
+      "char_count": 4605,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 5,
+      "char_count": 5521,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 6,
+      "char_count": 1762,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 7,
+      "char_count": 3271,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 8,
+      "char_count": 3321,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 9,
+      "char_count": 3551,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 10,
+      "char_count": 4429,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 11,
+      "char_count": 2675,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 12,
+      "char_count": 4174,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 13,
+      "char_count": 4230,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 14,
+      "char_count": 4524,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 15,
+      "char_count": 2745,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 16,
+      "char_count": 301,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    }
+  ],
+  "sections": [
+    {
+      "file": "sec_01_pp01-03_introduction.md",
+      "label": "introduction",
+      "display_label": "Introduction",
+      "pages": [
+        1,
+        2,
+        3
+      ],
+      "is_subsplit": false,
+      "char_count": 14395
+    },
+    {
+      "file": "sec_02_pp04-07_model.md",
+      "label": "model",
+      "display_label": "Model",
+      "pages": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "is_subsplit": false,
+      "char_count": 15301
+    },
+    {
+      "file": "sec_03_pp08-10_extension.md",
+      "label": "extension",
+      "display_label": "Extension",
+      "pages": [
+        8,
+        9,
+        10
+      ],
+      "is_subsplit": false,
+      "char_count": 11409
+    },
+    {
+      "file": "sec_04_pp11-11_conclusion.md",
+      "label": "conclusion",
+      "display_label": "Conclusion",
+      "pages": [
+        11
+      ],
+      "is_subsplit": false,
+      "char_count": 2711
+    },
+    {
+      "file": "sec_05_pp12-12_appendix.md",
+      "label": "appendix",
+      "display_label": "Appendix",
+      "pages": [
+        12
+      ],
+      "is_subsplit": false,
+      "char_count": 4210
+    },
+    {
+      "file": "sec_06_pp13-16_references.md",
+      "label": "references",
+      "display_label": "References",
+      "pages": [
+        13,
+        14,
+        15,
+        16
+      ],
+      "is_subsplit": false,
+      "char_count": 11950
+    }
+  ],
+  "split_method": "headers"
+}

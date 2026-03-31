@@ -1,0 +1,75 @@
+% =============================================================================
+% MODEL SPECIFICATION SUMMARY — Copy-paste reference
+% =============================================================================
+
+% --- Model 1 (T0): Election-Year Binary ---
+% Sample: B_no_offcycle, open-seat cycles excluded (~465 obs)
+\begin{equation}\tag{T0}
+Y_{ct} = \beta \cdot \text{ElectionYear}_{ct} + \alpha_c + \gamma_t + \varepsilon_{ct}
+\end{equation}
+% ElectionYear = 1 if incumbent-running prosecutor election
+% Omitted: non-election years
+% Open-seat election years AND their preceding lame-duck years are dropped
+
+
+% --- Model 2 (T1): Incumbent vs Open Seat (MAIN SPECIFICATION) ---
+% Sample: B_no_offcycle, full panel (~415 obs)
+\begin{equation}\tag{T1}
+Y_{ct} = \beta_1 \cdot \text{IncumbentRunning}_{ct} + \beta_2 \cdot \text{OpenSeat}_{ct} + \alpha_c + \gamma_t + \varepsilon_{ct}
+\end{equation}
+% Both coefficients relative to non-election years (omitted)
+% Key estimand: \Delta = \beta_1 - \beta_2 tested via lincom
+% TWFE weights: clean (0.7% negative weight share)
+
+
+% --- Model 3 (T5): Within-Election Comparison ---
+% Sample: B_no_offcycle, election years only (~134 obs)
+\begin{equation}\tag{T5}
+Y_{ct} = \beta \cdot \text{IncumbentRunning}_{ct} + \alpha_c + \gamma_t + \varepsilon_{ct}
+\end{equation}
+% Sample restricted to election years only
+% Omitted: open-seat elections
+% \beta = effect of incumbent presence relative to open seats
+
+
+% --- Model 4 (T2): Contestation Mechanism ---
+% Sample: B_no_offcycle, open seats + primary-only excluded (~390 obs)
+\begin{equation}\tag{T2}
+Y_{ct} = \beta_1 \cdot \text{Contested}_{ct} + \beta_2 \cdot \text{Uncontested}_{ct} + \alpha_c + \gamma_t + \varepsilon_{ct}
+\end{equation}
+% Both coefficients relative to non-election years (omitted)
+% Key estimand: \Delta = \beta_1 - \beta_2 tested via lincom
+% Contested = general-election challenger present
+% T2 = T3 in this sample (zero primary-only contested after PPP corrections)
+
+
+% --- All specifications ---
+% \alpha_c = county fixed effects (83 Michigan counties)
+% \gamma_t = year fixed effects (5 years: 2016, 2017, 2019, 2023, 2024)
+% Standard errors clustered at county level
+% B_no_offcycle = Panel B dropping 2018 and 2022 (off-cycle election years)
+% COVID years 2020--2021 always excluded (SCAO data does not exist)
+
+
+% --- Heterogeneity Variants ---
+% Each model estimated separately for:
+%   - Above-median population counties (~42 counties)
+%   - Below-median population counties (~41 counties)
+% Median county population: ~37,650
+
+
+% --- Robustness Variants (Table 7) ---
+% B:             Full panel (83 counties x 7 years = 579 obs)
+% B_no_offcycle: Drop 2018, 2022 (main specification)
+% B_no2016:      Drop 2016 (leave-one-cycle-out)
+% B_no2024:      Drop 2024 (leave-one-cycle-out)
+
+
+% --- Mapping: Paper Model Numbers to Code Tier Labels ---
+% | Paper | Code  | Treatment Variable(s)                          | Sample Restriction       |
+% |-------|-------|------------------------------------------------|--------------------------|
+% | M1    | T0    | is_election_year_pros                          | Open-seat cycles excl.   |
+% | M2    | T1    | treat_pros_pressure + open_pros                | Full B_no_offcycle       |
+% | M3    | T5    | treat_pros_pressure                            | Election years only      |
+% | M4    | T2/T3 | treat_pros_contested_long + treat_pros_uncontested | Open seats excluded  |
+% |  --   | T4    | treat_pros_pressure + open_pros (per-10k DVs)  | Full panel (appendix)    |

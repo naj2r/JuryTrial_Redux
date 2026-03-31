@@ -1,0 +1,244 @@
+{
+  "source_pdf": "mccannon2013_elections_mistakes_appeals.pdf",
+  "source_path": "C:\\Users\\jensenn\\Dropbox\\Research Resources\\law_econ_resources\\Papers\\Prosecutor_Elections\\mccannon2013_elections_mistakes_appeals.pdf",
+  "total_pages": 20,
+  "extraction_timestamp": "2026-03-24T19:43:37.987862",
+  "scanned_pdf": false,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 2793,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 2,
+      "char_count": 2750,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 3,
+      "char_count": 3471,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 4,
+      "char_count": 3797,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 5,
+      "char_count": 3104,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 6,
+      "char_count": 3494,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 7,
+      "char_count": 3040,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 8,
+      "char_count": 3396,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 9,
+      "char_count": 1944,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 10,
+      "char_count": 2256,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 11,
+      "char_count": 3814,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 12,
+      "char_count": 2558,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 13,
+      "char_count": 2587,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 14,
+      "char_count": 2535,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 15,
+      "char_count": 2877,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 16,
+      "char_count": 3433,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 17,
+      "char_count": 2977,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 18,
+      "char_count": 3547,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 19,
+      "char_count": 2025,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 20,
+      "char_count": 2604,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    }
+  ],
+  "sections": [
+    {
+      "file": "sec_01_pp01-01_front_matter.md",
+      "label": "front_matter",
+      "display_label": "Front Matter",
+      "pages": [
+        1
+      ],
+      "is_subsplit": false,
+      "char_count": 2827
+    },
+    {
+      "file": "sec_02_pp02-05_introduction_pt1.md",
+      "label": "introduction_pt1",
+      "display_label": "Introduction (Part 1)",
+      "pages": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "is_subsplit": true,
+      "char_count": 13264
+    },
+    {
+      "file": "sec_03_pp06-07_introduction_pt2.md",
+      "label": "introduction_pt2",
+      "display_label": "Introduction (Part 2)",
+      "pages": [
+        6,
+        7
+      ],
+      "is_subsplit": true,
+      "char_count": 6604
+    },
+    {
+      "file": "sec_04_pp08-11_results_pt1.md",
+      "label": "results_pt1",
+      "display_label": "Results (Part 1)",
+      "pages": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "is_subsplit": true,
+      "char_count": 11556
+    },
+    {
+      "file": "sec_05_pp12-15_results_pt2.md",
+      "label": "results_pt2",
+      "display_label": "Results (Part 2)",
+      "pages": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "is_subsplit": true,
+      "char_count": 10707
+    },
+    {
+      "file": "sec_06_pp16-16_conclusion.md",
+      "label": "conclusion",
+      "display_label": "Conclusion",
+      "pages": [
+        16
+      ],
+      "is_subsplit": false,
+      "char_count": 3469
+    },
+    {
+      "file": "sec_07_pp17-18_references.md",
+      "label": "references",
+      "display_label": "References",
+      "pages": [
+        17,
+        18
+      ],
+      "is_subsplit": false,
+      "char_count": 6598
+    },
+    {
+      "file": "sec_08_pp19-20_appendix.md",
+      "label": "appendix",
+      "display_label": "Appendix",
+      "pages": [
+        19,
+        20
+      ],
+      "is_subsplit": false,
+      "char_count": 4703
+    }
+  ],
+  "split_method": "headers"
+}

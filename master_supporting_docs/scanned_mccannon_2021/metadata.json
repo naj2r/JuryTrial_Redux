@@ -1,0 +1,289 @@
+{
+  "source_pdf": "mccannon2021contests.pdf",
+  "source_path": "C:\\Users\\jensenn\\Dropbox\\Research Resources\\law_econ_resources\\Papers\\Prosecutor_Elections\\mccannon2021contests.pdf",
+  "total_pages": 20,
+  "extraction_timestamp": "2026-03-24T19:49:41.440020",
+  "scanned_pdf": false,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 1049,
+      "has_images": true,
+      "image_count": 2,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 2,
+      "char_count": 1968,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 3,
+      "char_count": 4628,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 4,
+      "char_count": 4208,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 5,
+      "char_count": 4500,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 6,
+      "char_count": 3421,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 7,
+      "char_count": 4158,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 8,
+      "char_count": 3048,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 9,
+      "char_count": 3715,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 10,
+      "char_count": 2754,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 11,
+      "char_count": 3013,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 12,
+      "char_count": 3300,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 13,
+      "char_count": 3394,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 14,
+      "char_count": 1317,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 15,
+      "char_count": 3643,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 16,
+      "char_count": 3959,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 17,
+      "char_count": 3866,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 18,
+      "char_count": 3713,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 19,
+      "char_count": 1868,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 20,
+      "char_count": 1053,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    }
+  ],
+  "sections": [
+    {
+      "file": "sec_01_pp01-01_front_matter.md",
+      "label": "front_matter",
+      "display_label": "Front Matter",
+      "pages": [
+        1
+      ],
+      "is_subsplit": false,
+      "char_count": 1083
+    },
+    {
+      "file": "sec_02_pp02-03_introduction.md",
+      "label": "introduction",
+      "display_label": "Introduction",
+      "pages": [
+        2,
+        3
+      ],
+      "is_subsplit": false,
+      "char_count": 6666
+    },
+    {
+      "file": "sec_03_pp04-04_related_literature.md",
+      "label": "related_literature",
+      "display_label": "Related Literature",
+      "pages": [
+        4
+      ],
+      "is_subsplit": false,
+      "char_count": 4242
+    },
+    {
+      "file": "sec_04_pp05-06_theory.md",
+      "label": "theory",
+      "display_label": "Theory",
+      "pages": [
+        5,
+        6
+      ],
+      "is_subsplit": false,
+      "char_count": 7991
+    },
+    {
+      "file": "sec_05_pp07-07_quasi_natural_experiment.md",
+      "label": "quasi_natural_experiment",
+      "display_label": "Quasi Natural Experiment",
+      "pages": [
+        7
+      ],
+      "is_subsplit": false,
+      "char_count": 4192
+    },
+    {
+      "file": "sec_06_pp08-08_data.md",
+      "label": "data",
+      "display_label": "Data",
+      "pages": [
+        8
+      ],
+      "is_subsplit": false,
+      "char_count": 3082
+    },
+    {
+      "file": "sec_07_pp09-09_incumbency_advantage.md",
+      "label": "incumbency_advantage",
+      "display_label": "Incumbency Advantage",
+      "pages": [
+        9
+      ],
+      "is_subsplit": false,
+      "char_count": 3749
+    },
+    {
+      "file": "sec_08_pp10-10_entry.md",
+      "label": "entry",
+      "display_label": "Entry",
+      "pages": [
+        10
+      ],
+      "is_subsplit": false,
+      "char_count": 2790
+    },
+    {
+      "file": "sec_09_pp11-14_robustness_pt1.md",
+      "label": "robustness_pt1",
+      "display_label": "Robustness (Part 1)",
+      "pages": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "is_subsplit": true,
+      "char_count": 11174
+    },
+    {
+      "file": "sec_10_pp15-15_robustness_pt2.md",
+      "label": "robustness_pt2",
+      "display_label": "Robustness (Part 2)",
+      "pages": [
+        15
+      ],
+      "is_subsplit": true,
+      "char_count": 3679
+    },
+    {
+      "file": "sec_11_pp16-16_conclusion.md",
+      "label": "conclusion",
+      "display_label": "Conclusion",
+      "pages": [
+        16
+      ],
+      "is_subsplit": false,
+      "char_count": 3995
+    },
+    {
+      "file": "sec_12_pp17-18_acknowledgments.md",
+      "label": "acknowledgments",
+      "display_label": "Acknowledgments",
+      "pages": [
+        17,
+        18
+      ],
+      "is_subsplit": false,
+      "char_count": 7653
+    },
+    {
+      "file": "sec_13_pp19-20_appendix.md",
+      "label": "appendix",
+      "display_label": "Appendix",
+      "pages": [
+        19,
+        20
+      ],
+      "is_subsplit": false,
+      "char_count": 2995
+    }
+  ],
+  "split_method": "headers"
+}

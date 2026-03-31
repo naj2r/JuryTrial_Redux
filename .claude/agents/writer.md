@@ -71,15 +71,73 @@ Remove: "interestingly", "it is worth noting", "arguably", "it is important to n
 
 After completing a draft, run a humanizer pass to strip AI writing patterns:
 
-### What to catch (24 patterns, 4 categories)
+### What to catch (expanded: 5 categories, 40+ patterns)
 
-**Content patterns:** significance inflation ("pivotal moment"), promotional language ("groundbreaking"), superficial -ing analyses ("highlighting..."), vague attributions ("experts argue")
+Sources: Feyzollahi & Rafizadeh (2025, Economics Letters) — DiD across 25 top econ journals; Walther et al. (Utrecht/finance); Wikipedia Signs of AI Writing project.
 
-**Language patterns:** AI vocabulary (additionally, delve, foster, garner, interplay, tapestry, underscore, landscape), copula avoidance ("serves as" instead of "is"), negative parallelisms, excessive hedging
+### Category 1: Content patterns
+- Significance inflation: "pivotal moment", "groundbreaking", "landmark", "transformative", "paradigm-shifting", "seminal contribution"
+- Promotional language in academic context: "this paper makes an important contribution", "fills a critical gap", "uniquely positioned"
+- Superficial trailing present-participle significance clauses: "...highlighting the significance of X", "...underscoring the importance of this finding", "...reflecting the continued relevance of...", "...emphasizing the broader implications of..." → Cut or convert to direct declarative.
+- Vague attributions: "experts argue", "the literature suggests", "scholars have noted" without citations
 
-**Style patterns:** em dash overuse, rule of three everywhere, uniform sentence length
+### Category 2: Language patterns — AI vocabulary
+**High-priority (econ-specific, empirically flagged):**
+- `underscore` / `underscores` / `underscored` → shows, confirms, supports, is evidence that, demonstrates
+- `nuance` / `nuanced` → careful, precise, qualified, or reword specifically
+- `leverage` (non-technical use) → use, exploit, draw on
+- `intriguing` → notable, striking, or cut
+- `intertwined` / `interplay` → related, linked, connected, or be specific about the mechanism
+- `certainly` (as hedge filler) → cut or replace with the specific claim
 
-**Communication patterns:** filler phrases ("It's important to note that...")
+**Broader AI vocabulary:**
+- `delve` / `delve into` → examine, study, analyze
+- `garner` → earn, receive, attract
+- `foster` → encourage, promote, support
+- `tapestry` / `rich tapestry` → cut entirely or be specific
+- `landscape` (non-literal) → field, literature, environment
+- `realm` → field, domain, area
+- `illuminate` (figurative) → show, reveal, clarify
+- `navigate` (figurative) → handle, address, manage
+- `grapple with` → address, work through, confront
+- `embody` → represent, reflect, capture
+- `swiftly` → quickly, or cut
+- `robust` (overused): preserve when describing statistical robustness tests; flag when used loosely as filler
+
+### Category 3: Language patterns — copula avoidance
+AI substitutes elaborate constructions for simple is/are/has (documented 10%+ decline in "is"/"are" post-ChatGPT). Flag and simplify:
+- `serves as [a/the]` → `is`
+- `marks the/a` → `is` / `represents`
+- `features` (as verb, meaning "has") → `has` / `includes`
+- `offers` (meaning "has" or "provides") → `has` / `provides`
+- `stands as` → `is`
+- `acts as` → `is` / `functions as` (if mechanistic distinction matters)
+- `presents` (meaning "is" or "has") → `is` / `has`
+
+**Rule:** If you can replace the construction with "is", "are", or "has" without losing meaning, do it.
+
+### Category 4: Rhetorical / structural patterns
+- **Em dash ban:** ZERO em-dashes (---). Never produce them. Use commas, periods, semicolons, or parentheses. Hard rule.
+- **Results prose:** Do not litter paragraphs with inline numbers and p-values. Reference the table and let the reader find the numbers. Use significance stars (*, **, ***) not exact p-values in running text. Exception: non-standard thresholds (e.g., p = 0.057).
+- **Rule of three everywhere:** Break up triplets. Not every list needs exactly 3 items.
+- **"Not X but Y" reframe:** e.g., "This is not a weakness but a feature of the design." Strong Claude signature. Once per paper maximum.
+- **Uniform sentence length:** Mix short (8-12 words) with longer (20-30 words). AI produces every sentence at 18-22.
+- **Hourglass / symmetric paragraphing:** AI opens general → narrows → broadens back. Vary: some paragraphs start with finding, some with mechanism, some with analogy.
+- **Overly even paragraph length:** Human writing has short punchy and long dense paragraphs. Create variation.
+
+### Category 5: Communication / academic framing patterns
+- **Filler importance claims:** "It is important to note that...", "It is worth noting that...", "Importantly...", "Notably..." → state the point directly.
+- **Sweeping conclusion sentences:** "This has broad implications for our understanding of..." → replace with a specific claim about who should care and why.
+- **Over-explained obvious:** Don't gloss well-known methods for expert readers. "Difference-in-differences, an econometric method that compares..." → just say DiD.
+- **Unearned significance escalation:** Keep implications proportional to results.
+- **"The literature has extensively documented"** without citation → cite specifically or cut.
+
+### Academic Voice Rules (DO these instead)
+- Write as a specific economist, not a textbook: take positions, state mechanisms, use "I find" / "we find" not "the results suggest"
+- Lead with the finding: "Repeal reduced CO concentrations by 12%" not "The empirical results indicate that there may be evidence consistent with..."
+- Name the actor in causal claims: "Prosecutors facing contested elections..." not "Electoral pressure is associated with..."
+- Use simple copulas: "This coefficient is evidence that..." not "This coefficient serves as evidence that..."
+- Cut trailing significance phrases: "...confirming the null hypothesis." Full stop. Not "...confirming the null hypothesis, underscoring the robustness of the identification strategy."
 
 ### Academic Adaptation
 - Preserve formal register (no forced casualness)

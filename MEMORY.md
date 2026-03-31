@@ -70,3 +70,71 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:meta] Dogfooding principles must be enforced: plan-first, spec-then-plan, quality gates, session logs → we follow our own guide.
 
 [LEARN:meta] Template development work (building infrastructure, docs) doesn't create session logs in quality_reports/ → those are for user work (slides, analysis), not meta-work. Keeps template clean for users who fork.
+
+## Project-Specific (Jury Trial Redux)
+
+[LEARN:project] User institution is Wabash College. Any Emory references in templates are placeholders.
+
+[LEARN:project] "Shadow expansion" mobilization story is DEAD (2026-03-20 correction). Current framing: "shadow contraction" — election pressure reduces voir dire utilization and suppresses jury verdicts. Contestation adds capital-felony verdict premium in small counties.
+
+[LEARN:project] Overleaf results section (5-results.tex) contains pre-correction coefficient values. All specific numbers are UNVERIFIED until pipeline re-run with corrected code.
+
+[LEARN:project] Three locations: repo (code + config), Dropbox $RB (data + results + Quarto book), Overleaf $OL (paper .tex). See `_paths.md` for routing.
+
+[LEARN:data] Log transform rule: log(x) is fine for CONTROLS with no zeros (e.g., log_county_pop — every county has positive population). Log(x) is BAD for outcomes or controls with concentrated zeros (jury counts, plea counts, pending caseload). pending_felony has zeros at 1st percentile — use levels, not log. Permanent rule.
+
+[LEARN:data] FC = Felony Capital (life-eligible), FH = Felony non-capital. From SCAO case type codes. Never guess definitions.
+
+[LEARN:data] `B_midterm` was renamed to `B_no_offcycle` (2026-03-21). It means "dropping 2018 and 2022 off-cycle years." Rename applied to all do-files + CSV outputs. Coefficients verified identical pre/post rename.
+
+[LEARN:stata] Always use PowerShell batch mode for Stata: `& "C:\Program Files\StataNow19\StataMP-64.exe" /e do "path\to\file.do"`. Never run from bash.
+
+[LEARN:stata] Do NOT use `///` line continuation inside `local` macro definitions with quoted strings (`local x "a b /// c d"`). Stata treats `///` as literal text. Put the full list on one line.
+
+[LEARN:stata] Stata writes p-values without leading zeros (`.39` not `0.39`). R's `read_csv` parses these as character strings. ALWAYS add `mutate(across(c(beta, se, p_value, ci_lo, ci_hi), as.numeric))` after reading Stata-generated CSVs in R/Quarto.
+
+[LEARN:identity] CLAUDE.md must stay under 150 lines. Verbose content goes into .claude/rules/ files.
+
+[LEARN:identification] `is_election_year_pros` = 1 for ALL election years including open seats (N=170). It OVERLAPS with `open_pros`. Use `treat_pros_pressure` (alias `elec_incumbent`) for incumbent-only elections. These are mutually exclusive with `open_pros`.
+
+[LEARN:identification] T0 cannot use county + year FE (TWFE) because election timing is nearly synchronized — year FE absorbs the election signal. Use county FE only for T0 (descriptive benchmark). T2 can use TWFE because contested/uncontested varies within election years.
+
+[LEARN:identification] Off-cycle counties (Allegan, Isabella, Newaygo, Osceola, Roscommon + Delta) have structurally lower composition baselines (capital felony share 5.8% vs 13.9%). They distort year FE estimation for composition outcomes. Δ (contested - uncontested) is robust; individual coefficients are sensitive. Address with timing-group × year FE (= 2-cohort Wooldridge, they're identical).
+
+[LEARN:identification] 2018 and 2022 off-cycle elections are the SAME off-cycle schedule, not separate cohorts. Do NOT split into 3 cohorts (sync, 2018, 2022). Use 2 cohorts only (sync vs off-cycle). The 3-cohort Wooldridge was an error — corrected 2026-03-25.
+
+[LEARN:identification] TWFE weights for T2: contested 0/39 negative (perfect), uncontested 2/105 negative (0.06%). T2 is TWFE-valid on the full panel.
+
+[LEARN:tables] Stata `file write` eats `$` as macro references. Use `\(` and `\)` for inline LaTeX math instead of `$...$`. Or use compound quotes `` `"..."' `` to suppress expansion.
+
+[LEARN:tables] Portrait format (outcomes as rows) is better for 16-outcome tables. Use `file write` loop, not `esttab` (which forces outcomes as columns).
+
+[LEARN:workflow] When user says "add placeholder" to the paper, ALWAYS use: red font (\color{red}), bold header with description + timestamp, closing timestamp. Format: {\color{red}\textbf{[PLACEHOLDER --- DESCRIPTION --- YYYY-MM-DD HH:MM]} ... text ... (YYYY-MM-DD HH:MM)}
+
+[LEARN:data] SCAO jury utilization dashboard verdict columns (capital_felony, other_felony, other_cases) are BROKEN for 2024. Power BI uses MIN() aggregation for capital_felony. Shows 3 FC verdicts statewide vs 431 in caseload data. Use SCAO outgoing caseload dashboard (outgoing_felony_by_year.csv) for ALL verdict, plea, and dismissal variables. Pipeline variables (summoned through utilization_rate) are fine from jury dashboard.
+
+[LEARN:data] The SCAO 73 jury statistics form does NOT collect verdict categories at all. Only pipeline counts (summoned through questioned_in_voir_dire). Verdict columns in the jury dashboard come from a different, unreliable data source.
+
+[LEARN:identification] Δ ≈ 0 on disposition margins (FC jury trial rate, FC dismissal rate) distinguishes competence-maintenance from voter-signaling (McCannon). McCannon predicts Δ > 0 (more behavior change when challenged). Our finding: Δ = 0 — the election cycle itself is sufficient, regardless of challenger presence. This is a distinct theoretical contribution.
+
+[LEARN:identification] FC dismissal rate (-13.6pp***) is the strongest individual result. Both contested and uncontested produce identical drops (Δ = 0.000). FH dismissal rate increases under contestation only (+2.9pp**) — contested prosecutors triage non-capital cases.
+
+[LEARN:git] Always use SSH for git remotes, not HTTPS. SSH key exists at ~/.ssh/id_ed25519 and is authenticated with GitHub (naj2r). When setting up a new repo or encountering OAuth popups, run: `git remote set-url origin git@github.com:naj2r/REPO.git`
+
+[LEARN:stata] NEVER use `levelsof` to extract numeric values from a dataset into locals. `levelsof` is for string/categorical values. For numeric extraction from a single-row filter, use `qui summ varname if condition` then `local val = r(mean)`. The `levelsof` approach causes `<0.01 invalid name` errors when the local is empty or when Stata tries to parse a numeric literal as a name.
+
+[LEARN:stata] All regression panels should be built from ONE unified augmented dataset. Do NOT load different .dta files for different tables — fragile, bad for replication. Use `05b_build_augmented_panel.do` to merge all sources (pipeline, caseload, disposition, election) into `michigan_panel_B_augmented.dta`. Pipeline position: after 05 + 03d, before 06.
+
+[LEARN:tables] AER formatting standard: booktabs only (\toprule, \midrule, \bottomrule), no vertical lines, threeparttable for notes, SEs in parentheses below coefficients, stars (*p<0.10, **p<0.05, ***p<0.01), column headers (1)/(2)/(3), notes section with sample/specification/clustering description. Use siunitx S columns for decimal alignment when needed.
+
+[LEARN:humanizer] When updating humanizer patterns in agent/skill files, NEVER replace existing content. All updates must be ADDITIVE — append new categories and patterns AFTER the existing ones. Preserve every existing pattern, rule, and deduction. If the existing file has 4 categories with 24 patterns, the result must have those same 24 patterns PLUS any new ones. Merge, never substitute.
+
+[LEARN:voice] ZERO em-dashes. The user's writing voice does not use em-dashes. Claude must NEVER produce em-dashes (---) in any prose, placeholder text, or paper content. Use commas, periods, semicolons, or parentheses instead. This is a hard rule, not a guideline. If an em-dash appears in Claude output, it is a bug.
+
+[LEARN:voice] Results prose style: do NOT litter paragraphs with inline numbers and p-values. Reference the table ("Table 4 shows...") and let the reader find the numbers. Use significance stars (*, **, ***) when mentioning a result in text, not exact p-values. Exception: p-values at non-standard thresholds (e.g., p = 0.057) where the star convention is ambiguous. Never write sentences like "the coefficient is -0.136 (SE = 0.021, p < 0.001, 95% CI [-0.176, -0.096])" in running text.
+
+[LEARN:tables] HARD RULE: The do-file that generates tables (14_paper_tables.do) must ALWAYS match the current results. Every time a model, sample restriction, label, or outcome list changes, the do-file must be updated AND re-run BEFORE any prose is written referencing those tables. Never write prose from memory or old numbers. Never let the do-file and the Overleaf .tex files diverge. The do-file is the single source of truth for all table content. See quality_reports/MODEL_SPECIFICATIONS.md for the authoritative spec.
+
+[LEARN:tables] HARD RULE: Labels in 14_paper_tables.do must match labels in Overleaf. The do-file OVERWRITES the .tex files on every run. If a label is changed in Overleaf but not in the do-file, the next run destroys the fix. Always change labels in the do-file FIRST, then run, then verify the Overleaf files match.
+
+[LEARN:results] Controlled specifications (incoming_felony + pending_felony + log_county_pop) produce ZERO meaningful shifts on any T2 headline result. FC Dismissal Rate, FC Jury Trial Rate, Severity Share, and all Δ values are identical to 3 decimal places across base, caseload, pop, and combined controls. The disposition shift is entirely control-invariant.

@@ -41,11 +41,13 @@ Strip AI writing patterns from existing text without rewriting content.
 **Agent:** Writer (humanizer mode)
 **Output:** Edited file with AI patterns removed
 
-Strips 24 patterns across 4 categories:
-- Structural: forced narrative arcs, artificial progression
-- Lexical: "delve", "leverage", "nuanced", "robust"
-- Rhetorical: rule-of-three, negative parallelisms, em dash overuse
-- Formatting: excessive bullet points, promotional language
+Strips patterns across 5 categories (40+, expanded per Feyzollahi & Rafizadeh 2025; Walther et al.):
+- **Structural:** forced narrative arcs, artificial progression, hourglass paragraphs, symmetric paragraph length, "not X but Y" reframes (more than once)
+- **Lexical (general):** delve, leverage (non-technical), nuanced, robust (non-statistical), garner, foster, tapestry, landscape (figurative), realm, illuminate (figurative), navigate (figurative), embody, grapple, swiftly
+- **Lexical (econ-specific, empirically flagged):** underscore/underscores/underscored, nuance/nuanced, intriguing, intertwined, interplay, certainly (filler), leverage (filler)
+- **Copula substitution:** "serves as" → "is"; "marks the/a" → "is"; "stands as" → "is"; "features" (= has) → "has"; "offers" (= has) → "has/provides"
+- **Rhetorical:** rule-of-three everywhere, em dash overuse (>2/paragraph), trailing significance clauses ("...highlighting/underscoring/emphasizing the importance of...")
+- **Framing:** filler importance preambles ("It is worth noting that..."), unearned escalation to broad significance, over-explaining obvious concepts to expert readers, promotional language ("fills a critical gap", "groundbreaking"), excessive bullet points
 
 ---
 

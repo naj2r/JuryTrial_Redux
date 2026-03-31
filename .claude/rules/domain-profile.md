@@ -1,100 +1,99 @@
 # Domain Profile
 
-<!--
-HOW TO USE: Fill this in manually OR let /discover (interactive interview) generate it.
-All agents read this file to calibrate their field-specific behavior.
-Delete sections that don't apply. Add sections specific to your field.
--->
-
 ## Field
 
-**Primary:** [e.g., Health Economics, Labor Economics, Development, IO, Public Finance]
-**Adjacent subfields:** [e.g., Labor, Public, IO — fields whose methods and journals overlap]
+**Primary:** Political Economy / Law & Economics
+**Adjacent subfields:** Public Economics, Labor Economics, Criminal Justice, Judicial Politics
 
 ---
 
 ## Target Journals (ranked by tier)
 
-<!-- The Orchestrator uses this for journal selection. The Librarian prioritizes these in searches. -->
-
 | Tier | Journals |
 |------|----------|
-| Top-5 | AER, Econometrica, JPE, QJE, REStud |
-| Top field | [e.g., JHE, RAND JE, AEJ:EP, AEJ:Applied] |
-| Strong field | [e.g., Health Affairs, AJHE, JPubE, JHR] |
-| Specialty | [e.g., Medical Care, Health Services Research] |
+| Top-5 | AER, JPE, QJE, REStud |
+| Top field | AEJ:Applied, AEJ:Policy, JLE, Journal of Law and Economics, Journal of Law, Economics, and Organization |
+| Strong field | JPubE, JHR, JELS (Journal of Empirical Legal Studies), American Law and Economics Review |
+| Specialty | Journal of Criminal Justice, Criminology & Public Policy, Justice Quarterly |
 
 ---
 
 ## Common Data Sources
 
-<!-- The Explorer prioritizes these. The explorer-critic knows their quirks. -->
-
 | Dataset | Type | Access | Notes |
 |---------|------|--------|-------|
-| [e.g., CPS] | [survey/admin/panel] | [public/restricted] | [key strengths and limitations] |
+| SCAO Jury Management System | Admin (court-level) | Public (Power BI dashboard) | Michigan-specific; court-year panel of juror counts/rates |
+| UNC PPP (Prosecutors & Politics) | Admin (election) | Public (web scrape) | Candidate-level prosecutor election records, all states |
+| Census ACS | Survey/admin | Public | County-year population for scaling and controls |
+| SCAO Caseload Data | Admin (court-level) | Public (CSV) | Incoming/outgoing/pending felony caseloads by court-year |
 
 ---
 
 ## Common Identification Strategies
 
-<!-- The Strategist considers these first. The strategist-critic knows field-specific threats. -->
-
 | Strategy | Typical Application | Key Assumption to Defend |
 |----------|-------------------|------------------------|
-| [e.g., State-level DiD] | [Policy variation across states] | [Parallel trends in outcomes across treated/control states] |
+| TWFE with recurring treatment | Within-county election/non-election year contrasts | Conditional on county + year FE, outcomes would not differ across regimes absent electoral incentives |
+| Contestation decomposition | Contested vs uncontested incumbent elections | Contestation is not driven by county-specific jury trends |
+| Population heterogeneity splits | Above/below median county population | No differential trends by county size |
 
 ---
 
 ## Field Conventions
 
-<!-- The Coder and Writer follow these. The writer-critic checks for them. -->
-
-- [e.g., Binary outcomes → report LPM alongside logit/probit marginal effects]
-- [e.g., Cost outcomes → log transform or GLM (Gamma, log link)]
-- [e.g., Clustering at state level for state-level policy variation]
-- [e.g., Always discuss moral hazard / adverse selection implications]
-- [e.g., Welfare analysis expected in top-5 submissions]
+- County-clustered SEs for county-level policy variation (83 clusters)
+- Report within-unit SD standardized effects alongside raw coefficients
+- Multiple testing adjustments (Romano-Wolf, Bonferroni-Holm) when testing outcome families
+- TOST equivalence tests for establishing meaningful nulls
+- Always distinguish prosecutorial agency from judicial or administrative responses
+- Never claim prosecutors "summon jurors" — court administrators do
 
 ---
 
 ## Notation Conventions
 
-<!-- The Writer and writer-critic enforce these. -->
-
 | Symbol | Meaning | Anti-pattern |
 |--------|---------|-------------|
-| [e.g., $Y_{it}$] | [Outcome for individual i at time t] | [Don't use $y$ without subscripts] |
+| $Y_{ct}$ | Outcome for county $c$ in year $t$ | Don't use $y$ without subscripts |
+| $\alpha_c$ | County fixed effect | Don't call it "individual FE" |
+| $\gamma_t$ | Year fixed effect | Don't call it "time trend" |
+| $D_{ct}$ | Treatment indicator (electoral regime) | Don't use generic $T$ or $W$ |
+| FC | Felony Capital (life-eligible) | Never guess — from SCAO codes |
+| FH | Felony non-capital (other felonies) | Never guess — from SCAO codes |
 
 ---
 
 ## Seminal References
 
-<!-- The Librarian ensures these are cited when relevant. The strategist-critic knows their methods. -->
-
 | Paper | Why It Matters |
 |-------|---------------|
-| [e.g., Finkelstein et al. (2012)] | [Oregon HIE — gold standard for insurance effects] |
+| Bibas (2004) | Plea-bargaining shadow — credible threat of trial affects plea behavior |
+| Gordon & Huber (2007) | Electoral proximity increases prosecutorial severity in competitive districts |
+| Gordon (2009) | Review of prosecutorial agency framework (agents of voters, principals of staff) |
+| Priest & Klein (1984) | Selection model — enhanced preparation shifts litigation threshold |
+| Bandyopadhyay et al. (2014) | Population density and electoral competitiveness interaction |
+| Hessick & Morse (2020) | Contestation rates by district population |
+| Detotto et al. (2020) | Scale economies in prosecutor offices |
 
 ---
 
 ## Field-Specific Referee Concerns
 
-<!-- The domain-referee and methods-referee watch for these. -->
-
-- [e.g., "Why not use the Oregon HIE?" — must address if studying insurance effects]
-- [e.g., "Selection into treatment" — always a concern in health care utilization studies]
-- [e.g., "Moral hazard vs adverse selection" — referees expect you to distinguish]
-- [e.g., "External validity" — Medicaid population ≠ general population]
+- "Is this causal or just association?" — Recurring treatment complicates standard DiD interpretation
+- "External validity" — Michigan single-county prosecutor system is unusual nationally
+- "Selection into contestation" — Challenged incumbents may differ from unchallenged ones
+- "Reverse causality" — High-crime years could trigger both jury demand and contested elections
+- "Administrative vs prosecutorial" — Can you distinguish prosecutor intent from court admin response?
+- "Small N of treated cycles" — Only 2 presidential election cycles (2016, 2024) provide treatment variation
+- "Why not staggered DiD?" — Because treatment is recurring/transitory, not absorbing
 
 ---
 
 ## Quality Tolerance Thresholds
 
-<!-- Customize for your domain's standards. Used by quality.md. -->
-
 | Quantity | Tolerance | Rationale |
 |----------|-----------|-----------|
-| Point estimates | [e.g., 1e-6] | [Numerical precision] |
-| Standard errors | [e.g., 1e-4] | [MC variability] |
-| Coverage rates | [e.g., ± 0.01] | [Simulation with B reps] |
+| Point estimates | 1e-6 | Numerical precision in Stata |
+| Standard errors | 1e-4 | Clustering variance |
+| p-values | 1e-3 | Reporting precision |
+| Sample sizes | Exact | Must match panel structure exactly |

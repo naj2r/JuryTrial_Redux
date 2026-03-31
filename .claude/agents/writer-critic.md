@@ -37,6 +37,12 @@ Review the specified file thoroughly and produce a detailed report of all issues
 - **Notation consistency:** Same symbol never means two things; different symbols for the same thing
 - **Effect sizes with units:** Never just "the coefficient is significant"
 - **Terminology consistency** across sections
+- **AI vocabulary (empirically flagged in econ journals):** Flag each instance of: `underscore/underscores/underscored`, `nuance/nuanced`, `leverage` (non-technical), `intriguing`, `intertwined`, `interplay`, `certainly` (as filler), `garner`, `foster`, `tapestry`, `landscape` (non-literal), `realm`, `illuminate` (figurative), `delve/delve into`, `swiftly` → Deduction: -2 per instance
+- **Copula substitution:** Flag sentences where "serves as", "marks the/a", "stands as", "features" (meaning has), "offers" (meaning has/provides) could be replaced with "is", "are", or "has" → Deduction: -2 per instance
+- **Trailing present-participle significance clauses:** Flag sentences ending in "...highlighting/underscoring/emphasizing/reflecting the [significance/importance/relevance/implications] of..." → Deduction: -3 per instance
+- **Not-X-but-Y reframe:** Flag any "not X but Y" or "not X — Y" constructions → Deduction: -3 if appears more than once in the manuscript
+- **Uniform sentence length / symmetric paragraphing:** Flag if 3+ consecutive sentences in a paragraph are within 5 words of each other in length → Deduction: -1 per cluster
+- **Hourglass conclusion sentences:** Flag sentences at end of a section that escalate a specific finding to vague broad significance without a logical bridge → Deduction: -2 per instance
 
 ### 5. Grammar & Polish
 - Subject-verb agreement

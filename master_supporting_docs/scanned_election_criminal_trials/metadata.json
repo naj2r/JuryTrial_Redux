@@ -1,0 +1,203 @@
+{
+  "source_pdf": "The effect of the election of prosecutors on criminal trials.pdf",
+  "source_path": "C:\\Users\\jensenn\\Dropbox\\Research Resources\\law_econ_resources\\Papers\\Prosecutors\\The effect of the election of prosecutors on criminal trials.pdf",
+  "total_pages": 16,
+  "extraction_timestamp": "2026-03-24T19:52:10.850692",
+  "scanned_pdf": false,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 2219,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 2,
+      "char_count": 4281,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 3,
+      "char_count": 3741,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 4,
+      "char_count": 4142,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 5,
+      "char_count": 3755,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 6,
+      "char_count": 3205,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 7,
+      "char_count": 2925,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 8,
+      "char_count": 3511,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 9,
+      "char_count": 2989,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 10,
+      "char_count": 3918,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 11,
+      "char_count": 4222,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 12,
+      "char_count": 3780,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 13,
+      "char_count": 3107,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 14,
+      "char_count": 2654,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 15,
+      "char_count": 4021,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 16,
+      "char_count": 4467,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    }
+  ],
+  "sections": [
+    {
+      "file": "sec_01_pp01-02_introduction.md",
+      "label": "introduction",
+      "display_label": "Introduction",
+      "pages": [
+        1,
+        2
+      ],
+      "is_subsplit": false,
+      "char_count": 6570
+    },
+    {
+      "file": "sec_02_pp03-06_model_pt1.md",
+      "label": "model_pt1",
+      "display_label": "Model (Part 1)",
+      "pages": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "is_subsplit": true,
+      "char_count": 14985
+    },
+    {
+      "file": "sec_03_pp07-08_model_pt2.md",
+      "label": "model_pt2",
+      "display_label": "Model (Part 2)",
+      "pages": [
+        7,
+        8
+      ],
+      "is_subsplit": true,
+      "char_count": 6506
+    },
+    {
+      "file": "sec_04_pp09-11_data.md",
+      "label": "data",
+      "display_label": "Data",
+      "pages": [
+        9,
+        10,
+        11
+      ],
+      "is_subsplit": false,
+      "char_count": 11239
+    },
+    {
+      "file": "sec_05_pp12-14_results.md",
+      "label": "results",
+      "display_label": "Results",
+      "pages": [
+        12,
+        13,
+        14
+      ],
+      "is_subsplit": false,
+      "char_count": 9653
+    },
+    {
+      "file": "sec_06_pp15-15_conclusion.md",
+      "label": "conclusion",
+      "display_label": "Conclusion",
+      "pages": [
+        15
+      ],
+      "is_subsplit": false,
+      "char_count": 4057
+    },
+    {
+      "file": "sec_07_pp16-16_references.md",
+      "label": "references",
+      "display_label": "References",
+      "pages": [
+        16
+      ],
+      "is_subsplit": false,
+      "char_count": 4503
+    }
+  ],
+  "split_method": "headers"
+}

@@ -1,0 +1,260 @@
+{
+  "source_pdf": "dyke2007_electoral_cycles.pdf",
+  "source_path": "C:\\Users\\jensenn\\Dropbox\\Research Resources\\law_econ_resources\\Papers\\Prosecutor_Elections\\dyke2007_electoral_cycles.pdf",
+  "total_pages": 22,
+  "extraction_timestamp": "2026-03-24T19:49:40.750024",
+  "scanned_pdf": false,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 965,
+      "has_images": true,
+      "image_count": 2,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 2,
+      "char_count": 2518,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 3,
+      "char_count": 4391,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 4,
+      "char_count": 4201,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 5,
+      "char_count": 4105,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 6,
+      "char_count": 4440,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 7,
+      "char_count": 3813,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 8,
+      "char_count": 4163,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 9,
+      "char_count": 2076,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 10,
+      "char_count": 2817,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 11,
+      "char_count": 4185,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 12,
+      "char_count": 4155,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 13,
+      "char_count": 2624,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 14,
+      "char_count": 3907,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 15,
+      "char_count": 1406,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 16,
+      "char_count": 4427,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 17,
+      "char_count": 2088,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 18,
+      "char_count": 1554,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 19,
+      "char_count": 4458,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 20,
+      "char_count": 4226,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 21,
+      "char_count": 4395,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 22,
+      "char_count": 709,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    }
+  ],
+  "sections": [
+    {
+      "file": "sec_01_pp01-01_front_matter.md",
+      "label": "front_matter",
+      "display_label": "Front Matter",
+      "pages": [
+        1
+      ],
+      "is_subsplit": false,
+      "char_count": 999
+    },
+    {
+      "file": "sec_02_pp02-03_introduction.md",
+      "label": "introduction",
+      "display_label": "Introduction",
+      "pages": [
+        2,
+        3
+      ],
+      "is_subsplit": false,
+      "char_count": 6979
+    },
+    {
+      "file": "sec_03_pp04-07_literature_pt1.md",
+      "label": "literature_pt1",
+      "display_label": "Literature (Part 1)",
+      "pages": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "is_subsplit": true,
+      "char_count": 16701
+    },
+    {
+      "file": "sec_04_pp08-11_literature_pt2.md",
+      "label": "literature_pt2",
+      "display_label": "Literature (Part 2)",
+      "pages": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "is_subsplit": true,
+      "char_count": 13387
+    },
+    {
+      "file": "sec_05_pp12-13_literature_pt3.md",
+      "label": "literature_pt3",
+      "display_label": "Literature (Part 3)",
+      "pages": [
+        12,
+        13
+      ],
+      "is_subsplit": true,
+      "char_count": 6853
+    },
+    {
+      "file": "sec_06_pp14-17_empirical_pt1.md",
+      "label": "empirical_pt1",
+      "display_label": "Empirical (Part 1)",
+      "pages": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "is_subsplit": true,
+      "char_count": 11978
+    },
+    {
+      "file": "sec_07_pp18-20_empirical_pt2.md",
+      "label": "empirical_pt2",
+      "display_label": "Empirical (Part 2)",
+      "pages": [
+        18,
+        19,
+        20
+      ],
+      "is_subsplit": true,
+      "char_count": 10350
+    },
+    {
+      "file": "sec_08_pp21-22_references.md",
+      "label": "references",
+      "display_label": "References",
+      "pages": [
+        21,
+        22
+      ],
+      "is_subsplit": false,
+      "char_count": 5178
+    }
+  ],
+  "split_method": "headers"
+}

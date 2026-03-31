@@ -1,0 +1,623 @@
+{
+  "source_pdf": "hessick2020_picking_prosecutors.pdf",
+  "source_path": "C:\\Users\\jensenn\\Dropbox\\Research Resources\\law_econ_resources\\Papers\\Prosecutor_Elections\\hessick2020_picking_prosecutors.pdf",
+  "total_pages": 55,
+  "extraction_timestamp": "2026-03-24T19:43:37.256767",
+  "scanned_pdf": false,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 2746,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 2,
+      "char_count": 2891,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 3,
+      "char_count": 3783,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 4,
+      "char_count": 4360,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 5,
+      "char_count": 4247,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 6,
+      "char_count": 4149,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 7,
+      "char_count": 4609,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 8,
+      "char_count": 3434,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 9,
+      "char_count": 3242,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 10,
+      "char_count": 3267,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 11,
+      "char_count": 3497,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 12,
+      "char_count": 3765,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 13,
+      "char_count": 3962,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 14,
+      "char_count": 1051,
+      "has_images": true,
+      "image_count": 4,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 15,
+      "char_count": 4043,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 16,
+      "char_count": 3717,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 17,
+      "char_count": 3402,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 18,
+      "char_count": 4310,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 19,
+      "char_count": 4594,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 20,
+      "char_count": 4523,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 21,
+      "char_count": 3434,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 22,
+      "char_count": 2863,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 23,
+      "char_count": 3421,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 24,
+      "char_count": 3213,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 25,
+      "char_count": 2163,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 26,
+      "char_count": 3378,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 27,
+      "char_count": 3057,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 28,
+      "char_count": 3512,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 29,
+      "char_count": 3274,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 30,
+      "char_count": 3199,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 31,
+      "char_count": 2454,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 32,
+      "char_count": 2826,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 33,
+      "char_count": 3376,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 34,
+      "char_count": 3573,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 35,
+      "char_count": 3263,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 36,
+      "char_count": 2244,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 37,
+      "char_count": 2199,
+      "has_images": true,
+      "image_count": 10,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 38,
+      "char_count": 2923,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 39,
+      "char_count": 3985,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 40,
+      "char_count": 3618,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 41,
+      "char_count": 2064,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 42,
+      "char_count": 2324,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 43,
+      "char_count": 3289,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 44,
+      "char_count": 3266,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 45,
+      "char_count": 3289,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 46,
+      "char_count": 3399,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 47,
+      "char_count": 3402,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 48,
+      "char_count": 3479,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 49,
+      "char_count": 3200,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 50,
+      "char_count": 3944,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 51,
+      "char_count": 3319,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 52,
+      "char_count": 2752,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 53,
+      "char_count": 91,
+      "has_images": true,
+      "image_count": 4,
+      "extraction_quality": "poor"
+    },
+    {
+      "page": 54,
+      "char_count": 125,
+      "has_images": true,
+      "image_count": 3,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 55,
+      "char_count": 98,
+      "has_images": false,
+      "image_count": 0,
+      "extraction_quality": "good"
+    }
+  ],
+  "sections": [
+    {
+      "file": "sec_01_pp01-01_introduction_1538.md",
+      "label": "introduction_1538",
+      "display_label": "Introduction 1538",
+      "pages": [
+        1
+      ],
+      "is_subsplit": false,
+      "char_count": 2780
+    },
+    {
+      "file": "sec_02_pp02-05_prosecutorial_elections_population_and_t_pt1.md",
+      "label": "prosecutorial_elections_population_and_t_pt1",
+      "display_label": "Prosecutorial Elections Population And T (Part 1)",
+      "pages": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "is_subsplit": true,
+      "char_count": 15423
+    },
+    {
+      "file": "sec_03_pp06-06_prosecutorial_elections_population_and_t_pt2.md",
+      "label": "prosecutorial_elections_population_and_t_pt2",
+      "display_label": "Prosecutorial Elections Population And T (Part 2)",
+      "pages": [
+        6
+      ],
+      "is_subsplit": true,
+      "char_count": 4183
+    },
+    {
+      "file": "sec_04_pp07-10_fairfax_jr_prosecutorial_nullification_5_pt1.md",
+      "label": "fairfax_jr_prosecutorial_nullification_5_pt1",
+      "display_label": "Fairfax Jr Prosecutorial Nullification 5 (Part 1)",
+      "pages": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "is_subsplit": true,
+      "char_count": 14696
+    },
+    {
+      "file": "sec_05_pp11-11_fairfax_jr_prosecutorial_nullification_5_pt2.md",
+      "label": "fairfax_jr_prosecutorial_nullification_5_pt2",
+      "display_label": "Fairfax Jr Prosecutorial Nullification 5 (Part 2)",
+      "pages": [
+        11
+      ],
+      "is_subsplit": true,
+      "char_count": 3533
+    },
+    {
+      "file": "sec_06_pp12-15_methods_of_prosecutorial_selection_pt1.md",
+      "label": "methods_of_prosecutorial_selection_pt1",
+      "display_label": "Methods Of Prosecutorial Selection (Part 1)",
+      "pages": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "is_subsplit": true,
+      "char_count": 12971
+    },
+    {
+      "file": "sec_07_pp16-19_methods_of_prosecutorial_selection_pt2.md",
+      "label": "methods_of_prosecutorial_selection_pt2",
+      "display_label": "Methods Of Prosecutorial Selection (Part 2)",
+      "pages": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "is_subsplit": true,
+      "char_count": 16173
+    },
+    {
+      "file": "sec_08_pp20-20_methods_of_prosecutorial_selection_pt3.md",
+      "label": "methods_of_prosecutorial_selection_pt3",
+      "display_label": "Methods Of Prosecutorial Selection (Part 3)",
+      "pages": [
+        20
+      ],
+      "is_subsplit": true,
+      "char_count": 4559
+    },
+    {
+      "file": "sec_09_pp21-24_prosecutorial_election_in_the_states_pt1.md",
+      "label": "prosecutorial_election_in_the_states_pt1",
+      "display_label": "Prosecutorial Election In The States (Part 1)",
+      "pages": [
+        21,
+        22,
+        23,
+        24
+      ],
+      "is_subsplit": true,
+      "char_count": 13081
+    },
+    {
+      "file": "sec_10_pp25-28_prosecutorial_election_in_the_states_pt2.md",
+      "label": "prosecutorial_election_in_the_states_pt2",
+      "display_label": "Prosecutorial Election In The States (Part 2)",
+      "pages": [
+        25,
+        26,
+        27,
+        28
+      ],
+      "is_subsplit": true,
+      "char_count": 12260
+    },
+    {
+      "file": "sec_11_pp29-32_prosecutorial_election_in_the_states_pt3.md",
+      "label": "prosecutorial_election_in_the_states_pt3",
+      "display_label": "Prosecutorial Election In The States (Part 3)",
+      "pages": [
+        29,
+        30,
+        31,
+        32
+      ],
+      "is_subsplit": true,
+      "char_count": 11903
+    },
+    {
+      "file": "sec_12_pp33-33_prosecutorial_election_in_the_states_pt4.md",
+      "label": "prosecutorial_election_in_the_states_pt4",
+      "display_label": "Prosecutorial Election In The States (Part 4)",
+      "pages": [
+        33
+      ],
+      "is_subsplit": true,
+      "char_count": 3412
+    },
+    {
+      "file": "sec_13_pp34-37_prosecutorial_elections_population_and_t_pt1.md",
+      "label": "prosecutorial_elections_population_and_t_pt1",
+      "display_label": "Prosecutorial Elections Population And T (Part 1)",
+      "pages": [
+        34,
+        35,
+        36,
+        37
+      ],
+      "is_subsplit": true,
+      "char_count": 11429
+    },
+    {
+      "file": "sec_14_pp38-41_prosecutorial_elections_population_and_t_pt2.md",
+      "label": "prosecutorial_elections_population_and_t_pt2",
+      "display_label": "Prosecutorial Elections Population And T (Part 2)",
+      "pages": [
+        38,
+        39,
+        40,
+        41
+      ],
+      "is_subsplit": true,
+      "char_count": 12740
+    },
+    {
+      "file": "sec_15_pp42-45_prosecutorial_elections_population_and_t_pt3.md",
+      "label": "prosecutorial_elections_population_and_t_pt3",
+      "display_label": "Prosecutorial Elections Population And T (Part 3)",
+      "pages": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "is_subsplit": true,
+      "char_count": 12318
+    },
+    {
+      "file": "sec_16_pp46-49_prosecutorial_elections_population_and_t_pt4.md",
+      "label": "prosecutorial_elections_population_and_t_pt4",
+      "display_label": "Prosecutorial Elections Population And T (Part 4)",
+      "pages": [
+        46,
+        47,
+        48,
+        49
+      ],
+      "is_subsplit": true,
+      "char_count": 13630
+    },
+    {
+      "file": "sec_17_pp50-50_prosecutorial_elections_population_and_t_pt5.md",
+      "label": "prosecutorial_elections_population_and_t_pt5",
+      "display_label": "Prosecutorial Elections Population And T (Part 5)",
+      "pages": [
+        50
+      ],
+      "is_subsplit": true,
+      "char_count": 3980
+    },
+    {
+      "file": "sec_18_pp51-52_conclusion.md",
+      "label": "conclusion",
+      "display_label": "Conclusion",
+      "pages": [
+        51,
+        52
+      ],
+      "is_subsplit": false,
+      "char_count": 6145
+    },
+    {
+      "file": "sec_19_pp53-55_appendix.md",
+      "label": "appendix",
+      "display_label": "Appendix",
+      "pages": [
+        53,
+        54,
+        55
+      ],
+      "is_subsplit": false,
+      "char_count": 426
+    }
+  ],
+  "split_method": "headers"
+}

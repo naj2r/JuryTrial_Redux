@@ -1,0 +1,70 @@
+{
+  "source_pdf": "Voter information and prosecutor behavior.pdf",
+  "source_path": "C:\\Users\\jensenn\\Dropbox\\Research Resources\\law_econ_resources\\Papers\\Prosecutors\\Voter information and prosecutor behavior.pdf",
+  "total_pages": 5,
+  "extraction_timestamp": "2026-03-24T19:52:11.145205",
+  "scanned_pdf": false,
+  "pages": [
+    {
+      "page": 1,
+      "char_count": 3098,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 2,
+      "char_count": 3165,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 3,
+      "char_count": 5695,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 4,
+      "char_count": 5095,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    },
+    {
+      "page": 5,
+      "char_count": 1525,
+      "has_images": true,
+      "image_count": 1,
+      "extraction_quality": "good"
+    }
+  ],
+  "sections": [
+    {
+      "file": "sec_01_pp01-04_chunk_pp01_04.md",
+      "label": "chunk_pp01_04",
+      "display_label": "Pages 1\u20134",
+      "pages": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "is_subsplit": false,
+      "char_count": 17195
+    },
+    {
+      "file": "sec_02_pp05-05_chunk_pp05_05.md",
+      "label": "chunk_pp05_05",
+      "display_label": "Pages 5\u20135",
+      "pages": [
+        5
+      ],
+      "is_subsplit": false,
+      "char_count": 1559
+    }
+  ],
+  "split_method": "chunks"
+}
